@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 24" shape-rendering="crispEdges">
+  <!-- Hat -->
+  <rect x="4" y="0" width="8" height="1" fill="#E80000"/>
+  <rect x="3" y="1" width="10" height="1" fill="#E80000"/>
+  <rect x="2" y="2" width="12" height="1" fill="#E80000"/>
+  <!-- Hair + Face row 1 -->
+  <rect x="2" y="3" width="3" height="1" fill="#8B4513"/>
+  <rect x="5" y="3" width="2" height="1" fill="#FCCCA0"/>
+  <rect x="7" y="3" width="1" height="1" fill="#111"/>
+  <rect x="8" y="3" width="3" height="1" fill="#FCCCA0"/>
+  <!-- Hair + Face row 2 -->
+  <rect x="1" y="4" width="2" height="1" fill="#8B4513"/>
+  <rect x="3" y="4" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="4" y="4" width="1" height="1" fill="#8B4513"/>
+  <rect x="5" y="4" width="3" height="1" fill="#FCCCA0"/>
+  <rect x="8" y="4" width="1" height="1" fill="#8B4513"/>
+  <rect x="9" y="4" width="2" height="1" fill="#FCCCA0"/>
+  <rect x="11" y="4" width="2" height="1" fill="#8B4513"/>
+  <!-- Face row 3 -->
+  <rect x="1" y="5" width="1" height="1" fill="#8B4513"/>
+  <rect x="2" y="5" width="9" height="1" fill="#FCCCA0"/>
+  <rect x="11" y="5" width="2" height="1" fill="#8B4513"/>
+  <!-- Mustache row -->
+  <rect x="3" y="6" width="3" height="1" fill="#8B4513"/>
+  <rect x="6" y="6" width="4" height="1" fill="#FCCCA0"/>
+  <rect x="10" y="6" width="2" height="1" fill="#8B4513"/>
+  <!-- Neck -->
+  <rect x="4" y="7" width="8" height="1" fill="#FCCCA0"/>
+  <!-- Shirt row 1 -->
+  <rect x="3" y="8" width="2" height="1" fill="#E80000"/>
+  <rect x="5" y="8" width="3" height="1" fill="#4040E8"/>
+  <rect x="8" y="8" width="3" height="1" fill="#E80000"/>
+  <!-- Shirt row 2 -->
+  <rect x="2" y="9" width="3" height="1" fill="#E80000"/>
+  <rect x="5" y="9" width="1" height="1" fill="#4040E8"/>
+  <rect x="6" y="9" width="1" height="1" fill="#FFD700"/>
+  <rect x="7" y="9" width="1" height="1" fill="#4040E8"/>
+  <rect x="8" y="9" width="1" height="1" fill="#FFD700"/>
+  <rect x="9" y="9" width="3" height="1" fill="#E80000"/>
+  <!-- Arms + Shirt -->
+  <rect x="1" y="10" width="2" height="1" fill="#E80000"/>
+  <rect x="3" y="10" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="4" y="10" width="1" height="1" fill="#E80000"/>
+  <rect x="5" y="10" width="4" height="1" fill="#4040E8"/>
+  <rect x="9" y="10" width="1" height="1" fill="#E80000"/>
+  <rect x="10" y="10" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="11" y="10" width="2" height="1" fill="#E80000"/>
+  <!-- Hands + Overalls -->
+  <rect x="1" y="11" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="2" y="11" width="1" height="1" fill="#E80000"/>
+  <rect x="3" y="11" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="4" y="11" width="6" height="1" fill="#4040E8"/>
+  <rect x="10" y="11" width="1" height="1" fill="#FCCCA0"/>
+  <rect x="11" y="11" width="1" height="1" fill="#E80000"/>
+  <rect x="12" y="11" width="1" height="1" fill="#FCCCA0"/>
+  <!-- Overalls rows -->
+  <rect x="4" y="12" width="6" height="1" fill="#4040E8"/>
+  <rect x="4" y="13" width="6" height="1" fill="#4040E8"/>
+  <!-- Legs row 1 -->
+  <rect x="3" y="14" width="3" height="1" fill="#4040E8"/>
+  <rect x="8" y="14" width="3" height="1" fill="#4040E8"/>
+  <!-- Legs row 2 -->
+  <rect x="3" y="15" width="3" height="1" fill="#4040E8"/>
+  <rect x="8" y="15" width="3" height="1" fill="#4040E8"/>
+  <!-- Shoes -->
+  <rect x="2" y="16" width="3" height="1" fill="#8B4513"/>
+  <rect x="9" y="16" width="3" height="1" fill="#8B4513"/>
+  <rect x="1" y="17" width="4" height="1" fill="#8B4513"/>
+  <rect x="9" y="17" width="4" height="1" fill="#8B4513"/>
+</svg>

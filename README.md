@@ -1,36 +1,229 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏝️ OASIS — Gaming Club Website
 
-## Getting Started
+A premium, cinematic landing page for **OASIS**, a college gaming club. Built with **Next.js 16**, **GSAP**, and **Tailwind CSS**, featuring pixel art aesthetics, scroll-driven animations, and interactive elements.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)
+![GSAP](https://img.shields.io/badge/GSAP-3.x-88CE02?logo=greensock)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?logo=tailwind-css)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🎮 Features
+
+### 🏠 Start Screen (Hero)
+- Full-screen cinematic intro with scroll-pinned GSAP timeline
+- Animated pixel-art title with letter-by-letter reveal
+- Custom retro pixel cursors (default, pointer, text)
+- Smooth rainbow arc decoration
+- Draggable gaming characters (Mario, Pikachu, Pac-Man, Space Invader, Wizard, Robot)
+- Clickable coin blocks with particle burst effects
+- Konami Code easter egg (↑↑↓↓←→←→BA)
+- Mouse-follow particle trail effect
+
+### 📖 Origin Section ("Who We Are")
+- Dark mode cinematic section with pinned scroll
+- 7 premium animations:
+  - **Parallax depth layers** — far & mid-ground moving at different scroll speeds
+  - **Title clip-reveal** — "WHO WE ARE" wipes in from left-to-right
+  - **Text card boot-up** — card reveals from bottom with border draw-in
+  - **Color bleed glow** — pulsing glow on "OASIS" text, halos on accent words
+  - **Noise texture overlay** — SVG fractalNoise grain at 3.5% opacity
+  - **Scroll-linked particles** — 30 ascending particles in mint/purple/blue
+  - **Horizontal gradient divider** — draws itself between title and text
+- Custom mascot with idle bob animation
+- Rich background decorations (pixel shapes, gaming icons, orbs, connection lines)
+
+### ⚡ What We Do
+- 4 feature cards: **Game Dev**, **Esports**, **Community**, **Workshops**
+- SaaS-inspired card design with:
+  - Large visual header area with grid pattern & floating pixel dots
+  - Centered icon with hover scale + rotate
+  - Number badge and "EXPLORE →" button
+  - Colored border glow on hover
+- Rich animated background:
+  - Pixel clouds drifting across the viewport
+  - Floating geometric shapes (squares, circles, triangles, diamonds)
+  - Twinkling pixel stars
+  - Gaming icons and code snippets
+  - Pulsing radial glows
+  - Two parallax depth layers
+
+### 🎪 Events Section
+- Scroll-animated event showcase
+
+### 🤝 Collabs Section
+- Collaboration highlights
+
+### 🏆 Victory Section (Footer)
+- Closing cinematic scroll
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| **Next.js 16** | React framework, SSR, routing |
+| **TypeScript** | Type safety |
+| **Tailwind CSS 4** | Utility-first styling with custom theme |
+| **GSAP + ScrollTrigger** | Scroll-driven animations, pinned timelines |
+| **Custom SVG Art** | Pixel cursors, mascot, decorations |
+
+---
+
+## 🎨 Design System
+
+### Theme Colors
+- **Background**: `#0a0a0f` (dark), `#EAF6FF` (light sections)
+- **Accent Mint**: `#9EE6CF`
+- **Accent Purple/Lavender**: `#C9C3F5`
+- **Accent Pink**: `#F6B6C8`
+- **Accent Blue**: `#9FA8FF`
+- **Accent Yellow**: `#FFF1A8`
+
+### Fonts
+- **Pixel Font**: `"Press Start 2P"` — headings, titles, buttons
+- **Body Font**: `"Inter"` — descriptions, paragraphs
+
+---
+
+## 📁 Project Structure
+
+```
+oasis-website/
+├── public/
+│   └── assets/           # SVG characters, cursors, mascot
+├── src/
+│   ├── app/
+│   │   ├── globals.css   # Theme, keyframes, custom utilities
+│   │   ├── layout.tsx    # Root layout with fonts
+│   │   └── page.tsx      # Main page composition
+│   ├── components/
+│   │   ├── scenes/       # Page sections
+│   │   │   ├── StartScreen.tsx
+│   │   │   ├── Origin.tsx
+│   │   │   ├── WhatWeDo.tsx
+│   │   │   ├── Events.tsx
+│   │   │   ├── Collabs.tsx
+│   │   │   └── Victory.tsx
+│   │   ├── CoinBlocks.tsx
+│   │   ├── DraggableCharacter.tsx
+│   │   ├── KonamiCode.tsx
+│   │   ├── NavIsland.tsx
+│   │   ├── PixelTrail.tsx
+│   │   └── ScrollEngine.tsx
+│   └── lib/
+│       └── gsap.ts       # GSAP + ScrollTrigger setup
+├── package.json
+├── tsconfig.json
+├── next.config.ts
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Clone the repository
+git clone https://github.com/anirudhaacharyap/Oasis_Website.git
+cd Oasis_Website
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Install dependencies
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Start development server
+npm run dev
+```
 
-## Deploy on Vercel
+Visit [http://localhost:3000](http://localhost:3000) to see the site.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Build for Production
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 📋 Development Progress
+
+### Milestone 1: Project Scaffolding
+- [x] Next.js 16 + TypeScript + Tailwind CSS 4 setup
+- [x] GSAP + ScrollTrigger integration
+- [x] Custom theme with pixel art color palette
+- [x] Google Fonts integration (Press Start 2P, Inter)
+
+### Milestone 2: Start Screen (Hero)
+- [x] Full-screen cinematic hero with scroll-pinned timeline
+- [x] Animated pixel title with letter-by-letter reveal
+- [x] Welcome text with staggered line animation
+- [x] Background gradient with moving elements
+
+### Milestone 3: Interactive Elements
+- [x] Draggable gaming characters (6 SVG characters)
+- [x] Clickable coin blocks with particle effects
+- [x] Konami Code easter egg
+- [x] Mouse-follow particle trail
+- [x] Custom retro pixel cursors
+
+### Milestone 4: Origin Section
+- [x] Dark mode cinematic section
+- [x] Custom mascot integration (SVG)
+- [x] Rich background decorations
+- [x] Text content with gaming club description
+
+### Milestone 5: Premium Origin Animations
+- [x] Parallax depth layers
+- [x] Title clip-reveal wipe animation
+- [x] Text card boot-up effect
+- [x] Color bleed glow on accent text
+- [x] Noise/grain texture overlay
+- [x] Scroll-linked particle system (30 particles)
+- [x] Horizontal gradient divider animation
+
+### Milestone 6: What We Do Section
+- [x] 4 feature cards (Game Dev, Esports, Community, Workshops)
+- [x] SaaS-inspired card design with visual headers
+- [x] Rich animated background (clouds, shapes, stars)
+- [x] Parallax depth layers
+- [x] Scroll-animated card reveal
+
+### Milestone 7: Additional Sections
+- [x] Events section
+- [x] Collabs section
+- [x] Victory / footer section
+
+---
+
+## 🎯 Key Animations
+
+| Animation | Technique | Section |
+|-----------|-----------|---------|
+| Pinned scroll timeline | GSAP ScrollTrigger `pin: true, scrub` | All sections |
+| Parallax depth | Multiple layers at different scroll speeds | Origin, WhatWeDo |
+| Clip-path reveal | `clipPath: inset()` animation | Origin title |
+| Boot-up effect | Bottom-to-top clipPath + border draw | Origin text card |
+| Particle system | CSS `particle-drift` + GSAP fade | Origin |
+| Cloud drift | CSS `fly-right` keyframes | WhatWeDo |
+| Glow pulse | CSS `glow-pulse` keyframes | Origin accent text |
+| Floating elements | CSS `float` keyframes | All sections |
+| Drag & drop | Pointer events + state tracking | StartScreen characters |
+
+---
+
+## 📄 License
+
+This project is part of the OASIS Gaming Club initiative.
+
+---
+
+*Built with ❤️ and lots of pixels*

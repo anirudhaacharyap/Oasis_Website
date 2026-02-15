@@ -1,26 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ── OASIS Theme ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Backgrounds */
+  --color-sky-blue: #D9EEFB;
+  --color-light-blue: #EAF6FF;
+  --color-cloud-white: #F9FCFF;
+
+  /* Accents */
+  --color-accent-pink: #F6B6C8;
+  --color-accent-lavender: #C9C3F5;
+  --color-accent-purple: #9FA8FF;
+  --color-accent-mint: #9EE6CF;
+  --color-accent-yellow: #FFF1A8;
+
+  /* Text */
+  --color-text-primary: #2F5D8C;
+  --color-text-secondary: #5F86B5;
+
+  /* Borders */
+  --color-border-card: #BFD9F2;
+
+  /* Fonts */
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-body: 'Inter', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base Resets ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  /* Lenis handles smooth scrolling */
+  overflow-x: hidden;
+  cursor: url('/assets/cursor-default.svg') 0 0, auto;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cloud-white);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Pixel Cursors ── */
+a,
+button,
+[role="button"],
+.cursor-pointer,
+label,
+select,
+summary,
+[type="submit"],
+[type="button"] {
+  cursor: url('/assets/cursor-pointer.svg') 0 0, pointer !important;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+[contenteditable="true"] {
+  cursor: url('/assets/cursor-text.svg') 16 16, text !important;
+}
+
+/* ── Pixel Font Utility ── */
+.font-pixel {
+  font-family: var(--font-pixel);
+}
+
+/* ── Selection Color ── */
+::selection {
+  background: var(--color-accent-lavender);
+  color: var(--color-text-primary);
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-light-blue);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent-purple);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* ── Scene Keyframes (moved here to avoid styled-jsx hydration mismatch) ── */
+@keyframes fly-right {
+  0% {
+    transform: translateX(-60px);
+  }
+
+  100% {
+    transform: translateX(calc(100vw + 60px));
+  }
+}
+
+@keyframes fly-left {
+  0% {
+    transform: translateX(60px);
+  }
+
+  100% {
+    transform: translateX(calc(-100vw - 60px));
+  }
+}
+
+@keyframes flap {
+  0% {
+    transform: scaleY(1);
+  }
+
+  100% {
+    transform: scaleY(-0.6) translateY(4px);
+  }
+}
+
+@keyframes walk-right {
+  0% {
+    transform: translateX(-60px);
+  }
+
+  100% {
+    transform: translateX(calc(100vw + 60px));
+  }
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes coin-spin {
+
+  0%,
+  100% {
+    transform: scaleX(1) translateY(0);
+  }
+
+  25% {
+    transform: scaleX(0.3) translateY(-8px);
+  }
+
+  50% {
+    transform: scaleX(1) translateY(-14px);
+  }
+
+  75% {
+    transform: scaleX(0.3) translateY(-8px);
+  }
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes cloud-drift {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  50% {
+    transform: translateX(40px) translateY(-12px);
+  }
+
+  100% {
+    transform: translateX(80px) translateY(0);
+  }
+}
+
+@keyframes rainbow-scroll {
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Coin block animations */
+@keyframes coin-fly {
+  0% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-60px) translateX(-50%);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    transform: translateY(8px) translateX(-50%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes fly-right {
+  0% {
+    left: -10%;
+    transform: translateX(0);
+  }
+
+  100% {
+    left: 110%;
+    transform: translateX(0);
+  }
+}
+
+/* ── Origin Section Premium Animations ── */
+@keyframes noise-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -5%);
+  }
+
+  20% {
+    transform: translate(5%, 10%);
+  }
+
+  30% {
+    transform: translate(-10%, 5%);
+  }
+
+  40% {
+    transform: translate(10%, -5%);
+  }
+
+  50% {
+    transform: translate(-5%, 10%);
+  }
+
+  60% {
+    transform: translate(5%, -10%);
+  }
+
+  70% {
+    transform: translate(-10%, -5%);
+  }
+
+  80% {
+    transform: translate(0%, 5%);
+  }
+
+  90% {
+    transform: translate(5%, 0%);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
+    opacity: 1;
+  }
+
+  50% {
+    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor, 0 0 24px currentColor;
+    opacity: 1;
+  }
+}
+
+@keyframes particle-drift {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.6;
+  }
+
+  90% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
 }
