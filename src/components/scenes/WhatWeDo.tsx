@@ -114,10 +114,11 @@ function PixelCloud({ top, speed, delay, scale = 1 }: { top: string; speed: numb
 export default function WhatWeDo() {
     const sectionRef = useRef<HTMLElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
+    const dividerRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
     const bgFarRef = useRef<HTMLDivElement>(null);
     const bgMidRef = useRef<HTMLDivElement>(null);
-    const sectionBgRef = useRef<HTMLDivElement>(null);
+
 
     useEffect(() => {
         const section = sectionRef.current;
@@ -125,33 +126,25 @@ export default function WhatWeDo() {
 
         // Initial hidden states — more dramatic starting positions
         gsap.set(titleRef.current, { y: 80, autoAlpha: 0, scale: 0.8, rotateX: 15 });
+        gsap.set(dividerRef.current, { autoAlpha: 0, scaleX: 0 });
         cardsRef.current.forEach((card) => {
             if (card) gsap.set(card, { autoAlpha: 0, y: 80, scale: 0.85, rotateY: 5 });
         });
 
-        // Section background starts slightly transparent for blend effect
-        if (sectionBgRef.current) {
-            gsap.set(sectionBgRef.current, { autoAlpha: 0 });
-        }
+
 
         // ── PINNED SCROLL TIMELINE ──
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: section,
                 start: "top top",
-                end: "+=250%",
+                end: "+=350%",
                 scrub: 0.5,
                 pin: true,
                 anticipatePin: 1,
             },
         });
 
-        // Phase 0: Background blend-in
-        if (sectionBgRef.current) {
-            tl.to(sectionBgRef.current, {
-                autoAlpha: 1, duration: 0.1, ease: "none",
-            }, 0);
-        }
 
         // Parallax background layers at different speeds
         if (bgFarRef.current) {
@@ -161,13 +154,20 @@ export default function WhatWeDo() {
             tl.to(bgMidRef.current, { y: -30, duration: 1, ease: "none" }, 0);
         }
 
-        // Phase 1: Title swoops in with 3D rotation
+        // Phase 1: Title swoops in first (0.05 → 0.20)
         tl.to(titleRef.current, {
             y: 0, autoAlpha: 1, scale: 1, rotateX: 0,
             duration: 0.15, ease: "power3.out",
         }, 0.05);
 
-        // Phase 2: Cards unlock sequentially with stagger
+        // Phase 2: Divider appears after title (0.22 → 0.30)
+        tl.to(dividerRef.current, {
+            autoAlpha: 1, scaleX: 1,
+            duration: 0.08, ease: "power2.out",
+            transformOrigin: "center center",
+        }, 0.22);
+
+        // Phase 3: Each card unlocks one by one from left (starts at 0.35, well after title+divider)
         cardsRef.current.forEach((card, i) => {
             if (!card) return;
             tl.to(card, {
@@ -175,12 +175,12 @@ export default function WhatWeDo() {
                 y: 0,
                 scale: 1,
                 rotateY: 0,
-                duration: 0.15,
+                duration: 0.10,
                 ease: "back.out(1.6)",
-            }, 0.22 + i * 0.08);
+            }, 0.35 + i * 0.12);
         });
 
-        // Phase 3: Breathing room (holds at 70%-100%)
+        // Phase 4: Breathing room (holds at ~85%-100%)
 
         return () => {
             ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -191,14 +191,8 @@ export default function WhatWeDo() {
         <section
             ref={sectionRef}
             className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden"
-            style={{ perspective: "1200px" }}
+            style={{ perspective: "1200px", background: "linear-gradient(180deg, #D9EEFB 0%, #EAF6FF 40%, #F9FCFF 100%)" }}
         >
-            {/* Background gradient layer (animated blend-in) */}
-            <div
-                ref={sectionBgRef}
-                className="absolute inset-0 z-0"
-                style={{ background: "linear-gradient(180deg, #D9EEFB 0%, #EAF6FF 40%, #F9FCFF 100%)" }}
-            />
             {/* ═══ Layer 0: Base grid + ground ═══ */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div
@@ -500,106 +494,148 @@ export default function WhatWeDo() {
                 {/* Title */}
                 <h2
                     ref={titleRef}
-                    className="font-pixel text-3xl sm:text-4xl lg:text-5xl text-center mb-32"
-                    style={{ color: "#2F5D8C" }}
+                    className="font-pixel text-3xl sm:text-4xl lg:text-5xl text-center mb-4"
+                    style={{ color: "#2F5D8C", visibility: "hidden" }}
                 >
                     WHAT WE DO
                 </h2>
 
+                {/* Decorative pixel divider */}
+                <div ref={dividerRef} className="flex items-center justify-center gap-2 mb-16" style={{ visibility: "hidden" }}>
+                    <div className="w-8 h-[2px] rounded-full" style={{ background: "#BFD9F2" }} />
+                    <div className="w-2 h-2 rounded-sm rotate-45" style={{ background: "#9FA8FF" }} />
+                    <div className="w-16 h-[2px] rounded-full" style={{ background: "#BFD9F2" }} />
+                    <div className="w-2 h-2 rounded-sm rotate-45" style={{ background: "#F6B6C8" }} />
+                    <div className="w-8 h-[2px] rounded-full" style={{ background: "#BFD9F2" }} />
+                </div>
+
                 {/* Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
                     {powerUps.map((item, i) => (
                         <div
                             key={item.title}
                             ref={(el) => { cardsRef.current[i] = el; }}
-                            className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-3 flex flex-col min-h-[420px]"
+                            className="group relative rounded-2xl overflow-hidden flex flex-col min-h-[400px] cursor-pointer"
                             style={{
+                                visibility: "hidden" as const,
                                 background: "#fff",
-                                border: "1px solid rgba(191, 217, 242, 0.35)",
-                                boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
+                                border: "1.5px solid rgba(191, 217, 242, 0.30)",
+                                boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+                                transition: "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, border-color 0.4s ease",
                             }}
                             onMouseEnter={(e) => {
                                 const el = e.currentTarget;
-                                el.style.borderColor = `${item.accent}60`;
-                                el.style.boxShadow = `0 20px 50px ${item.accent}25, 0 8px 16px rgba(0,0,0,0.06)`;
+                                el.style.transform = "translateY(-10px) scale(1.03)";
+                                el.style.borderColor = `${item.accent}55`;
+                                el.style.boxShadow = `0 25px 60px ${item.accent}22, 0 12px 24px rgba(0,0,0,0.06), inset 0 1px 0 ${item.accent}15`;
+                                // Accent bar glow
+                                const bar = el.querySelector("[data-accent-bar]") as HTMLElement;
+                                if (bar) { bar.style.opacity = "1"; bar.style.height = "4px"; }
                             }}
                             onMouseLeave={(e) => {
                                 const el = e.currentTarget;
-                                el.style.borderColor = "rgba(191, 217, 242, 0.35)";
-                                el.style.boxShadow = "0 4px 24px rgba(0,0,0,0.04)";
+                                el.style.transform = "translateY(0) scale(1)";
+                                el.style.borderColor = "rgba(191, 217, 242, 0.30)";
+                                el.style.boxShadow = "0 4px 20px rgba(0,0,0,0.03)";
+                                const bar = el.querySelector("[data-accent-bar]") as HTMLElement;
+                                if (bar) { bar.style.opacity = "0.5"; bar.style.height = "3px"; }
                             }}
                         >
+                            {/* Accent bar at top */}
+                            <div
+                                data-accent-bar=""
+                                className="absolute top-0 left-0 right-0 z-20 rounded-t-2xl"
+                                style={{
+                                    height: "3px",
+                                    background: `linear-gradient(90deg, transparent, ${item.accent}, transparent)`,
+                                    opacity: 0.5,
+                                    transition: "opacity 0.4s ease, height 0.4s ease",
+                                }}
+                            />
+
                             {/* ── Visual header area ── */}
                             <div
-                                className="relative h-48 lg:h-52 flex items-center justify-center overflow-hidden"
+                                className="relative h-44 lg:h-48 flex items-center justify-center overflow-hidden"
                                 style={{
-                                    background: `linear-gradient(160deg, ${item.accent}18 0%, ${item.accent}08 100%)`,
+                                    background: `linear-gradient(160deg, ${item.accent}15 0%, ${item.accent}06 100%)`,
                                 }}
                             >
-                                {/* Subtle grid pattern in header */}
+                                {/* Radial hover highlight */}
                                 <div
-                                    className="absolute inset-0 opacity-[0.06]"
+                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                    style={{
+                                        background: `radial-gradient(circle at 50% 60%, ${item.accent}12, transparent 70%)`,
+                                    }}
+                                />
+
+                                {/* Grid pattern */}
+                                <div
+                                    className="absolute inset-0 opacity-[0.05]"
                                     style={{
                                         backgroundImage: `linear-gradient(${item.accent}40 1px, transparent 1px), linear-gradient(90deg, ${item.accent}40 1px, transparent 1px)`,
                                         backgroundSize: "20px 20px",
                                     }}
                                 />
 
-                                {/* Floating pixel dots in header */}
+                                {/* Floating pixel dots */}
                                 <div className="absolute top-4 left-4 w-2 h-2 rounded-sm opacity-20 animate-float" style={{ backgroundColor: item.accent, animationDuration: "5s" }} />
                                 <div className="absolute top-6 right-6 w-1.5 h-1.5 rounded-sm opacity-15 animate-float" style={{ backgroundColor: item.accent, animationDuration: "7s", animationDelay: "1s" }} />
                                 <div className="absolute bottom-6 left-8 w-1 h-1 rounded-sm opacity-20 animate-float" style={{ backgroundColor: item.accent, animationDuration: "6s", animationDelay: "2s" }} />
                                 <div className="absolute bottom-4 right-4 w-2 h-2 rounded-sm opacity-15 animate-float" style={{ backgroundColor: item.accent, animationDuration: "8s", animationDelay: "3s" }} />
 
-                                {/* Number badge top right */}
+                                {/* Number badge */}
                                 <span
-                                    className="absolute top-4 right-4 font-pixel text-[10px] px-2 py-1 rounded-lg opacity-40 group-hover:opacity-80 transition-opacity duration-300"
-                                    style={{ color: item.accent, background: `${item.accent}15`, border: `1px solid ${item.accent}20` }}
+                                    className="absolute top-4 right-4 font-pixel text-[10px] px-2 py-1 rounded-lg opacity-30 group-hover:opacity-80 transition-all duration-300 group-hover:scale-110"
+                                    style={{ color: item.accent, background: `${item.accent}12`, border: `1px solid ${item.accent}20` }}
                                 >
                                     0{i + 1}
                                 </span>
 
-                                {/* Large centered pixel icon */}
+                                {/* Central icon — enhanced hover */}
                                 <div
-                                    className="relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+                                    className="relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-[1.18] group-hover:-rotate-6"
                                     style={{
-                                        background: `linear-gradient(135deg, ${item.accent}35, ${item.accent}15)`,
-                                        border: `2px solid ${item.accent}30`,
-                                        boxShadow: `0 8px 24px ${item.accent}20`,
+                                        background: `linear-gradient(135deg, ${item.accent}30, ${item.accent}10)`,
+                                        border: `2px solid ${item.accent}25`,
+                                        boxShadow: `0 8px 24px ${item.accent}18`,
                                     }}
                                 >
+                                    {/* Glow ring on hover */}
+                                    <div
+                                        className="absolute inset-[-4px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                        style={{ border: `2px solid ${item.accent}30`, boxShadow: `0 0 20px ${item.accent}20` }}
+                                    />
                                     {(() => { const Icon = pixelIcons[i]; return <Icon color={item.accent} />; })()}
                                 </div>
 
-                                {/* Bottom gradient fade */}
+                                {/* Bottom gradient */}
                                 <div className="absolute bottom-0 left-0 right-0 h-8" style={{ background: "linear-gradient(transparent, #fff)" }} />
                             </div>
 
                             {/* ── Text content ── */}
-                            <div className="px-7 lg:px-8 pb-10 pt-5 flex flex-col flex-1 items-center text-center">
-                                {/* Title */}
+                            <div className="px-7 lg:px-8 pb-8 pt-5 flex flex-col flex-1 items-center text-center">
                                 <h3
-                                    className="font-pixel text-sm lg:text-base mb-4 tracking-wide"
+                                    className="font-pixel text-sm lg:text-base mb-3 tracking-wide transition-colors duration-300"
                                     style={{ color: "#2F5D8C" }}
                                 >
                                     {item.title}
                                 </h3>
 
-                                {/* Description */}
                                 <p
-                                    className="text-sm lg:text-[15px] leading-loose flex-1"
+                                    className="text-sm lg:text-[14px] leading-relaxed flex-1"
                                     style={{ color: "#6B8DB5", fontFamily: "var(--font-body), system-ui, sans-serif" }}
                                 >
                                     {item.description}
                                 </p>
 
-                                {/* Explore link */}
-                                <div className="mt-auto pt-4 w-full flex justify-center">
+                                {/* Explore link — arrow slides on hover */}
+                                <div className="mt-auto pt-5 w-full flex justify-center">
                                     <span
-                                        className="font-pixel text-xs lg:text-sm tracking-wider transition-all duration-300 cursor-pointer hover:opacity-70"
+                                        className="font-pixel text-xs tracking-wider transition-all duration-300 cursor-pointer inline-flex items-center gap-1.5 group-hover:gap-3"
                                         style={{ color: item.accent }}
                                     >
-                                        EXPLORE →
+                                        EXPLORE
+                                        <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                                     </span>
                                 </div>
                             </div>
