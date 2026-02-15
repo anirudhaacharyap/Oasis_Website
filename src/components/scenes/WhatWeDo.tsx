@@ -158,6 +158,14 @@ export default function WhatWeDo() {
         tl.to(titleRef.current, {
             y: 0, autoAlpha: 1, scale: 1, rotateX: 0,
             duration: 0.15, ease: "power3.out",
+            onComplete: () => {
+                // Trigger glitch animation after title lands
+                const layers = titleRef.current?.querySelectorAll("span");
+                if (layers) {
+                    gsap.to(layers[1], { opacity: 0.8, duration: 0.1, yoyo: true, repeat: 5 }); // Magenta layer
+                    gsap.to(layers[2], { opacity: 0.8, duration: 0.1, delay: 0.05, yoyo: true, repeat: 5 }); // Cyan layer
+                }
+            }
         }, 0.05);
 
         // Phase 2: Divider appears after title (0.22 → 0.30)
@@ -167,18 +175,35 @@ export default function WhatWeDo() {
             transformOrigin: "center center",
         }, 0.22);
 
-        // Phase 3: Each card unlocks one by one from left (starts at 0.35, well after title+divider)
-        cardsRef.current.forEach((card, i) => {
-            if (!card) return;
-            tl.to(card, {
-                autoAlpha: 1,
-                y: 0,
-                scale: 1,
-                rotateY: 0,
-                duration: 0.10,
-                ease: "back.out(1.6)",
-            }, 0.35 + i * 0.12);
-        });
+        // Phase 3: Asymmetric Card Reveals (0.35+)
+        // Card 1: Slide from Left
+        if (cardsRef.current[0]) {
+            gsap.set(cardsRef.current[0], { x: -100, y: 50, autoAlpha: 0, rotateY: -15 });
+            tl.to(cardsRef.current[0], {
+                x: 0, y: 0, autoAlpha: 1, rotateY: 0, duration: 0.4, ease: "back.out(1.4)"
+            }, 0.35);
+        }
+        // Card 2: Pop from Bottom
+        if (cardsRef.current[1]) {
+            gsap.set(cardsRef.current[1], { y: 120, autoAlpha: 0, scale: 0.8 });
+            tl.to(cardsRef.current[1], {
+                y: 0, autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)"
+            }, 0.42);
+        }
+        // Card 3: Drop from Top
+        if (cardsRef.current[2]) {
+            gsap.set(cardsRef.current[2], { y: -120, autoAlpha: 0, scale: 1.1 });
+            tl.to(cardsRef.current[2], {
+                y: 0, autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)"
+            }, 0.49);
+        }
+        // Card 4: Slide from Right
+        if (cardsRef.current[3]) {
+            gsap.set(cardsRef.current[3], { x: 100, y: 50, autoAlpha: 0, rotateY: 15 });
+            tl.to(cardsRef.current[3], {
+                x: 0, y: 0, autoAlpha: 1, rotateY: 0, duration: 0.4, ease: "back.out(1.4)"
+            }, 0.56);
+        }
 
         // Phase 4: Breathing room (holds at ~85%-100%)
 
@@ -491,13 +516,16 @@ export default function WhatWeDo() {
             {/* ═══ Layer 3: Content ═══ */}
             <div className="relative z-10 w-full max-w-[90rem] mx-auto px-6 md:px-12 lg:px-20">
 
-                {/* Title */}
+                {/* Title with Glitch Effect */}
                 <h2
                     ref={titleRef}
-                    className="font-pixel text-3xl sm:text-4xl lg:text-5xl text-center mb-4"
+                    className="font-pixel text-3xl sm:text-4xl lg:text-5xl text-center mb-4 relative inline-block"
                     style={{ color: "#2F5D8C", visibility: "hidden" }}
                 >
-                    WHAT WE DO
+                    <span className="relative z-10">WHAT WE DO</span>
+                    {/* Glitch layers */}
+                    <span className="absolute top-0 left-0 -z-10 text-[#FF00FF] opacity-0 animate-glitch-1">WHAT WE DO</span>
+                    <span className="absolute top-0 left-0 -z-10 text-[#00FFFF] opacity-0 animate-glitch-2">WHAT WE DO</span>
                 </h2>
 
                 {/* Decorative pixel divider */}
@@ -509,36 +537,60 @@ export default function WhatWeDo() {
                     <div className="w-8 h-[2px] rounded-full" style={{ background: "#BFD9F2" }} />
                 </div>
 
-                {/* Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7">
+                {/* Cards Container - PERSPECTIVE is key for 3D tilt */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7" style={{ perspective: "1000px" }}>
                     {powerUps.map((item, i) => (
                         <div
                             key={item.title}
                             ref={(el) => { cardsRef.current[i] = el; }}
-                            className="group relative rounded-2xl overflow-hidden flex flex-col min-h-[400px] cursor-pointer"
+                            className="group relative rounded-2xl flex flex-col min-h-[460px] cursor-none transition-all duration-200 ease-out"
                             style={{
                                 visibility: "hidden" as const,
                                 background: "#fff",
                                 border: "1.5px solid rgba(191, 217, 242, 0.30)",
                                 boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-                                transition: "transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, border-color 0.4s ease",
+                                transformStyle: "preserve-3d", // Critical for 3D effect
                             }}
-                            onMouseEnter={(e) => {
+                            onMouseMove={(e) => {
                                 const el = e.currentTarget;
-                                el.style.transform = "translateY(-10px) scale(1.03)";
-                                el.style.borderColor = `${item.accent}55`;
-                                el.style.boxShadow = `0 25px 60px ${item.accent}22, 0 12px 24px rgba(0,0,0,0.06), inset 0 1px 0 ${item.accent}15`;
-                                // Accent bar glow
-                                const bar = el.querySelector("[data-accent-bar]") as HTMLElement;
-                                if (bar) { bar.style.opacity = "1"; bar.style.height = "4px"; }
+                                const rect = el.getBoundingClientRect();
+                                const x = e.clientX - rect.left;
+                                const y = e.clientY - rect.top;
+                                const centerX = rect.width / 2;
+                                const centerY = rect.height / 2;
+
+                                // Rotate based on mouse position (max 10deg)
+                                const rotateX = ((y - centerY) / centerY) * -8;
+                                const rotateY = ((x - centerX) / centerX) * 8;
+
+                                gsap.to(el, {
+                                    rotateX: rotateX,
+                                    rotateY: rotateY,
+                                    scale: 1.05,
+                                    boxShadow: `0 25px 50px ${item.accent}30, 0 10px 20px rgba(0,0,0,0.1)`,
+                                    borderColor: `${item.accent}60`,
+                                    duration: 0.1,
+                                    ease: "power2.out"
+                                });
+
+                                // Move content slightly for parallax depth
+                                const content = el.querySelector(".card-content") as HTMLElement;
+                                if (content) {
+                                    gsap.to(content, { x: (x - centerX) * 0.05, y: (y - centerY) * 0.05, duration: 0.1 });
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                const el = e.currentTarget;
-                                el.style.transform = "translateY(0) scale(1)";
-                                el.style.borderColor = "rgba(191, 217, 242, 0.30)";
-                                el.style.boxShadow = "0 4px 20px rgba(0,0,0,0.03)";
-                                const bar = el.querySelector("[data-accent-bar]") as HTMLElement;
-                                if (bar) { bar.style.opacity = "0.5"; bar.style.height = "3px"; }
+                                gsap.to(e.currentTarget, {
+                                    rotateX: 0,
+                                    rotateY: 0,
+                                    scale: 1,
+                                    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+                                    borderColor: "rgba(191, 217, 242, 0.30)",
+                                    duration: 0.5,
+                                    ease: "elastic.out(1, 0.5)"
+                                });
+                                const content = e.currentTarget.querySelector(".card-content") as HTMLElement;
+                                if (content) gsap.to(content, { x: 0, y: 0, duration: 0.5 });
                             }}
                         >
                             {/* Accent bar at top */}
@@ -549,15 +601,15 @@ export default function WhatWeDo() {
                                     height: "3px",
                                     background: `linear-gradient(90deg, transparent, ${item.accent}, transparent)`,
                                     opacity: 0.5,
-                                    transition: "opacity 0.4s ease, height 0.4s ease",
                                 }}
                             />
 
                             {/* ── Visual header area ── */}
                             <div
-                                className="relative h-44 lg:h-48 flex items-center justify-center overflow-hidden"
+                                className="relative h-40 lg:h-44 flex items-center justify-center overflow-hidden rounded-t-2xl card-content"
                                 style={{
                                     background: `linear-gradient(160deg, ${item.accent}15 0%, ${item.accent}06 100%)`,
+                                    transform: "translateZ(20px)", // Pop out in 3D
                                 }}
                             >
                                 {/* Radial hover highlight */}
@@ -581,62 +633,77 @@ export default function WhatWeDo() {
                                 <div className="absolute top-4 left-4 w-2 h-2 rounded-sm opacity-20 animate-float" style={{ backgroundColor: item.accent, animationDuration: "5s" }} />
                                 <div className="absolute top-6 right-6 w-1.5 h-1.5 rounded-sm opacity-15 animate-float" style={{ backgroundColor: item.accent, animationDuration: "7s", animationDelay: "1s" }} />
                                 <div className="absolute bottom-6 left-8 w-1 h-1 rounded-sm opacity-20 animate-float" style={{ backgroundColor: item.accent, animationDuration: "6s", animationDelay: "2s" }} />
-                                <div className="absolute bottom-4 right-4 w-2 h-2 rounded-sm opacity-15 animate-float" style={{ backgroundColor: item.accent, animationDuration: "8s", animationDelay: "3s" }} />
 
                                 {/* Number badge */}
                                 <span
-                                    className="absolute top-4 right-4 font-pixel text-[10px] px-2 py-1 rounded-lg opacity-30 group-hover:opacity-80 transition-all duration-300 group-hover:scale-110"
-                                    style={{ color: item.accent, background: `${item.accent}12`, border: `1px solid ${item.accent}20` }}
+                                    className="absolute top-4 right-4 font-pixel text-[10px] px-2 py-1 rounded-lg opacity-40 group-hover:opacity-90 group-hover:scale-110 transition-all duration-300"
+                                    style={{
+                                        color: item.accent,
+                                        background: `${item.accent}15`,
+                                        border: `1px solid ${item.accent}25`,
+                                        boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
+                                    }}
                                 >
                                     0{i + 1}
                                 </span>
 
                                 {/* Central icon — enhanced hover */}
                                 <div
-                                    className="relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-[1.18] group-hover:-rotate-6"
+                                    className="relative w-24 h-24 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-[1.1] group-hover:-rotate-3"
                                     style={{
-                                        background: `linear-gradient(135deg, ${item.accent}30, ${item.accent}10)`,
-                                        border: `2px solid ${item.accent}25`,
-                                        boxShadow: `0 8px 24px ${item.accent}18`,
+                                        background: `linear-gradient(135deg, ${item.accent}25, ${item.accent}05)`,
+                                        border: `2px solid ${item.accent}20`,
+                                        boxShadow: `0 8px 30px ${item.accent}15`,
+                                        backdropFilter: "blur(4px)"
                                     }}
                                 >
-                                    {/* Glow ring on hover */}
+                                    {/* Inner Glow ring */}
                                     <div
-                                        className="absolute inset-[-4px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                        style={{ border: `2px solid ${item.accent}30`, boxShadow: `0 0 20px ${item.accent}20` }}
+                                        className="absolute inset-[-2px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                        style={{ border: `2px solid ${item.accent}40`, boxShadow: `0 0 15px ${item.accent}25` }}
                                     />
                                     {(() => { const Icon = pixelIcons[i]; return <Icon color={item.accent} />; })()}
                                 </div>
 
                                 {/* Bottom gradient */}
-                                <div className="absolute bottom-0 left-0 right-0 h-8" style={{ background: "linear-gradient(transparent, #fff)" }} />
+                                <div className="absolute bottom-0 left-0 right-0 h-10" style={{ background: "linear-gradient(transparent, #fff)" }} />
                             </div>
 
                             {/* ── Text content ── */}
-                            <div className="px-7 lg:px-8 pb-8 pt-5 flex flex-col flex-1 items-center text-center">
+                            <div className="px-10 pb-10 pt-5 flex flex-col flex-1 items-center text-center card-content break-words" style={{ transform: "translateZ(30px)" }}>
                                 <h3
-                                    className="font-pixel text-sm lg:text-base mb-3 tracking-wide transition-colors duration-300"
+                                    className="font-pixel text-sm lg:text-base mb-3 tracking-wide transition-colors duration-300 group-hover:text-[#2F5D8C]"
                                     style={{ color: "#2F5D8C" }}
                                 >
                                     {item.title}
                                 </h3>
 
                                 <p
-                                    className="text-sm lg:text-[14px] leading-relaxed flex-1"
+                                    className="text-xs sm:text-[13px] lg:text-[14px] leading-loose flex-1 mb-8 max-w-[250px] mx-auto"
                                     style={{ color: "#6B8DB5", fontFamily: "var(--font-body), system-ui, sans-serif" }}
                                 >
                                     {item.description}
                                 </p>
 
-                                {/* Explore link — arrow slides on hover */}
-                                <div className="mt-auto pt-5 w-full flex justify-center">
-                                    <span
-                                        className="font-pixel text-xs tracking-wider transition-all duration-300 cursor-pointer inline-flex items-center gap-1.5 group-hover:gap-3"
-                                        style={{ color: item.accent }}
+                                {/* Pixel Button Link */}
+                                <div className="mt-auto w-full flex justify-center">
+                                    <button
+                                        className="relative group/btn font-pixel text-xs tracking-wider px-5 py-2.5 overflow-hidden transition-all duration-200 hover:-translate-y-1 active:translate-y-0"
+                                        style={{
+                                            color: item.accent,
+                                            background: `${item.accent}08`,
+                                            border: `1px solid ${item.accent}30`,
+                                            boxShadow: `0 4px 0 ${item.accent}20`,
+                                            borderRadius: "4px"
+                                        }}
                                     >
-                                        EXPLORE
-                                        <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                                    </span>
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            EXPLORE
+                                            <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+                                        </span>
+                                        {/* Hover fill effect */}
+                                        <div className="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-20 transition-opacity" />
+                                    </button>
                                 </div>
                             </div>
                         </div>
