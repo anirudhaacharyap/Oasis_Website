@@ -88,7 +88,7 @@ export default function Origin() {
             scrollTrigger: {
                 trigger: section,
                 start: "top top",
-                end: "+=200%",       // Longer scroll distance = more cinematic
+                end: "+=280%",       // Extended for cinematic exit transition
                 scrub: 0.6,
                 pin: true,
                 anticipatePin: 1,
@@ -160,7 +160,46 @@ export default function Origin() {
         tl.to(line2Ref.current, { y: 0, autoAlpha: 1, duration: 0.1, ease: "power2.out" }, 0.52);
         tl.to(line3Ref.current, { y: 0, autoAlpha: 1, duration: 0.1, ease: "power2.out" }, 0.59);
 
-        // ── Phase 8 (65%→100%): Hold / breathing room ──
+        // ── Phase 8 (65%→70%): Hold / breathing room ──
+
+        // ── Phase 9 (70%→95%): Cinematic EXIT — dark-to-light transition ──
+        // Text lines fade out with upward drift
+        tl.to(line3Ref.current, { y: -20, autoAlpha: 0, duration: 0.06, ease: "power2.in" }, 0.70);
+        tl.to(line2Ref.current, { y: -20, autoAlpha: 0, duration: 0.06, ease: "power2.in" }, 0.73);
+        tl.to(line1Ref.current, { y: -20, autoAlpha: 0, duration: 0.06, ease: "power2.in" }, 0.76);
+
+        // Mascot scales down and fades
+        tl.to(mascotRef.current, {
+            scale: 0.7, autoAlpha: 0, y: 30, duration: 0.1, ease: "power2.in",
+        }, 0.75);
+
+        // Text window clips shut (reverse boot-up)
+        tl.to(windowRef.current, {
+            clipPath: "inset(100% 0 0 0)", autoAlpha: 0, duration: 0.1, ease: "power3.in",
+        }, 0.78);
+
+        // Title wipes away
+        tl.to(titleRef.current, {
+            clipPath: "inset(0 0 0 100%)", autoAlpha: 0, duration: 0.08, ease: "power2.in",
+        }, 0.80);
+
+        // Divider shrinks
+        tl.to(dividerRef.current, {
+            scaleX: 0, autoAlpha: 0, duration: 0.06, ease: "power2.in",
+        }, 0.80);
+
+        // Noise & particles fade out
+        tl.to(noiseRef.current, { autoAlpha: 0, duration: 0.1 }, 0.82);
+        tl.to(particlesRef.current, { autoAlpha: 0, duration: 0.1 }, 0.82);
+
+        // ── Phase 10 (85%→100%): Background dark → light transition ──
+        tl.to(bg, {
+            backgroundColor: "#D9EEFB", duration: 0.15, ease: "power2.inOut",
+        }, 0.85);
+
+        // Parallax layers drift further
+        tl.to(parallaxBgRef.current, { y: -80, duration: 0.3, ease: "none" }, 0.7);
+        tl.to(parallaxMidRef.current, { y: -50, duration: 0.3, ease: "none" }, 0.7);
 
         // Mascot idle bob (plays independently, not scroll-linked)
         const bobTween = gsap.to(mascotRef.current, {

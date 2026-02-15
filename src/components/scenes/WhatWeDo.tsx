@@ -3,29 +3,76 @@
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
+/* ── Pixel Art SVG Icons ── */
+const PixelGamepad = ({ color }: { color: string }) => (
+    <svg width="36" height="36" viewBox="0 0 16 16" fill={color} className="[image-rendering:pixelated]">
+        <rect x="2" y="4" width="12" height="8" />
+        <rect x="1" y="5" width="1" height="6" />
+        <rect x="14" y="5" width="1" height="6" />
+        <rect x="4" y="6" width="1" height="4" fill="white" fillOpacity="0.7" />
+        <rect x="3" y="7" width="3" height="2" fill="white" fillOpacity="0.7" />
+        <rect x="10" y="6" width="2" height="2" fill="white" fillOpacity="0.7" />
+        <rect x="12" y="8" width="2" height="2" fill="white" fillOpacity="0.7" />
+    </svg>
+);
+
+const PixelTrophy = ({ color }: { color: string }) => (
+    <svg width="36" height="36" viewBox="0 0 16 16" fill={color} className="[image-rendering:pixelated]">
+        <rect x="4" y="2" width="8" height="2" />
+        <rect x="3" y="4" width="10" height="4" />
+        <rect x="1" y="4" width="2" height="3" />
+        <rect x="13" y="4" width="2" height="3" />
+        <rect x="5" y="8" width="6" height="2" />
+        <rect x="6" y="10" width="4" height="2" />
+        <rect x="4" y="12" width="8" height="2" />
+        <rect x="6" y="5" width="4" height="2" fill="white" fillOpacity="0.5" />
+    </svg>
+);
+
+const PixelGlobe = ({ color }: { color: string }) => (
+    <svg width="36" height="36" viewBox="0 0 16 16" fill={color} className="[image-rendering:pixelated]">
+        <rect x="4" y="1" width="8" height="2" />
+        <rect x="2" y="3" width="12" height="2" />
+        <rect x="1" y="5" width="14" height="6" />
+        <rect x="2" y="11" width="12" height="2" />
+        <rect x="4" y="13" width="8" height="2" />
+        <rect x="7" y="1" width="2" height="14" fill="white" fillOpacity="0.3" />
+        <rect x="1" y="7" width="14" height="2" fill="white" fillOpacity="0.3" />
+    </svg>
+);
+
+const PixelBook = ({ color }: { color: string }) => (
+    <svg width="36" height="36" viewBox="0 0 16 16" fill={color} className="[image-rendering:pixelated]">
+        <rect x="3" y="2" width="10" height="12" />
+        <rect x="2" y="3" width="1" height="10" />
+        <rect x="5" y="4" width="6" height="2" fill="white" fillOpacity="0.6" />
+        <rect x="5" y="7" width="6" height="1" fill="white" fillOpacity="0.4" />
+        <rect x="5" y="9" width="4" height="1" fill="white" fillOpacity="0.4" />
+        <rect x="2" y="13" width="11" height="1" opacity="0.6" />
+    </svg>
+);
+
+const pixelIcons = [PixelGamepad, PixelTrophy, PixelGlobe, PixelBook];
+
 const powerUps = [
     {
         title: "GAME DEV",
         description: "Build games using Unity, Unreal & Godot. Learn mechanics, physics and storytelling.",
-        icon: "🎮",
         accent: "#9FA8FF",
     },
     {
         title: "ESPORTS",
         description: "Compete in Valorant, BGMI & Rocket League tournaments. Train. Dominate. Repeat.",
-        icon: "🏆",
         accent: "#F6B6C8",
     },
     {
         title: "COMMUNITY",
         description: "Game jams, watch parties, LAN events & a Discord that never sleeps.",
-        icon: "🌐",
         accent: "#9EE6CF",
     },
     {
         title: "WORKSHOPS",
         description: "Hands-on sessions covering game engines, level design & streaming setups.",
-        icon: "📚",
         accent: "#FFF1A8",
     },
 ];
@@ -67,33 +114,44 @@ function PixelCloud({ top, speed, delay, scale = 1 }: { top: string; speed: numb
 export default function WhatWeDo() {
     const sectionRef = useRef<HTMLElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
-    const subtitleRef = useRef<HTMLParagraphElement>(null);
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
     const bgFarRef = useRef<HTMLDivElement>(null);
     const bgMidRef = useRef<HTMLDivElement>(null);
+    const sectionBgRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const section = sectionRef.current;
         if (!section) return;
 
-        // Initial hidden states
-        gsap.set(titleRef.current, { y: 40, autoAlpha: 0 });
-        gsap.set(subtitleRef.current, { y: 20, autoAlpha: 0 });
+        // Initial hidden states — more dramatic starting positions
+        gsap.set(titleRef.current, { y: 80, autoAlpha: 0, scale: 0.8, rotateX: 15 });
         cardsRef.current.forEach((card) => {
-            if (card) gsap.set(card, { autoAlpha: 0, y: 50, scale: 0.92 });
+            if (card) gsap.set(card, { autoAlpha: 0, y: 80, scale: 0.85, rotateY: 5 });
         });
+
+        // Section background starts slightly transparent for blend effect
+        if (sectionBgRef.current) {
+            gsap.set(sectionBgRef.current, { autoAlpha: 0 });
+        }
 
         // ── PINNED SCROLL TIMELINE ──
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: section,
                 start: "top top",
-                end: "+=200%",
+                end: "+=250%",
                 scrub: 0.5,
                 pin: true,
                 anticipatePin: 1,
             },
         });
+
+        // Phase 0: Background blend-in
+        if (sectionBgRef.current) {
+            tl.to(sectionBgRef.current, {
+                autoAlpha: 1, duration: 0.1, ease: "none",
+            }, 0);
+        }
 
         // Parallax background layers at different speeds
         if (bgFarRef.current) {
@@ -103,29 +161,26 @@ export default function WhatWeDo() {
             tl.to(bgMidRef.current, { y: -30, duration: 1, ease: "none" }, 0);
         }
 
-        // Phase 1: Title
+        // Phase 1: Title swoops in with 3D rotation
         tl.to(titleRef.current, {
-            y: 0, autoAlpha: 1, duration: 0.12, ease: "power2.out",
-        }, 0.03);
+            y: 0, autoAlpha: 1, scale: 1, rotateX: 0,
+            duration: 0.15, ease: "power3.out",
+        }, 0.05);
 
-        // Phase 2: Subtitle
-        tl.to(subtitleRef.current, {
-            y: 0, autoAlpha: 1, duration: 0.1, ease: "power2.out",
-        }, 0.1);
-
-        // Phase 3: Cards unlock sequentially
+        // Phase 2: Cards unlock sequentially with stagger
         cardsRef.current.forEach((card, i) => {
             if (!card) return;
             tl.to(card, {
                 autoAlpha: 1,
                 y: 0,
                 scale: 1,
-                duration: 0.14,
-                ease: "back.out(1.4)",
-            }, 0.2 + i * 0.08);
+                rotateY: 0,
+                duration: 0.15,
+                ease: "back.out(1.6)",
+            }, 0.22 + i * 0.08);
         });
 
-        // Phase 4: Breathing room (holds at 65%-100%)
+        // Phase 3: Breathing room (holds at 70%-100%)
 
         return () => {
             ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -136,9 +191,15 @@ export default function WhatWeDo() {
         <section
             ref={sectionRef}
             className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden"
-            style={{ background: "linear-gradient(180deg, #D9EEFB 0%, #EAF6FF 40%, #F9FCFF 100%)" }}
+            style={{ perspective: "1200px" }}
         >
-            {/* ═══ Layer 0: Base grid pattern ═══ */}
+            {/* Background gradient layer (animated blend-in) */}
+            <div
+                ref={sectionBgRef}
+                className="absolute inset-0 z-0"
+                style={{ background: "linear-gradient(180deg, #D9EEFB 0%, #EAF6FF 40%, #F9FCFF 100%)" }}
+            />
+            {/* ═══ Layer 0: Base grid + ground ═══ */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div
                     className="absolute inset-0 opacity-[0.03]"
@@ -147,34 +208,205 @@ export default function WhatWeDo() {
                         backgroundSize: "32px 32px",
                     }}
                 />
+                {/* Ground pixel tiles */}
+                <div className="absolute bottom-0 left-0 right-0 h-12 opacity-[0.04]"
+                    style={{
+                        backgroundImage: "linear-gradient(90deg, #5F86B5 2px, transparent 2px), linear-gradient(#5F86B5 2px, transparent 2px)",
+                        backgroundSize: "12px 12px",
+                    }}
+                />
             </div>
 
-            {/* ═══ Layer 1: Far parallax (slowest) — clouds, large glows ═══ */}
+            {/* ═══ Layer 1: Far parallax — clouds, castle, glows ═══ */}
             <div ref={bgFarRef} className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
-                {/* Pixel clouds drifting across */}
-                <PixelCloud top="8%" speed={35} delay={0} scale={1.2} />
-                <PixelCloud top="22%" speed={40} delay={8} scale={0.8} />
-                <PixelCloud top="70%" speed={30} delay={4} scale={1} />
-                <PixelCloud top="85%" speed={45} delay={12} scale={0.6} />
+                {/* Pixel clouds */}
+                <PixelCloud top="6%" speed={35} delay={0} scale={1.4} />
+                <PixelCloud top="18%" speed={42} delay={6} scale={0.9} />
+                <PixelCloud top="14%" speed={50} delay={15} scale={0.6} />
+                <PixelCloud top="65%" speed={30} delay={3} scale={1.1} />
+                <PixelCloud top="80%" speed={38} delay={10} scale={0.7} />
+                <PixelCloud top="45%" speed={55} delay={20} scale={0.5} />
 
-                {/* Large soft radial glows */}
-                <div
-                    className="absolute top-[15%] left-[10%] w-80 h-80 rounded-full opacity-[0.05] animate-pulse"
-                    style={{ background: "radial-gradient(circle, #9FA8FF 0%, transparent 70%)", animationDuration: "6s" }}
-                />
-                <div
-                    className="absolute bottom-[20%] right-[15%] w-64 h-64 rounded-full opacity-[0.04] animate-pulse"
-                    style={{ background: "radial-gradient(circle, #F6B6C8 0%, transparent 70%)", animationDuration: "8s", animationDelay: "3s" }}
-                />
-                <div
-                    className="absolute top-[55%] left-[50%] w-48 h-48 rounded-full opacity-[0.04] animate-pulse"
-                    style={{ background: "radial-gradient(circle, #9EE6CF 0%, transparent 70%)", animationDuration: "7s", animationDelay: "1s" }}
-                />
+                {/* Large pulsing orbs */}
+                <div className="absolute top-[10%] left-[8%] w-96 h-96 rounded-full opacity-[0.06] animate-pulse"
+                    style={{ background: "radial-gradient(circle, #9FA8FF 0%, transparent 65%)", animationDuration: "5s" }} />
+                <div className="absolute top-[50%] right-[5%] w-80 h-80 rounded-full opacity-[0.05] animate-pulse"
+                    style={{ background: "radial-gradient(circle, #F6B6C8 0%, transparent 65%)", animationDuration: "7s", animationDelay: "2s" }} />
+                <div className="absolute bottom-[10%] left-[40%] w-72 h-72 rounded-full opacity-[0.05] animate-pulse"
+                    style={{ background: "radial-gradient(circle, #9EE6CF 0%, transparent 65%)", animationDuration: "6s", animationDelay: "1s" }} />
+                <div className="absolute top-[30%] left-[60%] w-64 h-64 rounded-full opacity-[0.04] animate-pulse"
+                    style={{ background: "radial-gradient(circle, #FFF1A8 0%, transparent 65%)", animationDuration: "8s", animationDelay: "4s" }} />
+
+                {/* Pixel castle silhouette — bottom right */}
+                <svg className="absolute bottom-0 right-[8%] opacity-[0.04]" width="120" height="80" viewBox="0 0 30 20" fill="#2F5D8C" style={{ imageRendering: "pixelated" }}>
+                    <rect x="0" y="12" width="30" height="8" />
+                    <rect x="2" y="8" width="6" height="4" />
+                    <rect x="12" y="6" width="8" height="6" />
+                    <rect x="22" y="8" width="6" height="4" />
+                    <rect x="3" y="5" width="2" height="3" />
+                    <rect x="25" y="5" width="2" height="3" />
+                    <rect x="14" y="2" width="4" height="4" />
+                    <rect x="15" y="0" width="2" height="2" />
+                    {/* windows */}
+                    <rect x="4" y="14" width="2" height="3" fill="#EAF6FF" fillOpacity="0.5" />
+                    <rect x="15" y="9" width="2" height="2" fill="#EAF6FF" fillOpacity="0.5" />
+                    <rect x="24" y="14" width="2" height="3" fill="#EAF6FF" fillOpacity="0.5" />
+                </svg>
+
+                {/* Pixel trees/bushes along bottom left */}
+                <svg className="absolute bottom-0 left-[5%] opacity-[0.05]" width="80" height="50" viewBox="0 0 20 14" fill="#9EE6CF" style={{ imageRendering: "pixelated" }}>
+                    <rect x="4" y="2" width="4" height="4" />
+                    <rect x="3" y="4" width="6" height="3" />
+                    <rect x="2" y="6" width="8" height="2" />
+                    <rect x="5" y="8" width="2" height="4" fill="#8B7355" />
+                    <rect x="14" y="4" width="3" height="3" />
+                    <rect x="13" y="6" width="5" height="2" />
+                    <rect x="15" y="8" width="1" height="3" fill="#8B7355" />
+                </svg>
+                <svg className="absolute bottom-0 left-[22%] opacity-[0.04]" width="60" height="40" viewBox="0 0 16 10" fill="#9EE6CF" style={{ imageRendering: "pixelated" }}>
+                    <rect x="3" y="1" width="4" height="3" />
+                    <rect x="2" y="3" width="6" height="2" />
+                    <rect x="4" y="5" width="2" height="3" fill="#8B7355" />
+                </svg>
             </div>
 
-            {/* ═══ Layer 2: Mid parallax — shapes, icons, code snippets ═══ */}
+            {/* ═══ Layer 2: Mid parallax — characters, items, rich elements ═══ */}
             <div ref={bgMidRef} className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
-                {/* Floating geometric shapes */}
+
+                {/* ── PIXEL CHARACTERS ── */}
+
+                {/* Walking pixel person — top left */}
+                <div className="absolute top-[15%] left-[3%] opacity-[0.10]" style={{ animation: "fly-right 25s linear infinite", imageRendering: "pixelated" }}>
+                    <svg width="32" height="40" viewBox="0 0 8 10" fill="#5F86B5">
+                        <rect x="2" y="0" width="4" height="2" fill="#9FA8FF" /> {/* hat */}
+                        <rect x="2" y="2" width="4" height="3" fill="#FFD9B3" /> {/* head */}
+                        <rect x="3" y="3" width="1" height="1" fill="#333" /> {/* eye */}
+                        <rect x="1" y="5" width="6" height="3" fill="#9FA8FF" /> {/* body */}
+                        <rect x="2" y="8" width="2" height="2" fill="#5F86B5" /> {/* leg */}
+                        <rect x="5" y="8" width="2" height="2" fill="#5F86B5" /> {/* leg */}
+                    </svg>
+                </div>
+
+                {/* Bouncing slime — right side */}
+                <div className="absolute top-[70%] right-[5%] opacity-[0.10] animate-bounce" style={{ animationDuration: "2s", imageRendering: "pixelated" }}>
+                    <svg width="36" height="28" viewBox="0 0 9 7" fill="#9EE6CF">
+                        <rect x="2" y="0" width="5" height="2" />
+                        <rect x="1" y="2" width="7" height="3" />
+                        <rect x="0" y="4" width="9" height="3" />
+                        <rect x="3" y="2" width="1" height="1" fill="#333" /> {/* eye */}
+                        <rect x="6" y="2" width="1" height="1" fill="#333" /> {/* eye */}
+                        <rect x="4" y="4" width="2" height="1" fill="#5B9E8A" /> {/* mouth */}
+                    </svg>
+                </div>
+
+                {/* Pixel cat — bottom left */}
+                <div className="absolute bottom-[18%] left-[15%] opacity-[0.08] animate-float" style={{ animationDuration: "4s", imageRendering: "pixelated" }}>
+                    <svg width="30" height="30" viewBox="0 0 10 10" fill="#F6B6C8">
+                        <rect x="1" y="0" width="2" height="2" /> {/* ear */}
+                        <rect x="7" y="0" width="2" height="2" /> {/* ear */}
+                        <rect x="1" y="2" width="8" height="4" /> {/* head+body */}
+                        <rect x="0" y="6" width="10" height="3" /> {/* body */}
+                        <rect x="3" y="3" width="1" height="1" fill="#333" /> {/* eye */}
+                        <rect x="6" y="3" width="1" height="1" fill="#333" /> {/* eye */}
+                        <rect x="0" y="9" width="2" height="1" /> {/* paw */}
+                        <rect x="8" y="9" width="2" height="1" /> {/* paw */}
+                    </svg>
+                </div>
+
+                {/* ── FLOATING ITEMS ── */}
+
+                {/* Floating pixel hearts */}
+                <div className="absolute top-[25%] right-[12%] opacity-[0.12]" style={{ animation: "particle-drift 8s ease-in-out infinite", imageRendering: "pixelated" }}>
+                    <svg width="20" height="18" viewBox="0 0 10 9" fill="#F6B6C8">
+                        <rect x="1" y="0" width="2" height="2" />
+                        <rect x="5" y="0" width="2" height="2" />
+                        <rect x="0" y="1" width="4" height="2" />
+                        <rect x="4" y="1" width="4" height="2" />
+                        <rect x="1" y="3" width="6" height="2" />
+                        <rect x="2" y="5" width="4" height="2" />
+                        <rect x="3" y="7" width="2" height="1" />
+                    </svg>
+                </div>
+                <div className="absolute top-[55%] left-[8%] opacity-[0.08]" style={{ animation: "particle-drift 10s ease-in-out 3s infinite", imageRendering: "pixelated" }}>
+                    <svg width="14" height="12" viewBox="0 0 10 9" fill="#F6B6C8">
+                        <rect x="1" y="0" width="2" height="2" />
+                        <rect x="5" y="0" width="2" height="2" />
+                        <rect x="0" y="1" width="4" height="2" />
+                        <rect x="4" y="1" width="4" height="2" />
+                        <rect x="1" y="3" width="6" height="2" />
+                        <rect x="2" y="5" width="4" height="2" />
+                        <rect x="3" y="7" width="2" height="1" />
+                    </svg>
+                </div>
+
+                {/* Floating pixel coins */}
+                <div className="absolute top-[35%] right-[25%] opacity-[0.12] animate-bounce" style={{ animationDuration: "3s", imageRendering: "pixelated" }}>
+                    <svg width="20" height="20" viewBox="0 0 10 10" fill="#FFF1A8">
+                        <rect x="3" y="0" width="4" height="1" />
+                        <rect x="1" y="1" width="8" height="8" />
+                        <rect x="3" y="9" width="4" height="1" />
+                        <rect x="4" y="3" width="2" height="4" fill="#DAA520" />
+                    </svg>
+                </div>
+                <div className="absolute bottom-[35%] left-[30%] opacity-[0.08] animate-bounce" style={{ animationDuration: "4s", animationDelay: "1s", imageRendering: "pixelated" }}>
+                    <svg width="14" height="14" viewBox="0 0 10 10" fill="#FFF1A8">
+                        <rect x="3" y="0" width="4" height="1" />
+                        <rect x="1" y="1" width="8" height="8" />
+                        <rect x="3" y="9" width="4" height="1" />
+                        <rect x="4" y="3" width="2" height="4" fill="#DAA520" />
+                    </svg>
+                </div>
+
+                {/* Pixel potion bottle */}
+                <div className="absolute top-[45%] left-[5%] opacity-[0.09] animate-float" style={{ animationDuration: "7s", imageRendering: "pixelated" }}>
+                    <svg width="18" height="24" viewBox="0 0 6 8" fill="#C9C3F5">
+                        <rect x="2" y="0" width="2" height="2" fill="#aaa" /> {/* cork */}
+                        <rect x="1" y="2" width="4" height="1" />
+                        <rect x="0" y="3" width="6" height="4" />
+                        <rect x="1" y="7" width="4" height="1" />
+                        <rect x="2" y="4" width="2" height="2" fill="white" fillOpacity="0.4" />
+                    </svg>
+                </div>
+
+                {/* Pixel sword */}
+                <div className="absolute top-[20%] right-[35%] opacity-[0.07] animate-float" style={{ animationDuration: "9s", animationDelay: "2s", imageRendering: "pixelated" }}>
+                    <svg width="14" height="36" viewBox="0 0 4 10" fill="#9FA8FF">
+                        <rect x="1" y="0" width="2" height="1" /> {/* tip */}
+                        <rect x="1" y="1" width="2" height="5" /> {/* blade */}
+                        <rect x="0" y="6" width="4" height="1" fill="#DAA520" /> {/* guard */}
+                        <rect x="1" y="7" width="2" height="2" fill="#8B7355" /> {/* handle */}
+                        <rect x="1" y="9" width="2" height="1" fill="#DAA520" /> {/* pommel */}
+                    </svg>
+                </div>
+
+                {/* Pixel shield */}
+                <div className="absolute bottom-[25%] right-[18%] opacity-[0.07] animate-float" style={{ animationDuration: "11s", animationDelay: "4s", imageRendering: "pixelated" }}>
+                    <svg width="24" height="28" viewBox="0 0 8 9" fill="#9FA8FF">
+                        <rect x="0" y="0" width="8" height="2" />
+                        <rect x="0" y="2" width="8" height="4" />
+                        <rect x="1" y="6" width="6" height="2" />
+                        <rect x="2" y="8" width="4" height="1" />
+                        <rect x="3" y="2" width="2" height="4" fill="white" fillOpacity="0.3" />
+                        <rect x="1" y="3" width="6" height="1" fill="white" fillOpacity="0.3" />
+                    </svg>
+                </div>
+
+                {/* ── Question block ── */}
+                <div className="absolute top-[8%] left-[35%] opacity-[0.10] animate-bounce" style={{ animationDuration: "2.5s", imageRendering: "pixelated" }}>
+                    <svg width="28" height="28" viewBox="0 0 10 10">
+                        <rect x="0" y="0" width="10" height="10" fill="#FFF1A8" />
+                        <rect x="0" y="0" width="10" height="1" fill="#DAA520" />
+                        <rect x="0" y="9" width="10" height="1" fill="#DAA520" />
+                        <rect x="0" y="0" width="1" height="10" fill="#DAA520" />
+                        <rect x="9" y="0" width="1" height="10" fill="#DAA520" />
+                        <rect x="3" y="2" width="4" height="1" fill="#DAA520" />
+                        <rect x="6" y="3" width="1" height="2" fill="#DAA520" />
+                        <rect x="4" y="5" width="2" height="1" fill="#DAA520" />
+                        <rect x="4" y="7" width="2" height="1" fill="#DAA520" />
+                    </svg>
+                </div>
+
+                {/* ── GEOMETRIC SHAPES ── */}
                 <div className="absolute top-[12%] left-[6%] animate-float" style={{ animationDuration: "8s" }}>
                     <svg width="32" height="32" viewBox="0 0 32 32" className="opacity-[0.12]">
                         <rect x="6" y="6" width="20" height="20" rx="4" stroke="#9FA8FF" strokeWidth="2" fill="none" />
@@ -185,58 +417,69 @@ export default function WhatWeDo() {
                         <circle cx="12" cy="12" r="10" stroke="#F6B6C8" strokeWidth="2" fill="none" />
                     </svg>
                 </div>
-                <div className="absolute top-[45%] left-[3%] animate-float" style={{ animationDuration: "12s", animationDelay: "4s" }}>
+                <div className="absolute top-[45%] right-[3%] animate-float" style={{ animationDuration: "12s", animationDelay: "4s" }}>
                     <svg width="20" height="20" viewBox="0 0 20 20" className="opacity-[0.1]">
                         <polygon points="10,1 19,19 1,19" stroke="#9EE6CF" strokeWidth="1.5" fill="none" />
                     </svg>
                 </div>
-                <div className="absolute bottom-[30%] right-[6%] animate-float" style={{ animationDuration: "9s", animationDelay: "1s" }}>
+                <div className="absolute bottom-[30%] right-[40%] animate-float" style={{ animationDuration: "9s", animationDelay: "1s" }}>
                     <svg width="18" height="18" viewBox="0 0 18 18" className="opacity-[0.1]">
                         <rect x="2" y="2" width="14" height="14" rx="2" transform="rotate(45 9 9)" stroke="#FFF1A8" strokeWidth="2" fill="none" />
                     </svg>
                 </div>
-                <div className="absolute bottom-[15%] left-[12%] animate-float opacity-[0.08]" style={{ animationDuration: "14s", animationDelay: "6s" }}>
+                <div className="absolute top-[60%] left-[45%] animate-float opacity-[0.08]" style={{ animationDuration: "14s", animationDelay: "6s" }}>
                     <svg width="28" height="28" viewBox="0 0 28 28">
                         <path d="M14 2 L26 14 L14 26 L2 14 Z" stroke="#C9C3F5" strokeWidth="2" fill="none" />
                     </svg>
                 </div>
+                <div className="absolute top-[80%] left-[60%] animate-float" style={{ animationDuration: "10s", animationDelay: "3s" }}>
+                    <svg width="22" height="22" viewBox="0 0 22 22" className="opacity-[0.08]">
+                        <polygon points="11,1 21,8 18,19 4,19 1,8" stroke="#9FA8FF" strokeWidth="1.5" fill="none" />
+                    </svg>
+                </div>
 
                 {/* Pixel dots scattered */}
-                <div className="absolute top-[25%] left-[20%] w-2 h-2 bg-accent-mint rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "7s" }} />
-                <div className="absolute top-[60%] right-[25%] w-2.5 h-2.5 bg-accent-lavender rounded-sm opacity-[0.12] animate-float" style={{ animationDuration: "9s", animationDelay: "3s" }} />
-                <div className="absolute top-[40%] right-[8%] w-1.5 h-1.5 bg-accent-pink rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "6s", animationDelay: "2s" }} />
-                <div className="absolute bottom-[40%] left-[7%] w-2 h-2 bg-accent-purple rounded-sm opacity-[0.12] animate-float" style={{ animationDuration: "11s", animationDelay: "5s" }} />
-                <div className="absolute top-[18%] left-[45%] w-1.5 h-1.5 bg-accent-yellow rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "8s", animationDelay: "1s" }} />
-
-                {/* Small gaming icons */}
-                <div className="absolute top-[65%] left-[25%] animate-float opacity-[0.08]" style={{ animationDuration: "13s", animationDelay: "2s" }}>
-                    <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-                        <rect x="3" y="3" width="16" height="10" rx="5" stroke="#5F86B5" strokeWidth="1.5" />
-                        <circle cx="8" cy="8" r="1.5" fill="#5F86B5" />
-                        <circle cx="14" cy="8" r="1.5" fill="#5F86B5" />
-                    </svg>
-                </div>
-                <div className="absolute top-[30%] right-[20%] animate-float opacity-[0.08]" style={{ animationDuration: "11s", animationDelay: "7s" }}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="#F6B6C8">
-                        <polygon points="7,0 9,5 14,5 10,8 12,14 7,10 2,14 4,8 0,5 5,5" />
-                    </svg>
-                </div>
+                <div className="absolute top-[25%] left-[20%] w-2 h-2 bg-accent-mint rounded-sm opacity-[0.18] animate-float" style={{ animationDuration: "7s" }} />
+                <div className="absolute top-[60%] right-[25%] w-2.5 h-2.5 bg-accent-lavender rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "9s", animationDelay: "3s" }} />
+                <div className="absolute top-[40%] right-[8%] w-1.5 h-1.5 bg-accent-pink rounded-sm opacity-[0.18] animate-float" style={{ animationDuration: "6s", animationDelay: "2s" }} />
+                <div className="absolute bottom-[40%] left-[7%] w-2 h-2 bg-accent-purple rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "11s", animationDelay: "5s" }} />
+                <div className="absolute top-[18%] left-[45%] w-1.5 h-1.5 bg-accent-yellow rounded-sm opacity-[0.18] animate-float" style={{ animationDuration: "8s", animationDelay: "1s" }} />
+                <div className="absolute top-[75%] left-[35%] w-2 h-2 bg-accent-mint rounded-sm opacity-[0.12] animate-float" style={{ animationDuration: "13s", animationDelay: "7s" }} />
+                <div className="absolute top-[5%] right-[40%] w-1.5 h-1.5 bg-accent-pink rounded-sm opacity-[0.15] animate-float" style={{ animationDuration: "10s", animationDelay: "4s" }} />
+                <div className="absolute bottom-[10%] right-[30%] w-2 h-2 bg-accent-lavender rounded-sm opacity-[0.12] animate-float" style={{ animationDuration: "12s", animationDelay: "6s" }} />
 
                 {/* Floating code text */}
-                <div className="absolute top-[35%] left-[4%] opacity-[0.06] animate-float" style={{ animationDuration: "15s", animationDelay: "3s" }}>
+                <div className="absolute top-[35%] left-[4%] opacity-[0.07] animate-float" style={{ animationDuration: "15s", animationDelay: "3s" }}>
                     <span className="font-pixel text-[10px] text-text-secondary">function()</span>
                 </div>
-                <div className="absolute bottom-[25%] right-[4%] opacity-[0.06] animate-float" style={{ animationDuration: "12s", animationDelay: "5s" }}>
+                <div className="absolute bottom-[25%] right-[4%] opacity-[0.07] animate-float" style={{ animationDuration: "12s", animationDelay: "5s" }}>
                     <span className="font-pixel text-[10px] text-text-secondary">&lt;/&gt;</span>
                 </div>
-                <div className="absolute top-[75%] right-[35%] opacity-[0.05] animate-float" style={{ animationDuration: "10s", animationDelay: "8s" }}>
+                <div className="absolute top-[75%] right-[35%] opacity-[0.06] animate-float" style={{ animationDuration: "10s", animationDelay: "8s" }}>
                     <span className="font-pixel text-xs text-text-secondary">0x42</span>
                 </div>
+                <div className="absolute top-[10%] left-[55%] opacity-[0.06] animate-float" style={{ animationDuration: "18s", animationDelay: "2s" }}>
+                    <span className="font-pixel text-[10px] text-text-secondary">while(true)</span>
+                </div>
+                <div className="absolute bottom-[15%] left-[40%] opacity-[0.05] animate-float" style={{ animationDuration: "14s", animationDelay: "9s" }}>
+                    <span className="font-pixel text-[10px] text-text-secondary">LEVEL UP!</span>
+                </div>
+
+                {/* Connection lines */}
+                <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
+                    <line x1="10%" y1="20%" x2="30%" y2="40%" stroke="#5F86B5" strokeWidth="1" strokeDasharray="4 8" />
+                    <line x1="70%" y1="15%" x2="85%" y2="45%" stroke="#9FA8FF" strokeWidth="1" strokeDasharray="4 8" />
+                    <line x1="20%" y1="70%" x2="45%" y2="85%" stroke="#9EE6CF" strokeWidth="1" strokeDasharray="4 8" />
+                    <line x1="60%" y1="60%" x2="90%" y2="75%" stroke="#F6B6C8" strokeWidth="1" strokeDasharray="4 8" />
+                </svg>
 
                 {/* Twinkling pixel stars */}
                 {[
-                    { top: "10%", left: "30%" }, { top: "20%", left: "70%" }, { top: "50%", left: "90%" },
-                    { top: "75%", left: "15%" }, { top: "88%", left: "55%" }, { top: "35%", left: "55%" },
+                    { top: "5%", left: "15%" }, { top: "10%", left: "30%" }, { top: "15%", left: "80%" },
+                    { top: "20%", left: "70%" }, { top: "30%", left: "50%" }, { top: "35%", left: "55%" },
+                    { top: "50%", left: "90%" }, { top: "55%", left: "20%" }, { top: "65%", left: "75%" },
+                    { top: "70%", left: "10%" }, { top: "75%", left: "15%" }, { top: "80%", left: "65%" },
+                    { top: "85%", left: "45%" }, { top: "88%", left: "55%" }, { top: "92%", left: "25%" },
                 ].map((pos, i) => (
                     <div
                         key={i}
@@ -244,8 +487,8 @@ export default function WhatWeDo() {
                         style={{
                             top: pos.top,
                             left: pos.left,
-                            animation: `twinkle ${2 + (i % 3)}s ease-in-out ${i * 0.8}s infinite`,
-                            opacity: 0.2,
+                            animation: `twinkle ${1.5 + (i % 4)}s ease-in-out ${i * 0.5}s infinite`,
+                            opacity: 0.25,
                         }}
                     />
                 ))}
@@ -257,20 +500,11 @@ export default function WhatWeDo() {
                 {/* Title */}
                 <h2
                     ref={titleRef}
-                    className="font-pixel text-2xl sm:text-3xl lg:text-4xl text-center mb-4"
+                    className="font-pixel text-3xl sm:text-4xl lg:text-5xl text-center mb-32"
                     style={{ color: "#2F5D8C" }}
                 >
                     WHAT WE DO
                 </h2>
-
-                {/* Subtitle */}
-                <p
-                    ref={subtitleRef}
-                    className="text-center text-sm lg:text-base mb-16 max-w-lg mx-auto"
-                    style={{ color: "#5F86B5" }}
-                >
-                    Four pillars that power the OASIS experience.
-                </p>
 
                 {/* Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
@@ -278,7 +512,7 @@ export default function WhatWeDo() {
                         <div
                             key={item.title}
                             ref={(el) => { cardsRef.current[i] = el; }}
-                            className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-3 flex flex-col"
+                            className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-3 flex flex-col min-h-[420px]"
                             style={{
                                 background: "#fff",
                                 border: "1px solid rgba(191, 217, 242, 0.35)",
@@ -297,7 +531,7 @@ export default function WhatWeDo() {
                         >
                             {/* ── Visual header area ── */}
                             <div
-                                className="relative h-44 lg:h-48 flex items-center justify-center overflow-hidden"
+                                className="relative h-48 lg:h-52 flex items-center justify-center overflow-hidden"
                                 style={{
                                     background: `linear-gradient(160deg, ${item.accent}18 0%, ${item.accent}08 100%)`,
                                 }}
@@ -325,16 +559,16 @@ export default function WhatWeDo() {
                                     0{i + 1}
                                 </span>
 
-                                {/* Large centered icon */}
+                                {/* Large centered pixel icon */}
                                 <div
-                                    className="relative w-20 h-20 rounded-2xl flex items-center justify-center text-4xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+                                    className="relative w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
                                     style={{
                                         background: `linear-gradient(135deg, ${item.accent}35, ${item.accent}15)`,
                                         border: `2px solid ${item.accent}30`,
                                         boxShadow: `0 8px 24px ${item.accent}20`,
                                     }}
                                 >
-                                    {item.icon}
+                                    {(() => { const Icon = pixelIcons[i]; return <Icon color={item.accent} />; })()}
                                 </div>
 
                                 {/* Bottom gradient fade */}
@@ -342,7 +576,7 @@ export default function WhatWeDo() {
                             </div>
 
                             {/* ── Text content ── */}
-                            <div className="px-7 lg:px-8 pb-8 pt-4 flex flex-col flex-1">
+                            <div className="px-7 lg:px-8 pb-10 pt-5 flex flex-col flex-1 items-center text-center">
                                 {/* Title */}
                                 <h3
                                     className="font-pixel text-sm lg:text-base mb-4 tracking-wide"
@@ -359,26 +593,14 @@ export default function WhatWeDo() {
                                     {item.description}
                                 </p>
 
-                                {/* Explore button */}
-                                <div className="mt-5">
-                                    <button
-                                        className="font-pixel text-[9px] lg:text-[10px] tracking-wider px-3 py-1.5 rounded-md transition-all duration-300 group-hover:shadow-sm cursor-pointer"
-                                        style={{
-                                            color: item.accent,
-                                            background: `${item.accent}12`,
-                                            border: `1.5px solid ${item.accent}30`,
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.background = `${item.accent}25`;
-                                            e.currentTarget.style.borderColor = `${item.accent}50`;
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.background = `${item.accent}12`;
-                                            e.currentTarget.style.borderColor = `${item.accent}30`;
-                                        }}
+                                {/* Explore link */}
+                                <div className="mt-auto pt-4 w-full flex justify-center">
+                                    <span
+                                        className="font-pixel text-xs lg:text-sm tracking-wider transition-all duration-300 cursor-pointer hover:opacity-70"
+                                        style={{ color: item.accent }}
                                     >
                                         EXPLORE →
-                                    </button>
+                                    </span>
                                 </div>
                             </div>
                         </div>
