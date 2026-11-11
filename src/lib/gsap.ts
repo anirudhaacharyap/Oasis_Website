@@ -2,10 +2,18 @@
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
-// Register GSAP plugins once
+// Register plugins once. useGSAP scopes every animation to its component and
+// reverts only that component's tweens/triggers on unmount.
 if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
-export { gsap, ScrollTrigger };
+/** Media queries shared by every animated section. */
+export const MQ = {
+    motionOk: "(prefers-reduced-motion: no-preference)",
+    desktopMotion: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+};
+
+export { gsap, ScrollTrigger, useGSAP };

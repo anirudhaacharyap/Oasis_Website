@@ -27,10 +27,6 @@
   <rect x="6" y="22" width="12" height="2" fill="#FFF1A8" opacity="0.3"/>
   
   <!-- Magic Particles (floating around orb) -->
-  <rect x="16" y="1" width="1" height="1" fill="#C9C3F5">
-    <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" />
-  </rect>
-  <rect x="22" y="3" width="1" height="1" fill="#C9C3F5">
-    <animate attributeName="opacity" values="0;1;0" dur="2s" begin="1s" repeatCount="indefinite" />
-  </rect>
+  <rect x="16" y="1" width="1" height="1" fill="#C9C3F5" />
+  <rect x="22" y="3" width="1" height="1" fill="#C9C3F5" />
 </svg>

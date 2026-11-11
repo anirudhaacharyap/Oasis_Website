@@ -22,6 +22,7 @@ export default function PixelTrail() {
     const raf = useRef<number>(0);
 
     useEffect(() => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
@@ -102,8 +103,9 @@ export default function PixelTrail() {
     return (
         <canvas
             ref={canvasRef}
+            aria-hidden="true"
             className="fixed inset-0 pointer-events-none"
-            style={{ zIndex: 9999 }}
+            style={{ zIndex: 40 }}
         />
     );
 }
