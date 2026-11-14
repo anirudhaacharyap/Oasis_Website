@@ -1,0 +1,306 @@
+.section {
+    padding-block: clamp(5rem, 10vw, 10rem);
+    overflow-x: clip;
+}
+
+.head {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+}
+
+.head h2 {
+    color: var(--ink);
+}
+
+.fact {
+    color: var(--gold);
+    padding-top: 0.25rem;
+}
+
+/* Next up */
+.next {
+    margin-top: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.nextTitle {
+    font-weight: 700;
+    font-size: var(--t-m);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+}
+
+.cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gutter);
+}
+
+.card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding: clamp(1.4rem, 2.5vw, 2rem);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    translate: 0 0;
+    transition: translate 0.26s var(--snap), border-color 0.2s;
+}
+
+.card:hover,
+.card:focus-within {
+    translate: 0 -3px;
+    border-color: var(--gold-hi);
+}
+
+.card:active {
+    translate: 0 1px;
+    transition-duration: 0.09s;
+    transition-timing-function: var(--press);
+}
+
+.pill {
+    justify-self: start;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--void);
+}
+
+.cardDate {
+    color: var(--gold);
+}
+
+.cardTitle {
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.cardLink {
+    text-decoration: none;
+}
+
+.cardLink::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+}
+
+.cardLink:focus-visible {
+    outline: none;
+}
+
+.cardLink:focus-visible::after {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+}
+
+.cardMeta {
+    color: var(--muted);
+}
+
+/* Timeline */
+.timeline {
+    margin-top: clamp(4rem, 8vw, 7rem);
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+}
+
+.rail {
+    grid-column: 1 / 5;
+    display: none; /* shown only once the scroll behaviour is live */
+}
+
+:global([data-live]) .rail {
+    display: block;
+}
+
+.railInner {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+    display: grid;
+    gap: 1rem;
+}
+
+.yearMask {
+    overflow: hidden;
+    padding-block: 0.08em;
+}
+
+.year {
+    display: block;
+    font-size: clamp(4rem, 9vw, 9rem);
+    font-weight: 800;
+    line-height: 0.95;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.05em;
+}
+
+.slot {
+    color: var(--muted);
+}
+
+.listWrap {
+    position: relative;
+    grid-column: 5 / 13;
+    padding-left: 4.5rem;
+}
+
+.arc {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    overflow: visible;
+}
+
+.track,
+.drawn {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 2px;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+}
+
+.track {
+    opacity: 0.18;
+}
+
+.star {
+    position: absolute;
+    left: 20px;
+    top: 100%;
+    width: 22px;
+    height: 22px;
+    fill: var(--gold);
+    translate: -50% -50%;
+    pointer-events: none;
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 5rem;
+}
+
+.item {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+}
+
+.dot {
+    position: absolute;
+    left: calc(var(--dot-x, 20px) - 4.5rem);
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px var(--deep);
+    translate: -50% -50%;
+}
+
+.itemYear {
+    color: var(--gold);
+}
+
+:global([data-live]) .itemYear {
+    display: none;
+}
+
+.itemMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.kind {
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--ink);
+}
+
+.itemTitle {
+    font-weight: 700;
+    font-size: clamp(1.5rem, 1.1rem + 1vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.venue {
+    color: var(--muted);
+}
+
+.summary {
+    max-width: var(--measure);
+    color: var(--ink);
+}
+
+.outcome {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--gold);
+}
+
+/* Phone and tablet: no sticky rail, a straight gold line, a year on every item */
+@media (max-width: 899px) {
+    .cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .timeline {
+        display: block;
+    }
+
+    .rail {
+        display: none;
+    }
+
+    .listWrap {
+        padding-left: 2.25rem;
+    }
+
+    .arc {
+        display: none;
+    }
+
+    .listWrap::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--gold);
+    }
+
+    .star {
+        left: 6px;
+    }
+
+    .list {
+        gap: 3.5rem;
+    }
+
+    .dot {
+        left: calc(6px - 2.25rem);
+        top: 0.6rem;
+    }
+}

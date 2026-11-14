@@ -1,0 +1,165 @@
+.section {
+    padding-block: clamp(6rem, 4rem + 8vw, 11rem);
+    color: var(--ink);
+}
+
+.head {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+    margin-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+}
+
+.hint { color: var(--gold); }
+.hintTouch { display: none; }
+@media (hover: none) {
+    .hintFine { display: none; }
+    .hintTouch { display: inline; }
+}
+
+.select {
+    display: grid;
+    gap: 2.5rem;
+}
+
+/* Monogram */
+.mono {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 2px;
+}
+.monoPhoto { object-fit: cover; }
+.monoSvg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Panel */
+.panel { min-width: 0; }
+.panelInner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+.panelMono { flex: 0 0 9rem; width: 9rem; }
+.panelText { min-width: 0; flex: 1; display: grid; gap: 0.5rem; align-content: start; }
+.handle {
+    font-size: clamp(1.7rem, 1.2rem + 2vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--gold);
+    overflow-wrap: anywhere;
+}
+.name { font-size: 1.2rem; line-height: 1.2; color: var(--ink); }
+.stats { margin: 0.9rem 0 0; border-top: 1px solid var(--line); }
+.stat {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--line);
+}
+.stat dd { margin: 0; color: var(--ink); line-height: 1.3; }
+.links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+
+/* Roster: flat 3-column grid on phones, grouped 4-column rows on desktop */
+.roster {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    min-width: 0;
+}
+.group { display: contents; }
+.tiles { display: contents; }
+.groupLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.tile {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0.5rem;
+    margin: 0;
+    min-height: 44px;
+    display: grid;
+    gap: 0.55rem;
+    justify-items: center;
+    color: var(--muted);
+    font: inherit;
+    cursor: pointer;
+    translate: 0 0;
+    transition: translate 0.26s var(--snap), color 0.2s;
+}
+.tileMono { position: relative; display: block; width: 100%; }
+.tileHandle {
+    font-family: var(--font-mono);
+    font-size: var(--t-hud);
+    letter-spacing: 0.02em;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tile[aria-pressed="true"] { color: var(--gold); }
+.tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) {
+    .tile:hover { translate: 0 -3px; color: var(--ink); }
+}
+.tile:active { translate: 0 2px; transition-timing-function: var(--press); }
+
+/* Gold cursor frame: four corner brackets */
+.frame {
+    position: absolute;
+    inset: -6px;
+    pointer-events: none;
+}
+.frame i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--gold); }
+.frame i:nth-child(1) { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.frame i:nth-child(2) { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+.frame i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+.frame i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+@media (min-width: 1000px) {
+    .select {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        column-gap: var(--gutter);
+        align-items: start;
+    }
+    .panel {
+        grid-column: 1 / 6;
+        position: sticky;
+        top: 6rem;
+    }
+    .panelInner { display: grid; gap: 1.75rem; }
+    .panelMono { flex: none; width: min(100%, 26rem); }
+    .name { font-size: 1.4rem; }
+    .roster {
+        grid-column: 7 / 13;
+        grid-template-columns: none;
+        gap: 2.25rem;
+    }
+    .group { display: grid; gap: 0.9rem; }
+    .groupLabel {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+        white-space: normal;
+    }
+    .tiles {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+}

@@ -1,0 +1,133 @@
+.bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: var(--nav-h);
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  translate: 0 0;
+  transition: translate 0.5s var(--snap);
+}
+
+.bar[data-solid] {
+  background: color-mix(in srgb, var(--page, var(--ground)) 90%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.bar[data-away] {
+  translate: 0 -110%;
+}
+
+.word {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+  color: var(--gold);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.links {
+  display: flex;
+  gap: 1.6rem;
+}
+
+.link {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.link[aria-current] {
+  background-size: 100% 2px;
+  color: var(--ink);
+}
+
+.join {
+  min-height: 2.6rem;
+  padding: 0 1rem 0 0.7rem;
+  font-size: 0.85rem;
+}
+
+.menuBtn {
+  display: none;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--t-hud);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--void);
+  padding: calc(var(--nav-h) + 1rem) var(--gutter) 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panelLinks {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelLink {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 9vw, 3.2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.panelLink > :first-child {
+  order: 2;
+  color: var(--gold);
+}
+
+.panelClose {
+  align-self: flex-start;
+}
+
+@media (max-width: 860px) {
+  .links,
+  .join {
+    display: none;
+  }
+
+  .menuBtn {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (min-width: 861px) {
+  .panel {
+    display: none !important;
+  }
+}
+
+:global(html.menu-open) {
+  overflow: hidden;
+}

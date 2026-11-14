@@ -1,0 +1,353 @@
+/* Title screen. Desktop: the play area fills the viewport and the UI sits on the bottom edge.
+   Phone: the play area is a fixed-height box and the UI flows below it. */
+
+.hero {
+  min-height: 100svh;
+}
+
+.stage {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.play {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+}
+
+/* ── Giant words ── */
+.words {
+  position: absolute;
+  inset: 0 0 42svh;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.track {
+  display: flex;
+  gap: 6vw;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.word {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(4.5rem, 1rem + 15vw, 18rem);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(200, 161, 90, 0.5);
+  transition: color 0.45s var(--snap), -webkit-text-stroke-color 0.45s var(--snap);
+}
+
+.word[data-on] {
+  color: var(--ink);
+  -webkit-text-stroke-color: transparent;
+}
+
+/* ── Pad ── */
+.shadow {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: min(34vw, 520px);
+  aspect-ratio: 6 / 1;
+  translate: -50% 0;
+  z-index: 1;
+  background: radial-gradient(closest-side, rgba(28, 5, 7, 0.55), transparent);
+  animation: breathe 5.7s ease-in-out infinite;
+}
+
+.shadow[data-paused] {
+  animation-play-state: paused;
+}
+
+@keyframes breathe {
+  0%, 100% { scale: 1; opacity: 0.9; }
+  50% { scale: 0.86; opacity: 0.7; }
+}
+
+.fallback {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: min(44vw, 600px);
+  translate: -50% -50%;
+  rotate: -4deg;
+  z-index: 2;
+  filter: drop-shadow(0 24px 30px rgba(28, 5, 7, 0.35));
+  transition: opacity 0.6s var(--snap);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.6s var(--snap);
+}
+
+.canvas[data-ready] {
+  opacity: 1;
+}
+
+.canvas[data-ready] ~ .fallback,
+.play:has(.canvas[data-ready]) .fallback {
+  opacity: 0;
+}
+
+/* ── UI ── */
+.ui {
+  grid-row: 2;
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+  pointer-events: none;
+}
+
+.ui > * {
+  pointer-events: auto;
+}
+
+.intro {
+  grid-column: 1 / span 5;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-m);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+}
+
+.h1Name {
+  color: var(--gold);
+}
+
+.panel {
+  grid-column: 8 / span 5;
+  display: grid;
+  gap: 1rem;
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.mode {
+  display: grid;
+  gap: 0.5rem;
+  animation: mode-in 0.5s var(--snap);
+}
+
+@keyframes mode-in {
+  from { opacity: 0; translate: 0 10px; }
+}
+
+.modeName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--gold);
+}
+
+.modeLine {
+  color: var(--ink);
+  max-width: 44ch;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.items li {
+  font-family: var(--font-mono);
+  font-size: var(--t-hud);
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+/* Controls echo the pad: a D-pad pair, four face buttons, and a pause. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+
+.dpad,
+.faces {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.arrow,
+.face,
+.pause {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--deep);
+  box-shadow: 0 3px 0 0 #c9b89d;
+  translate: 0 0;
+  transition: translate 0.26s var(--snap), box-shadow 0.26s var(--snap), background-color 0.2s;
+}
+
+.arrow svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.face {
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: var(--gold);
+  color: var(--void);
+  box-shadow: 0 3px 0 0 #8e6f35;
+}
+
+.face[aria-pressed="true"] {
+  background: var(--gold-hi);
+  box-shadow: 0 3px 0 0 #8e6f35, 0 0 0 3px var(--ground), 0 0 0 5px var(--gold-hi);
+}
+
+.arrow:focus-visible,
+.face:focus-visible,
+.pause:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 6px;
+}
+
+.pause {
+  margin-left: auto;
+  padding: 0 0.9rem;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-family: var(--font-mono);
+  font-size: var(--t-hud);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.arrow:hover,
+.face:hover {
+  translate: 0 -2px;
+}
+
+.arrow:active,
+.face:active,
+.pause:active {
+  translate: 0 3px;
+  box-shadow: 0 0 0 0 transparent;
+  transition-duration: 0.09s;
+  transition-timing-function: var(--press);
+}
+
+.pause:hover {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.hint {
+  color: var(--muted);
+}
+
+.hintTouch {
+  display: none;
+}
+
+@media (hover: none) {
+  .hintFine { display: none; }
+  .hintTouch { display: inline; }
+}
+
+/* ── Phone ── */
+@media (max-width: 860px) {
+  .stage {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--nav-h);
+  }
+
+  .play {
+    position: relative;
+    inset: auto;
+    height: 56svh;
+    min-height: 22rem;
+  }
+
+  .words {
+    inset: 0 0 auto;
+    height: 40%;
+    align-items: flex-end;
+  }
+
+  .word {
+    font-size: clamp(3rem, 17vw, 6.5rem);
+  }
+
+  .fallback {
+    top: 66%;
+    width: min(86vw, 420px);
+  }
+
+  .shadow {
+    top: 74%;
+    width: 60vw;
+  }
+
+  .ui {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2rem;
+  }
+
+  .panel {
+    order: -1;
+  }
+
+  .pause {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shadow { animation: none; }
+}

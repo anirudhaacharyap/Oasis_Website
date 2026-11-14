@@ -1,0 +1,238 @@
+.finale {
+    overflow: clip;
+    display: grid;
+    align-items: center;
+    padding-block: 6rem;
+    color: var(--deep);
+}
+
+.inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
+}
+
+.label {
+    margin: 0;
+    color: var(--deep);
+}
+
+.poster {
+    margin: 0;
+    font-size: clamp(3rem, 0.6rem + 12vw, 13rem);
+    line-height: 0.95;
+    color: var(--deep);
+    text-wrap: balance;
+}
+
+.disc {
+    display: inline-grid;
+    place-items: center;
+    width: 0.9em;
+    height: 0.9em;
+    vertical-align: -0.08em;
+    border-radius: 50%;
+    background: var(--deep);
+    box-shadow: 0 0.06em 0 0 #3d070a;
+    translate: 0 0;
+}
+
+.disc > span {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.55em;
+    letter-spacing: 0;
+    color: var(--gold);
+}
+
+.invite {
+    margin: 0;
+    max-width: 38rem;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    color: var(--deep);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+}
+
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0 1.4rem;
+    border: 2px solid var(--deep);
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--deep);
+    translate: 0 0;
+    transition: translate 0.26s var(--snap), background-color 0.2s, color 0.2s;
+}
+
+.secondary:hover {
+    translate: 0 -2px;
+    background: var(--deep);
+    color: var(--gold);
+}
+
+.secondary:active {
+    translate: 0 3px;
+    transition-duration: 0.09s;
+    transition-timing-function: var(--press);
+}
+
+.soon {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    margin: 0;
+    padding: 0 1.4rem;
+    border: 2px dashed rgba(110, 13, 18, 0.6);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    color: var(--deep);
+}
+
+/* Footer */
+.footer {
+    background: var(--deep);
+    color: var(--ink);
+    padding-block: clamp(3rem, 6vw, 5rem) 1.5rem;
+}
+
+.markBox {
+    container-type: inline-size;
+}
+
+.mark {
+    margin: 0;
+    font-size: clamp(4rem, 22cqi, 18rem);
+    line-height: 0.85;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+.cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.col p {
+    margin: 0;
+}
+
+.tag {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.colHead {
+    margin: 0 0 0.5rem;
+    font-weight: 500;
+    color: var(--gold);
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.link {
+    display: inline-block;
+    padding-block: 0.6rem;
+    min-height: 44px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.bottom p {
+    margin: 0;
+}
+
+.bottom :global(.hud) {
+    color: var(--gold);
+}
+
+@media (min-width: 48rem) {
+    .finale {
+        min-height: 100svh;
+        padding-block: 8rem;
+    }
+
+    .inner {
+        gap: 2.25rem;
+    }
+
+    .cols {
+        grid-template-columns: 1.4fr 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+/* The title-screen pad returns at rest, lower right. Decorative (aria-hidden in the SVG). */
+.pad {
+  position: absolute;
+  right: -4vw;
+  bottom: 8%;
+  width: min(48vw, 760px);
+  rotate: -12deg;
+  z-index: 0;
+  filter: drop-shadow(0 30px 40px rgba(110, 13, 18, 0.35));
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .pad {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 78vw;
+    margin: 3rem auto 0;
+    rotate: -8deg;
+    order: 2;
+  }
+}

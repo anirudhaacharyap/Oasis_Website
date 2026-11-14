@@ -1,64 +1,111 @@
+// Mock content: replace with real club data. See src/data/types.ts.
 import type { ClubEvent } from "./types";
 import { todayISO } from "@/lib/content";
 
-/**
- * TODO(content): replace these sample events with real ones.
- * Upcoming vs past is computed from `date`, so just add events and keep them here.
- */
 export const events: ClubEvent[] = [
     {
-        slug: "sample-valorant-cup",
-        title: "Inter-college Valorant Cup",
-        date: "2027-02-14",
-        endDate: "2027-02-15",
-        type: "Tournament",
-        location: "Campus esports lab",
-        description: "5v5 double-elimination bracket open to all colleges. Sample entry: replace with a real event.",
-        registerUrl: "https://example.com/register",
-        sample: true,
+        slug: "oasis-open-2024",
+        title: "OASIS Open 2024",
+        date: "2024-03-09",
+        endDate: "2024-03-10",
+        kind: "Tournament",
+        venue: "Esports lab",
+        summary: "Our first campus Valorant and BGMI cup, played over a weekend with a streamed final.",
+        outcome: "12 teams, two days",
+        mock: true,
     },
     {
-        slug: "sample-48h-game-jam",
-        title: "48-Hour Game Jam",
-        date: "2027-03-07",
-        endDate: "2027-03-09",
-        type: "Game Jam",
-        location: "Seminar hall",
-        description: "Teams of up to four build a game around a theme revealed at kickoff. Sample entry.",
-        registerUrl: "https://example.com/register",
-        sample: true,
+        slug: "godot-first-steps",
+        title: "Godot first steps",
+        date: "2024-09-21",
+        kind: "Workshop",
+        venue: "Seminar hall",
+        summary: "A beginner session on scenes, nodes and signals. Everyone built a tiny platformer by the end.",
+        outcome: "40 attendees",
+        mock: true,
     },
     {
-        slug: "sample-godot-workshop",
-        title: "Intro to Godot Workshop",
-        date: "2026-09-20",
-        type: "Workshop",
-        location: "Lab 3",
-        description: "Beginner-friendly session: build a tiny platformer from scratch in two hours. Sample entry.",
-        recapUrl: "https://example.com/recap",
-        sample: true,
+        slug: "monsoon-jam-2024",
+        title: "Monsoon jam",
+        date: "2024-11-16",
+        endDate: "2024-11-17",
+        kind: "Game jam",
+        venue: "Library annex",
+        summary: "Thirty hours, one theme, solo or teams of three. Games were played live on Sunday evening.",
+        outcome: "9 games submitted",
+        mock: true,
     },
     {
-        slug: "sample-lan-night",
-        title: "LAN Night",
-        date: "2026-08-02",
-        type: "Social",
-        location: "Campus esports lab",
-        description: "Casual games, snacks and a mini bracket for newcomers. Sample entry.",
-        sample: true,
+        slug: "lan-night-feb-2025",
+        title: "LAN night: February",
+        date: "2025-02-14",
+        kind: "LAN night",
+        venue: "Esports lab",
+        summary: "Rocket League, EA FC and CS2 on a shared network, with a casual bracket for each.",
+        mock: true,
+    },
+    {
+        slug: "how-studios-ship",
+        title: "How small studios ship",
+        date: "2025-08-30",
+        kind: "Talk",
+        venue: "Main auditorium",
+        summary: "A guest talk from an indie developer on scoping, playtesting and finishing a first release.",
+        outcome: "Around 90 in the room",
+        mock: true,
+    },
+    {
+        slug: "oasis-open-2025",
+        title: "OASIS Open 2025",
+        date: "2025-10-11",
+        endDate: "2025-10-12",
+        kind: "Tournament",
+        venue: "Main auditorium",
+        summary: "Valorant, BGMI and Tekken 8 brackets with teams from three nearby colleges.",
+        outcome: "16 teams, two days",
+        mock: true,
+    },
+    {
+        slug: "shader-night",
+        title: "Shader night",
+        date: "2026-03-07",
+        kind: "Workshop",
+        venue: "Seminar hall",
+        summary: "A hands-on evening on writing fragment shaders in Godot, from UVs to a simple water effect.",
+        outcome: "28 attendees",
+        mock: true,
+    },
+    {
+        slug: "member-showcase-2026",
+        title: "Member showcase",
+        date: "2026-09-19",
+        kind: "Showcase",
+        venue: "Library annex",
+        summary: "Members demo the games, mods and tools they built this year, with open play at every table.",
+        outcome: "6 projects shown",
+        mock: true,
+    },
+    {
+        slug: "winter-jam-2027",
+        title: "Winter jam",
+        date: "2027-01-23",
+        endDate: "2027-01-24",
+        kind: "Game jam",
+        venue: "Library annex",
+        summary: "A weekend jam open to all branches. Artists, coders and sound folks get paired on the first morning.",
+        mock: true,
+    },
+    {
+        slug: "oasis-open-2027",
+        title: "OASIS Open 2027",
+        date: "2027-03-06",
+        endDate: "2027-03-07",
+        kind: "Tournament",
+        venue: "Main auditorium",
+        summary: "Our yearly cup returns with Valorant, BGMI, CS2 and a Tekken 8 side bracket.",
+        mock: true,
     },
 ];
 
-export function upcomingEvents() {
-    const t = todayISO();
-    return events
-        .filter((e) => (e.endDate ?? e.date) >= t)
-        .sort((a, b) => a.date.localeCompare(b.date));
-}
-
-export function pastEvents() {
-    const t = todayISO();
-    return events
-        .filter((e) => (e.endDate ?? e.date) < t)
-        .sort((a, b) => b.date.localeCompare(a.date));
-}
+export function upcomingEvents() { const t = todayISO(); return events.filter((e) => (e.endDate ?? e.date) >= t).sort((a, b) => a.date.localeCompare(b.date)); }
+export function pastEvents() { const t = todayISO(); return events.filter((e) => (e.endDate ?? e.date) < t).sort((a, b) => b.date.localeCompare(a.date)); }

@@ -1,69 +1,58 @@
 import type { Metadata, Viewport } from "next";
-import { Press_Start_2P, Space_Grotesk } from "next/font/google";
+import { Instrument_Sans, Martian_Mono, Unbounded } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
-import PixelTrail from "@/components/PixelTrail";
 import KonamiCode from "@/components/KonamiCode";
+import Motion from "@/components/Motion";
 import { site } from "@/data/site";
+import { siteUrl } from "@/lib/site-url";
 
-const pixel = Press_Start_2P({ weight: "400", subsets: ["latin"], variable: "--font-press-start", display: "swap" });
-const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
+const display = Unbounded({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-unbounded", display: "swap" });
+const text = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-text", display: "swap" });
+const mono = Martian_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-martian", display: "swap" });
 
-const title = `${site.name}: ${site.tagline} | ${site.college}`;
-
-/** Absolute origin for Open Graph images and canonical URLs. */
-function siteUrl() {
-    if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
-    // Preview deploys should advertise their own URL. Production uses the project domain.
-    if (process.env.VERCEL_ENV === "production" && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-        return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-    }
-    if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-    return "http://localhost:3000";
-}
+const title = `${site.name}: ${site.tagline} at ${site.college}, ${site.city}`;
 
 export const metadata: Metadata = {
     metadataBase: new URL(siteUrl()),
     title: { default: title, template: `%s | ${site.name}` },
     description: site.description,
-    openGraph: {
-        title,
-        description: site.description,
-        siteName: site.name,
-        type: "website",
-        locale: "en_IN",
-        images: [{ url: "/assets/prat-mascot.png", alt: "Prat, the OASIS mascot" }],
-    },
-    twitter: {
-        card: "summary_large_image",
-        title,
-        description: site.description,
-        images: ["/assets/prat-mascot.png"],
-    },
+    alternates: { canonical: "./" },
+    openGraph: { title, description: site.description, siteName: site.name, type: "website", locale: "en_IN" },
+    twitter: { card: "summary_large_image", title, description: site.description },
 };
 
 export const viewport: Viewport = {
-    themeColor: "#D9EEFB",
+    themeColor: "#A3161D",
+    colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: site.name,
+        description: site.description,
+        url: siteUrl(),
+        memberOf: { "@type": "CollegeOrUniversity", name: "Nitte Meenakshi Institute of Technology" },
+    };
+
     return (
-        <html lang="en" className={`${pixel.variable} ${grotesk.variable}`}>
-            <body className="antialiased">
-                <a
-                    href="#main"
-                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] pixel-btn"
-                >
+        <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`}>
+            <body>
+                <a href="#main" className="skip-link">
                     Skip to content
                 </a>
                 <Navbar />
                 {children}
-                <Footer />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+                />
                 <SmoothScroll />
-                <PixelTrail />
+                <Motion />
                 <KonamiCode />
             </body>
         </html>

@@ -1,284 +1,328 @@
 @import "tailwindcss";
 
 /*
- * OASIS design system
- * One palette, one card style, one button style — used by every section and page.
- * Fonts are loaded with next/font in layout.tsx and exposed as CSS variables.
+ * OASIS: press start.
+ * Matte red field, bone type, gold used like foil stamping.
+ * Motion verb: press and snap. See DESIGN.md.
+ * Sections own their layout in CSS modules; this file holds tokens and shared primitives.
  */
+
 @theme inline {
-  /* Backgrounds */
-  --color-sky: #D9EEFB;
-  --color-sky-light: #EAF6FF;
-  --color-cloud: #F9FCFF;
-
-  /* Accents (fills, borders, decoration) */
-  --color-accent-pink: #F6B6C8;
-  --color-accent-lavender: #C9C3F5;
-  --color-accent-purple: #9FA8FF;
-  --color-accent-mint: #9EE6CF;
-  --color-accent-yellow: #FFF1A8;
-
-  /* Accent "ink" variants — readable as text on white (WCAG AA) */
-  --color-ink-purple: #4F5AD0;
-  --color-ink-pink: #B8476F;
-  --color-ink-mint: #1F7A60;
-  --color-ink-yellow: #8A6800;
-  --color-ink-lavender: #6556C4;
-
-  /* Text */
-  --color-ink: #2F5D8C;
-  --color-ink-soft: #4A6F99;
-
-  /* Lines */
-  --color-line: #BFD9F2;
-
-  /* Fonts — pixel for headings/labels, grotesk for reading */
-  --font-pixel: var(--font-press-start), ui-monospace, monospace;
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --color-ground: #a3161d;
+  --color-deep: #6e0d12;
+  --color-void: #1c0507;
+  --color-ink: #f7ecda;
+  --color-muted: #f0d3c4;
+  --color-gold: #c8a15a;
+  --font-sans: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-martian), ui-monospace, monospace;
 }
 
-/* ── Base ── (layered, so Tailwind utilities can override it) */
+:root {
+  /* palette */
+  --ground: #a3161d;
+  --deep: #6e0d12;
+  --void: #1c0507;
+  --ink: #f7ecda;
+  --muted: #f0d3c4;
+  --gold: #c8a15a;
+  --gold-hi: #e2c07c;
+  --line: rgba(247, 236, 218, 0.2);
+  --line-strong: rgba(247, 236, 218, 0.42);
+
+  /* motion */
+  --snap: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --press: cubic-bezier(0.4, 0, 0.6, 1);
+
+  /* layout */
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --max: 80rem;
+  --nav-h: 4.5rem;
+  --radius: 6px;
+  --measure: 60ch;
+
+  /* type scale */
+  --t-mega: clamp(3.5rem, 1rem + 13vw, 15rem);
+  --t-xl: clamp(2.4rem, 1.2rem + 4.4vw, 6rem);
+  --t-l: clamp(1.6rem, 1.2rem + 1.6vw, 2.75rem);
+  --t-m: clamp(1.2rem, 1.05rem + 0.6vw, 1.6rem);
+  --t-body: 1.0625rem;
+  --t-s: 0.875rem;
+  --t-hud: 0.78rem;
+
+  color-scheme: dark;
+}
+
 @layer base {
   html {
     overflow-x: clip;
-    cursor: url('/assets/cursor-default.svg') 0 0, auto;
+    scroll-padding-top: var(--nav-h);
+    background: var(--ground);
+    color: var(--ink);
+    scrollbar-color: var(--gold) var(--deep);
   }
 
   body {
-    background: var(--color-cloud);
-    color: var(--color-ink);
+    background: var(--ground);
+    color: var(--ink);
     font-family: var(--font-sans);
+    font-size: var(--t-body);
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
-  a,
-  button,
-  [role="button"],
-  .cursor-pointer,
-  label,
-  select,
-  summary {
-    cursor: url('/assets/cursor-pointer.svg') 0 0, pointer;
+  /* Matte finish: soft top light + fine film grain over every field. */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 90;
   }
 
-  input,
-  textarea,
-  [contenteditable="true"] {
-    cursor: url('/assets/cursor-text.svg') 16 16, text;
+  body::before {
+    background: radial-gradient(120% 70% at 50% -10%, rgba(255, 220, 200, 0.07), transparent 60%);
   }
 
-  :focus-visible {
-    outline: 3px solid var(--color-ink-purple);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
-
-  section[id] {
-    scroll-margin-top: 6.5rem;
+  body::after {
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection {
-    background: var(--color-accent-lavender);
-    color: var(--color-ink);
+    background: var(--gold);
+    color: var(--void);
   }
 
-  ::-webkit-scrollbar {
-    width: 8px;
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
-  ::-webkit-scrollbar-track {
-    background: var(--color-sky-light);
+  a {
+    color: inherit;
   }
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-accent-purple);
-    border-radius: 4px;
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  img,
+  svg,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-/* ── Shared components ── */
+/* ── Shared primitives ── */
 @layer components {
-  /* The one card style used everywhere */
-  .pixel-card {
+  .wrap {
+    width: min(var(--max), calc(100% - 2 * var(--gutter)));
+    margin-inline: auto;
+  }
+
+  /* Display type */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+  }
+
+  .t-mega { font-size: var(--t-mega); }
+  .t-xl { font-size: var(--t-xl); line-height: 0.95; letter-spacing: -0.04em; }
+  .t-l { font-size: var(--t-l); line-height: 1.05; letter-spacing: -0.03em; }
+
+  /* HUD labels carry real information: level, dates, engines, counts. */
+  .hud {
+    font-family: var(--font-mono);
+    font-size: var(--t-hud);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .lede {
+    font-size: var(--t-m);
+    line-height: 1.4;
+    color: var(--muted);
+    max-width: var(--measure);
+  }
+
+  /* Section scaffold. Each level paints its own field. */
+  .level {
     position: relative;
-    background: #fff;
-    border: 2px solid var(--color-line);
-    border-radius: 12px;
-    box-shadow: 4px 4px 0 var(--color-line);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    isolation: isolate;
   }
 
-  .pixel-card-hover:hover,
-  .pixel-card-hover:focus-within {
-    transform: translate(-2px, -2px);
-    border-color: var(--card-accent, var(--color-accent-purple));
-    box-shadow: 6px 6px 0 var(--card-accent, var(--color-accent-purple));
-  }
+  .tone-ground { background: var(--ground); }
+  .tone-deep { background: var(--deep); }
+  .tone-void { background: var(--void); }
+  .tone-gold { background: var(--gold); color: var(--deep); }
 
-  /* The one button style used everywhere */
-  .pixel-btn {
+  /* Buttons: press and snap. Dip on press, spring back on release. */
+  .btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    padding: 0.9rem 1.4rem;
-    font-family: var(--font-pixel);
-    font-size: 11px;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    color: var(--color-ink);
-    background: var(--btn-bg, var(--color-accent-yellow));
-    border: 2px solid var(--color-ink);
-    border-radius: 8px;
-    box-shadow: 4px 4px 0 var(--color-ink);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0 1.4rem;
+    border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    background: var(--ink);
+    color: var(--deep);
+    box-shadow: 0 4px 0 0 var(--btn-edge, #c9b89d);
+    translate: 0 0;
+    transition: translate 0.26s var(--snap), box-shadow 0.26s var(--snap), background-color 0.2s;
+  }
+
+  .btn:hover {
+    translate: 0 -2px;
+    box-shadow: 0 6px 0 0 var(--btn-edge, #c9b89d);
+  }
+
+  .btn:active {
+    translate: 0 3px;
+    box-shadow: 0 1px 0 0 var(--btn-edge, #c9b89d);
+    transition-duration: 0.09s;
+    transition-timing-function: var(--press);
+  }
+
+  .btn--gold {
+    background: var(--gold);
+    color: var(--void);
+    --btn-edge: #8e6f35;
+  }
+
+  .btn--deep {
+    background: var(--deep);
+    color: var(--ink);
+    --btn-edge: #3d070a;
+  }
+
+  /* Face-button glyph inside a button label (A, B, X, Y). */
+  .glyph {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    font-weight: 500;
+    background: currentColor;
+  }
+
+  .glyph > span {
+    color: var(--glyph-ink, var(--ink));
+  }
+
+  /* Primary text links: a gold bar snaps in from the left. */
+  .snap-link {
+    position: relative;
+    text-decoration: none;
+    padding-bottom: 0.15em;
+    background: linear-gradient(var(--gold), var(--gold)) left bottom / 0% 2px no-repeat;
+    transition: background-size 0.4s var(--snap);
+  }
+
+  .snap-link:hover,
+  .snap-link:focus-visible {
+    background-size: 100% 2px;
+  }
+
+  /* Inline links in body copy keep an underline at rest. */
+  .prose a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .skip-link {
+    position: fixed;
+    left: var(--gutter);
+    top: 0.75rem;
+    z-index: 200;
+    translate: 0 -200%;
+    padding: 0.7rem 1rem;
+    background: var(--ink);
+    color: var(--deep);
+    border-radius: var(--radius);
+    font-weight: 600;
+  }
+
+  .skip-link:focus-visible {
+    translate: 0 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     white-space: nowrap;
-  }
-
-  .pixel-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 var(--color-ink);
-  }
-
-  .pixel-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--color-ink);
-  }
-
-  .pixel-btn-ghost {
-    --btn-bg: #fff;
-  }
-
-  .section-title {
-    font-family: var(--font-pixel);
-    color: var(--color-ink);
-    line-height: 1.25;
-    text-shadow: 3px 3px 0 rgba(159, 168, 255, 0.45);
-  }
-
-  .eyebrow {
-    font-family: var(--font-pixel);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--color-ink-soft);
-    text-transform: uppercase;
-  }
-
-  .pixelated {
-    image-rendering: pixelated;
-  }
-
-  .cv-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 280px;
+    border: 0;
   }
 }
 
-/* Each OASIS letter is its own hover target. Kept outside @layer so Tailwind emits it. */
-.logo-letter {
-  color: var(--color-ink);
-  text-shadow: 4px 4px 0 #9fa8ff, 8px 8px 0 rgba(159, 168, 255, 0.2);
-  transition: color 0.15s ease, text-shadow 0.15s ease;
+/* Level tones: with motion on, <html> carries the scrubbed field colour (see Motion.tsx). */
+html.tone-live,
+html.tone-live body {
+  background: var(--page);
 }
 
+html.tone-live main > .level {
+  background: transparent;
+}
+
+/* Hero intro: the title screen's text and panel rise in once, after the pad. */
 @media (prefers-reduced-motion: no-preference) {
-  .logo-letter {
-    transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
-  }
-
-  .logo-letter:hover,
-  .logo-letter:focus-visible,
-  .logo-letter:active {
-    transform: translateY(-12px) scale(1.12);
+  [data-intro] {
+    animation: intro-rise 1s var(--snap) both;
+    animation-delay: calc(var(--i, 0) * 0.08s);
   }
 }
 
-.logo-letter:hover,
-.logo-letter:focus-visible,
-.logo-letter:active {
-  color: var(--letter);
-  text-shadow: 0 0 20px var(--letter), 4px 4px 0 var(--letter);
+@keyframes intro-rise {
+  from { translate: 0 28px; }
 }
 
-/* ── Keyframes (one definition each) ── */
-@keyframes fly-right {
-  from { transform: translateX(-80px); }
-  to { transform: translateX(calc(100vw + 80px)); }
-}
-
-@keyframes fly-left {
-  from { transform: translateX(80px); }
-  to { transform: translateX(calc(-100vw - 80px)); }
-}
-
-@keyframes flap {
-  from { transform: scaleY(1); }
-  to { transform: scaleY(-0.6) translateY(4px); }
-}
-
-@keyframes bob {
-  from { transform: translateY(0); }
-  to { transform: translateY(-3px); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes coin-spin {
-  0%, 100% { transform: scaleX(1) translateY(0); }
-  25% { transform: scaleX(0.3) translateY(-8px); }
-  50% { transform: scaleX(1) translateY(-14px); }
-  75% { transform: scaleX(0.3) translateY(-8px); }
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-@keyframes cloud-drift {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(40px, -12px); }
-  100% { transform: translate(80px, 0); }
-}
-
-@keyframes rainbow-scroll {
-  from { background-position: 0% 0; }
-  to { background-position: 200% 0; }
-}
-
-@keyframes coin-fly {
-  from { transform: translate(-50%, 0); opacity: 1; }
-  to { transform: translate(-50%, -60px); opacity: 0; }
-}
-
-@keyframes fade-in-up {
-  from { transform: translate(-50%, 8px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-}
-
-/* Spatial motion only. Colour changes on buttons and links stay. */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .pixel-btn,
-  .pixel-btn:hover,
-  .pixel-btn:active,
-  .pixel-card,
-  .pixel-card-hover:hover,
-  .pixel-card-hover:focus-within {
-    transform: none;
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
