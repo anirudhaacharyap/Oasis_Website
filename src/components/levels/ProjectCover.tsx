@@ -3,10 +3,15 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import type { Project } from "@/data/types";
 
+/** Print palette: ink, cream and red, foreground always the contrasting ink of the three. */
+const INK = "#1E181E";
+const CREAM = "#F2EADB";
+const CREAM_2 = "#E3D6C3";
+const RED = "#AD0013";
 const TONES = {
-    gold: { bg: "#C8A15A", fg: "#6E0D12" },
-    bone: { bg: "#F7ECDA", fg: "#6E0D12" },
-    deep: { bg: "#6E0D12", fg: "#C8A15A" },
+    gold: { bg: INK, fg: RED },
+    bone: { bg: CREAM, fg: INK },
+    deep: { bg: RED, fg: CREAM },
 } as const;
 
 /** Area the pattern fills, inside the cartridge shell. */
@@ -15,7 +20,7 @@ const AY = 44;
 const AW = 352;
 const AH = 348;
 
-const CART_PATH = "M0 14Q0 0 14 0H140L154 20H246L260 0H386Q400 0 400 14V486Q400 500 386 500H14Q0 500 0 486Z";
+const CART_PATH = "M0 0H140L154 20H246L260 0H400V500H0Z";
 
 function hash(text: string) {
     let h = 2166136261;
@@ -174,14 +179,13 @@ export default function ProjectCover({
 
     if (project.image) {
         return (
-            <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 14 }}>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden" }}>
                 <Image src={project.image} alt="" fill sizes={sizes} priority={priority} style={{ objectFit: "cover" }} />
             </div>
         );
     }
 
     const { bg, fg } = TONES[project.cover.tone];
-    const rand = rng(hash(project.slug));
     const size = Math.max(15, Math.min(26, 304 / (project.title.length * 0.82)));
 
     return (
@@ -190,28 +194,48 @@ export default function ProjectCover({
                 <clipPath id={uid}>
                     <rect x={AX} y={AY} width={AW} height={AH} />
                 </clipPath>
+                {/* Halftone screen: a 45 degree dot grid used as a mask over the pattern shapes. */}
+                <pattern id={`${uid}d`} width={6} height={6} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <circle cx={3} cy={3} r={2.3} fill="#fff" />
+                </pattern>
+                <mask id={`${uid}m`} maskUnits="userSpaceOnUse" x={AX} y={AY} width={AW} height={AH}>
+                    <rect x={AX} y={AY} width={AW} height={AH} fill={`url(#${uid}d)`} />
+                </mask>
+                {/* Solid ink builds up along one corner and breaks into dots across the rest. */}
+                <linearGradient id={`${uid}g`} x1="0" y1="1" x2="0.75" y2="0.1">
+                    <stop offset="0" stopColor="#fff" />
+                    <stop offset="0.55" stopColor="#fff" stopOpacity={0} />
+                </linearGradient>
+                <mask id={`${uid}s`} maskUnits="userSpaceOnUse" x={AX} y={AY} width={AW} height={AH}>
+                    <rect x={AX} y={AY} width={AW} height={AH} fill={`url(#${uid}g)`} />
+                </mask>
             </defs>
             <path d={CART_PATH} fill={bg} />
-            <rect x={14} y={34} width={372} height={460} rx={8} fill="none" stroke={fg} strokeOpacity={0.35} strokeWidth={2} />
+            <rect x={14} y={34} width={372} height={460} fill="none" stroke={fg} strokeOpacity={0.35} strokeWidth={2} />
             <g clipPath={`url(#${uid})`}>
-                <Pattern kind={project.cover.pattern} fg={fg} rand={rand} />
+                <g mask={`url(#${uid}m)`}>
+                    <Pattern kind={project.cover.pattern} fg={fg} rand={rng(hash(project.slug))} />
+                </g>
+                <g mask={`url(#${uid}s)`}>
+                    <Pattern kind={project.cover.pattern} fg={fg} rand={rng(hash(project.slug))} />
+                </g>
             </g>
-            <rect x={AX} y={408} width={AW} height={68} rx={4} fill={fg} />
+            <rect x={AX} y={408} width={AW} height={68} fill={INK} stroke={CREAM} strokeOpacity={0.45} strokeWidth={1.5} />
             <text
                 x={40}
                 y={439}
-                fill={bg}
+                fill={CREAM}
                 fontSize={n1(size)}
-                style={{ fontFamily: "var(--font-display), sans-serif", fontWeight: 800, letterSpacing: "-0.03em" }}
+                style={{ fontFamily: "var(--font-archivo), sans-serif", fontWeight: 900, fontVariationSettings: '"wdth" 112', letterSpacing: "-0.03em" }}
             >
                 {project.title}
             </text>
             <text
                 x={40}
                 y={462}
-                fill={bg}
+                fill={CREAM_2}
                 fontSize={13}
-                style={{ fontFamily: "var(--font-mono), monospace", fontWeight: 500, letterSpacing: "0.06em" }}
+                style={{ fontFamily: "var(--font-archivo), sans-serif", fontWeight: 700, fontVariationSettings: '"wdth" 72', letterSpacing: "0.06em" }}
             >
                 {`${project.kind.toUpperCase()}  ${project.year}`}
             </text>

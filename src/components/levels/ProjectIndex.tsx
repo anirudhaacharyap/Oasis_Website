@@ -123,13 +123,13 @@ export default function ProjectIndex({ projects }: { projects: Project[] }) {
     return (
         <div ref={scope}>
             <ol ref={list} className={s.list}>
-                {projects.map((p, i) => {
+                {projects.map((p) => {
                     const isOpen = open === p.slug;
                     const panelId = `${base}-panel-${p.slug}`;
                     const btnId = `${base}-btn-${p.slug}`;
                     const real = !isPlaceholderUrl(p.url);
                     return (
-                        <li key={p.slug} className={s.item} data-slug={p.slug} data-open={isOpen || undefined} data-reveal>
+                        <li key={p.slug} className={s.item} data-slug={p.slug} data-open={isOpen || undefined}>
                             <h3 className={s.head}>
                                 <button
                                     id={btnId}
@@ -139,16 +139,15 @@ export default function ProjectIndex({ projects }: { projects: Project[] }) {
                                     aria-controls={panelId}
                                     onClick={() => setOpen(isOpen ? null : p.slug)}
                                 >
-                                    <span className={s.num}>{String(i + 1).padStart(2, "0")}</span>
                                     <span className={s.thumb} aria-hidden="true">
                                         <ProjectCover project={p} sizes="72px" />
                                     </span>
                                     <span className={s.name}>{p.title}</span>
-                                    <span className={s.meta}>
+                                    <span className={`label ${s.meta}`}>
                                         <span>{p.kind}</span>
                                         <span>{p.engine}</span>
                                     </span>
-                                    <span className={s.year}>{p.year}</span>
+                                    <span className={`label ${s.year}`}>{p.year}</span>
                                 </button>
                             </h3>
                             <div id={panelId} role="region" aria-labelledby={btnId} className={s.panel} inert={!isOpen}>
@@ -161,7 +160,7 @@ export default function ProjectIndex({ projects }: { projects: Project[] }) {
                                         <div className={s.side}>
                                             <ul className={s.team} aria-label="Team">
                                                 {p.team.map((h) => (
-                                                    <li key={h} className={s.chip}>
+                                                    <li key={h} className={`label ${s.chip}`}>
                                                         @{h}
                                                     </li>
                                                 ))}

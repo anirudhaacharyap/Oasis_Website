@@ -2,8 +2,8 @@
 
 /**
  * The OASIS controller: an original game pad modelled procedurally in three.js.
- * It is the hero's remote: the D-pad and face buttons emit PadInput events that drive the
- * "what we do" carousel. It floats, leans toward the pointer, and can be dragged around.
+ * It lives in the Join section: the D-pad and face buttons emit PadInput events that drive the
+ * spawn point list. It floats, leans toward the pointer, and can be dragged around.
  *
  * One clock: the Canvas uses frameloop="never" and GSAP's ticker calls advance(), so the
  * scene shares the same clock as every other animation and stops while off screen.
@@ -16,13 +16,17 @@ import * as THREE from "three";
 import { gsap } from "@/lib/gsap";
 import { LAYOUT, starPoints, traceBody, type FaceButton, type PadInput, type Pulse } from "./pad";
 
+// Matte black pad, brand-red face buttons, cream controls, one gold star (the start button).
 const COLORS = {
-    body: "#8E1219",
-    trim: "#5A0A0F",
-    bone: "#F1E4CF",
-    gold: "#C8A15A",
-    goldHi: "#F0CC85",
-    stick: "#2A0608",
+    body: "#0B0B0D",
+    trim: "#050304",
+    bone: "#F2EADB",
+    face: "#AD0013",
+    faceHi: "#E5323A",
+    gold: "#C9A35B",
+    goldHi: "#E2C07C",
+    stick: "#0E0A0D",
+    seam: "#AD0013",
 };
 
 const DEPTH = 0.42;
@@ -85,7 +89,7 @@ function useLetterTexture(letter: string) {
         canvas.width = canvas.height = size;
         const ctx = canvas.getContext("2d")!;
         const family = getComputedStyle(document.documentElement).getPropertyValue("--font-unbounded").trim() || "sans-serif";
-        ctx.fillStyle = "#4A070B";
+        ctx.fillStyle = "#F2EADB";
         ctx.font = `800 76px ${family}, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -140,11 +144,11 @@ function FaceButtonMesh({ letter, active, onInput, register }: PartProps & { let
                 <cylinderGeometry args={[0.2, 0.21, 0.14, 40]} />
                 <meshPhysicalMaterial
                     ref={mat}
-                    color={COLORS.gold}
-                    metalness={0.55}
-                    roughness={0.32}
+                    color={COLORS.face}
+                    metalness={0.15}
+                    roughness={0.42}
                     clearcoat={0.6}
-                    emissive={COLORS.goldHi}
+                    emissive={COLORS.faceHi}
                     emissiveIntensity={0}
                 />
             </mesh>
@@ -350,23 +354,25 @@ function Pad({ pulse, active, nudge, paused, onInput, onReady }: ControllerScene
                 Math.sin(t * 0.7) * 0.035 * r.idle
             );
         }
-        if (floatRef.current) floatRef.current.position.y = (viewport.aspect > 1 ? -0.18 : 0.1) + Math.sin(t * 1.1) * 0.09 * r.idle;
+        if (floatRef.current) {
+            floatRef.current.position.y = 0.05 + Math.sin(t * 1.1) * 0.09 * r.idle;
+        }
     });
 
-    // Fit the pad to the viewport: big on desktop, scaled down on phones.
-    const scale = viewport.aspect > 1 ? THREE.MathUtils.clamp(viewport.width / 10.5, 0.55, 0.74) : THREE.MathUtils.clamp(viewport.width / 6.2, 0.5, 0.9);
+    // Centred in its own canvas, scaled to the box (about 7.2 units wide for a 3:2 box).
+    const scale = THREE.MathUtils.clamp(viewport.width / 5.6, 0.5, 1.6);
 
     return (
-        <group ref={floatRef} scale={scale} position-x={viewport.aspect > 1 ? -viewport.width * 0.06 : 0}>
+        <group ref={floatRef} scale={scale}>
             <group ref={spinRef} onPointerDown={onPointerDown} onPointerOver={cursorFor("grab")} onPointerOut={cursorFor("")}>
                 <mesh geometry={body}>
                     <meshPhysicalMaterial
                         color={COLORS.body}
-                        roughness={0.52}
-                        clearcoat={0.45}
-                        clearcoatRoughness={0.38}
-                        sheen={0.3}
-                        sheenColor="#ff8a7a"
+                        roughness={0.7}
+                        clearcoat={0.22}
+                        clearcoatRoughness={0.55}
+                        sheen={0.05}
+                        sheenColor="#E5323A"
                     />
                 </mesh>
                 {/* Bumpers on the top edge */}
@@ -390,10 +396,10 @@ function Pad({ pulse, active, nudge, paused, onInput, onReady }: ControllerScene
                     <Stick key={i} position={pos} />
                 ))}
                 <StarButton onInput={onInput} register={register} />
-                {/* A thin gold seam around the face, like foil on the logo */}
+                {/* A thin red seam around the face, like the poster's rules */}
                 <mesh position={[0, 0.06, FRONT - 0.005]}>
                     <ringGeometry args={[0.47, 0.49, 64]} />
-                    <meshStandardMaterial color={COLORS.gold} metalness={0.6} roughness={0.35} />
+                    <meshStandardMaterial color={COLORS.seam} roughness={0.5} />
                 </mesh>
             </group>
         </group>
@@ -422,7 +428,7 @@ export default function ControllerScene(props: ControllerSceneProps) {
         const tick = (time: number) => {
             if (!visible || document.hidden) return;
             const scrolling = performance.now() - lastScroll < 160;
-            if (scrolling && lite) return;
+            if (scrolling) return; // give every scroll frame to the page; the pad resumes 160 ms after
             frame++;
             // Lite devices render every other tick (30 fps); desktops do the same mid-scroll.
             if ((lite || scrolling) && frame % 2 === 1) return;
@@ -441,7 +447,7 @@ export default function ControllerScene(props: ControllerSceneProps) {
         <div ref={wrap} style={{ position: "absolute", inset: 0 }}>
             <Canvas
                 frameloop="never"
-                dpr={lite ? [1, 1.25] : [1, 1.75]}
+                dpr={lite ? [1, 1.25] : [1, 1.5]}
                 camera={{ position: [0, 0, 9], fov: 30 }}
                 gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
                 onCreated={({ gl }) => {
@@ -450,13 +456,15 @@ export default function ControllerScene(props: ControllerSceneProps) {
                 }}
                 aria-hidden="true"
             >
-                <ambientLight intensity={0.35} />
-                <directionalLight position={[3, 5, 6]} intensity={2.4} color="#FFE9D6" />
-                <directionalLight position={[-5, -2, -3]} intensity={1.4} color={COLORS.gold} />
+                <ambientLight intensity={0.22} />
+                <directionalLight position={[3, 5, 6]} intensity={2.6} color="#FFF1E4" />
+                {/* Red rim lights pull the black pad off the ink field. */}
+                <directionalLight position={[-6, 2, -4]} intensity={1.0} color={COLORS.faceHi} />
+                <directionalLight position={[6, -3, -2]} intensity={0.4} color={COLORS.face} />
                 <Environment resolution={lite ? 64 : 128}>
-                    <Lightformer form="rect" intensity={2.2} position={[0, 5, 4]} scale={[10, 2, 1]} color="#FFF3E6" />
-                    <Lightformer form="rect" intensity={1.2} position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} color="#FFD7B0" />
-                    <Lightformer form="ring" intensity={0.8} position={[5, 1, -3]} scale={3} color={COLORS.gold} />
+                    <Lightformer form="rect" intensity={1.3} position={[0, 5, 4]} scale={[10, 2, 1]} color="#F4F1EE" />
+                    <Lightformer form="rect" intensity={0.7} position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} color="#EDE7E2" />
+                    <Lightformer form="ring" intensity={1.2} position={[5, 1, -3]} scale={3} color={COLORS.faceHi} />
                 </Environment>
                 <Pad {...props} />
             </Canvas>

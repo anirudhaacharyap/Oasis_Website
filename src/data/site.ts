@@ -14,13 +14,15 @@ export const site = {
         { label: "Meets", value: "Fridays, 5 pm", mock: true as const },
     ],
     links: {
-        join: "https://example.com/oasis-join",
+        join: "https://oasis-rec.vercel.app", // real: the recruitment site
         discord: "https://example.com/oasis-discord",
-        email: "oasis@example.com",
+        email: "oasis@example.com", // TODO: partner/sponsor contact
     },
     socials: [
         { label: "Instagram", url: "https://example.com/instagram" },
         { label: "Discord", url: "https://example.com/oasis-discord" },
         { label: "YouTube", url: "https://example.com/youtube" },
     ],
+    /** Real recruitment domains ("Pick your spawn point"). */
+    domains: ["Operations", "Esports", "Sponsorship", "Media & Outreach", "Documentation"],
 };

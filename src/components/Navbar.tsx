@@ -2,20 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { levels } from "@/lib/content";
+import { scrollToLevel, startScroll, stopScroll } from "@/lib/scroll";
+import Logo from "@/components/brand/Logo";
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import styles from "./Navbar.module.css";
 
 /**
  * Four-corner frame: wordmark top left, level links + Join top right.
- * On phones a "Menu" button opens a full-screen overlay. The overlay is a sibling of the
- * header (never inside it), so the header's translate can't become its containing block.
+ * On phones a "Menu" button opens a full-screen Sheet (Base UI dialog: focus trap, Escape and
+ * scroll lock come with it). The sheet portals to the body, outside the header's translate.
  */
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [away, setAway] = useState(false);
     const [solid, setSolid] = useState(false);
     const [current, setCurrent] = useState<string>("play");
-    const buttonRef = useRef<HTMLButtonElement>(null);
-    const panelRef = useRef<HTMLDivElement>(null);
+    const pending = useRef<string | null>(null);
 
     // Step aside while scrolling down, come back on scroll up (patterns.md #6).
     useEffect(() => {
@@ -44,42 +46,38 @@ export default function Navbar() {
         return () => io.disconnect();
     }, []);
 
-    // Menu overlay: lock scroll, focus the first link, Escape closes, focus returns to the button.
+    // Growing past the phone layout while the sheet is open would strand its scroll lock.
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 861px)");
+        const on = () => {
+            if (mq.matches) setOpen(false);
+        };
+        mq.addEventListener("change", on);
+        return () => mq.removeEventListener("change", on);
+    }, []);
+
+    // Base UI locks native scroll while the sheet is open; Lenis has to stop too.
     useEffect(() => {
         if (!open) return;
-        const root = document.documentElement;
-        root.classList.add("menu-open");
-        panelRef.current?.querySelector<HTMLElement>("a")?.focus();
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setOpen(false);
-            if (e.key !== "Tab" || !panelRef.current) return;
-            const focusables = panelRef.current.querySelectorAll<HTMLElement>("a, button");
-            const first = focusables[0];
-            const last = focusables[focusables.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        };
-        window.addEventListener("keydown", onKey);
-        const button = buttonRef.current;
-        return () => {
-            root.classList.remove("menu-open");
-            window.removeEventListener("keydown", onKey);
-            button?.focus();
-        };
+        stopScroll();
+        return () => startScroll();
     }, [open]);
+
+    // Scroll to the chosen level once the sheet has closed and released its scroll lock.
+    const onOpenChangeComplete = (isOpen: boolean) => {
+        if (isOpen || !pending.current) return;
+        const id = pending.current;
+        pending.current = null;
+        scrollToLevel(id);
+    };
 
     const links = levels.filter((level) => level.id !== "play" && level.id !== "join");
 
     return (
-        <>
+        <Sheet open={open} onOpenChange={setOpen} onOpenChangeComplete={onOpenChangeComplete}>
             <header className={styles.bar} data-away={away && !open ? "" : undefined} data-solid={solid ? "" : undefined}>
                 <a href="#play" className={styles.word} aria-label="OASIS, back to the title screen">
-                    OASIS
+                    <Logo decorative className={styles.mark} />
                 </a>
                 <nav aria-label="Levels" className={styles.links}>
                     {links.map((level) => (
@@ -93,46 +91,40 @@ export default function Navbar() {
                         </a>
                     ))}
                 </nav>
-                <a href="#join" className={`btn btn--gold ${styles.join}`} style={{ ["--glyph-ink" as string]: "var(--gold)" }}>
+                <a href="#join" className={`btn btn--red ${styles.join}`} style={{ ["--glyph-ink" as string]: "var(--c-red)" }}>
                     <span className="glyph" aria-hidden="true">
                         <span>A</span>
                     </span>
                     Join
                 </a>
-                <button
-                    ref={buttonRef}
-                    type="button"
-                    className={styles.menuBtn}
-                    aria-expanded={open}
-                    aria-controls="menu-panel"
-                    onClick={() => setOpen((o) => !o)}
-                >
-                    {open ? "Close" : "Menu"}
-                </button>
+                <SheetTrigger className={styles.menuBtn}>Menu</SheetTrigger>
             </header>
 
-            <div
-                id="menu-panel"
-                ref={panelRef}
-                className={styles.panel}
-                data-open={open ? "" : undefined}
-                hidden={!open}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Menu"
-            >
+            <SheetContent side="right" showCloseButton={false} className={styles.sheet}>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
                 <nav aria-label="Levels" className={styles.panelLinks}>
                     {levels.map((level) => (
-                        <a key={level.id} href={`#${level.id}`} onClick={() => setOpen(false)} className={styles.panelLink}>
-                            <span className="hud">{level.hud}</span>
+                        <SheetClose
+                            key={level.id}
+                            nativeButton={false}
+                            className={styles.panelLink}
+                            render={
+                                <a
+                                    href={`#${level.id}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        pending.current = level.id;
+                                    }}
+                                />
+                            }
+                        >
+                            <span className="label">{level.hud}</span>
                             <span>{level.label}</span>
-                        </a>
+                        </SheetClose>
                     ))}
                 </nav>
-                <button type="button" className={`btn ${styles.panelClose}`} onClick={() => setOpen(false)}>
-                    Close menu
-                </button>
-            </div>
-        </>
+                <SheetClose className={`btn ${styles.panelClose}`}>Close menu</SheetClose>
+            </SheetContent>
+        </Sheet>
     );
 }

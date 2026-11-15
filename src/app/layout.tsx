@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Martian_Mono, Unbounded } from "next/font/google";
+import { Archivo, Mr_Dafoe } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/Navbar";
@@ -9,9 +9,10 @@ import Motion from "@/components/Motion";
 import { site } from "@/data/site";
 import { siteUrl } from "@/lib/site-url";
 
-const display = Unbounded({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-unbounded", display: "swap" });
-const text = Instrument_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-text", display: "swap" });
-const mono = Martian_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-martian", display: "swap" });
+// Archivo carries every voice through its width axis: expanded display, normal body, condensed labels.
+const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
+// One retro script accent, as on the club's posters ("Gaming & Game Dev").
+const dafoe = Mr_Dafoe({ subsets: ["latin"], weight: "400", variable: "--font-dafoe", display: "swap" });
 
 const title = `${site.name}: ${site.tagline} at ${site.college}, ${site.city}`;
 
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-    themeColor: "#A3161D",
+    themeColor: "#1E181E",
     colorScheme: "dark",
 };
 
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     };
 
     return (
-        <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`}>
+        <html lang="en" className={`${archivo.variable} ${dafoe.variable}`}>
             <body>
                 <a href="#main" className="skip-link">
                     Skip to content

@@ -1,4 +1,4 @@
-/* Level 3: cartridges. Index list with a cursor-following cover preview. */
+/* Cartridges: a red print band, ink rules, cursor-following cover preview. */
 
 .section {
     padding-block: clamp(5rem, 10vw, 8rem);
@@ -10,12 +10,12 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 1.5rem 3rem;
-    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 2px solid var(--c-ink);
 }
 
 .title {
-    margin-top: 0.75rem;
-    color: var(--ink);
+    color: var(--c-cream);
 }
 
 .aside {
@@ -24,17 +24,16 @@
     max-width: 24rem;
 }
 
-/* ── Index ── */
+/* Index */
 .list {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1px solid var(--line);
 }
 
 .item {
-    border-bottom: 1px solid var(--line);
-    transition: opacity 0.3s var(--snap);
+    border-bottom: 2px solid var(--c-ink);
+    transition: opacity 200ms var(--ease-out);
 }
 
 .head {
@@ -46,10 +45,10 @@
 .row {
     position: relative;
     display: grid;
-    grid-template-columns: 1.75rem 72px minmax(0, 1fr) auto;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
     grid-template-areas:
-        "num thumb name year"
-        "num thumb meta meta";
+        "thumb name year"
+        "thumb meta meta";
     align-items: center;
     column-gap: 1rem;
     row-gap: 0.3rem;
@@ -57,21 +56,21 @@
     min-height: 44px;
     padding: 1.1rem 0;
     text-align: left;
-    color: var(--ink);
+    color: var(--c-cream);
 }
 
-/* Gold bar fills under the row from the left. */
+/* Ink bar fills under the row from the left. */
 .row::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -1px;
-    height: 3px;
-    background: var(--gold);
+    bottom: 0;
+    height: 4px;
+    background: var(--c-ink);
     transform-origin: left center;
     scale: 0 1;
-    transition: scale 0.5s var(--snap);
+    transition: scale 300ms var(--ease-out);
 }
 
 .row:focus-visible {
@@ -84,23 +83,15 @@
 }
 
 .row:active .name {
-    translate: 0.15em 0;
-    transition-duration: 0.09s;
+    scale: 0.97;
+    transform-origin: left center;
 }
 
-.num,
 .year,
 .meta {
-    font-family: var(--font-mono);
-    font-size: var(--t-hud);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    font-variant-numeric: tabular-nums;
-    color: var(--muted);
-}
-
-.num {
-    grid-area: num;
+    color: var(--c-cream);
+    font-weight: 700;
+    opacity: 1;
 }
 
 .thumb {
@@ -110,13 +101,17 @@
 
 .name {
     grid-area: name;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(1.15rem, 4.6vw, 1.6rem);
-    line-height: 1.05;
-    letter-spacing: -0.035em;
+    font-family: var(--font-archivo);
+    font-weight: 900;
+    font-variation-settings: "wdth" 112;
+    font-size: clamp(1.6rem, 3vw, 2.8rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--c-cream);
     translate: 0 0;
-    transition: translate 0.4s var(--snap);
+    transition:
+        translate 250ms var(--ease-out),
+        scale var(--t-press) var(--ease-out);
 }
 
 .meta {
@@ -131,18 +126,22 @@
     text-align: right;
 }
 
-/* ── Expandable panel ── */
+/* Expandable panel */
 .panel {
     display: grid;
     grid-template-rows: 0fr;
     visibility: hidden;
-    transition: grid-template-rows 0.5s var(--snap), visibility 0s linear 0.5s;
+    transition:
+        grid-template-rows 300ms var(--ease-out),
+        visibility 0s linear 300ms;
 }
 
 .item[data-open] .panel {
     grid-template-rows: 1fr;
     visibility: visible;
-    transition: grid-template-rows 0.5s var(--snap), visibility 0s;
+    transition:
+        grid-template-rows 300ms var(--ease-out),
+        visibility 0s;
 }
 
 .panelClip {
@@ -163,9 +162,9 @@
 .pitch {
     margin: 0;
     max-width: 44ch;
-    font-size: 1.15rem;
+    font-size: var(--t-m);
     line-height: 1.5;
-    color: var(--ink);
+    color: var(--c-cream);
 }
 
 .side {
@@ -185,12 +184,10 @@
 }
 
 .chip {
+    font-weight: 700;
     padding: 0.35rem 0.65rem;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius);
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--muted);
+    background: var(--c-ink);
+    color: var(--c-cream);
 }
 
 .link {
@@ -198,39 +195,29 @@
     align-items: center;
     align-self: flex-start;
     min-height: 44px;
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--ink);
-    translate: 0 0;
-    transition: translate 0.26s var(--snap), background-size 0.4s var(--snap);
-}
-
-.link:hover,
-.link:focus-visible {
-    translate: 0.2em 0;
+    font-weight: 800;
+    font-variation-settings: "wdth" 110;
+    color: var(--c-cream);
+    transition: scale var(--t-press) var(--ease-out);
 }
 
 .link:active {
-    translate: 0.35em 0;
-    transition-duration: 0.09s;
+    scale: 0.97;
 }
 
 .soon {
     margin: 0;
-    color: var(--muted);
+    color: var(--c-cream);
+    font-weight: 700;
     font-size: var(--t-s);
 }
 
 /* Wider touch layouts keep the thumbnail, with columns. */
 @media (min-width: 720px) {
     .row {
-        grid-template-columns: 2.5rem 72px minmax(0, 1fr) minmax(8rem, 14rem) 4rem;
-        grid-template-areas: "num thumb name meta year";
+        grid-template-columns: 72px minmax(0, 1fr) minmax(8rem, 14rem) 4rem;
+        grid-template-areas: "thumb name meta year";
         column-gap: 1.5rem;
-    }
-
-    .name {
-        font-size: clamp(1.4rem, 3vw, 2rem);
     }
 
     .meta {
@@ -239,11 +226,11 @@
     }
 
     .panelInner {
-        padding-left: calc(2.5rem + 72px + 3rem);
+        padding-left: calc(72px + 1.5rem);
     }
 }
 
-/* ── Cursor preview ── */
+/* Cursor preview */
 .preview {
     display: none;
 }
@@ -251,7 +238,7 @@
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .row {
         grid-template-columns: repeat(12, minmax(0, 1fr));
-        grid-template-areas: "num name name name name name name meta meta meta . year";
+        grid-template-areas: "name name name name name name name meta meta meta . year";
         column-gap: 1.5rem;
         padding: clamp(1.4rem, 2.4vw, 2rem) 0;
     }
@@ -261,15 +248,6 @@
         display: none;
     }
 
-    .name {
-        font-size: clamp(1.6rem, 3vw, 3rem);
-    }
-
-    .meta {
-        flex-direction: column;
-        gap: 0.15rem;
-    }
-
     .panelInner {
         grid-template-columns: repeat(12, minmax(0, 1fr));
         column-gap: 1.5rem;
@@ -277,7 +255,7 @@
     }
 
     .pitch {
-        grid-column: 2 / 8;
+        grid-column: 1 / 8;
     }
 
     .side {
@@ -288,7 +266,7 @@
 
     .row:hover .name,
     .row:focus-visible .name {
-        translate: 0.4em 0;
+        translate: 0.3em 0;
     }
 
     .row:hover::after {
@@ -296,7 +274,7 @@
     }
 
     .list:has(.item:hover, .item:focus-within) .item:not(:hover, :focus-within) {
-        opacity: 0.72;
+        opacity: 0.75;
     }
 
     .preview {
@@ -312,7 +290,7 @@
         pointer-events: none;
         visibility: hidden;
         opacity: 0;
-        filter: drop-shadow(0 18px 30px rgba(28, 5, 7, 0.45));
+        filter: drop-shadow(0 18px 30px rgba(20, 15, 20, 0.5));
     }
 
     .previewCover {
@@ -331,4 +309,18 @@
     .item:not([data-open]) .panelClip {
         display: none;
     }
+}
+
+.sample {
+    display: inline-block;
+    margin-left: 0.75rem;
+    padding: 2px 6px;
+    border: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+    border-radius: 0;
+    color: inherit;
+    vertical-align: middle;
+}
+
+.count {
+    color: var(--c-cream);
 }

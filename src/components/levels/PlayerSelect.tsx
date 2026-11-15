@@ -129,16 +129,16 @@ export default function PlayerSelect({ members }: { members: Member[] }) {
                         <p className={styles.name} data-swap>
                             {shown.name}
                         </p>
-                        <p className="hud" data-swap>
+                        <p className={`label ${styles.role}`} data-swap>
                             {shown.role} / {shown.tier}
                         </p>
                         <dl className={styles.stats} data-swap>
                             <div className={styles.stat}>
-                                <dt className="hud">Main</dt>
+                                <dt className="label">Main</dt>
                                 <dd>{shown.main}</dd>
                             </div>
                             <div className={styles.stat}>
-                                <dt className="hud">Branch</dt>
+                                <dt className="label">Branch</dt>
                                 <dd>{shown.detail}</dd>
                             </div>
                         </dl>
@@ -170,7 +170,7 @@ export default function PlayerSelect({ members }: { members: Member[] }) {
             >
                 {GROUPS.map((g) => (
                     <div className={styles.group} key={g.tier}>
-                        <p className={`hud ${styles.groupLabel}`}>{g.label}</p>
+                        <p className={`label ${styles.groupLabel}`}>{g.label}</p>
                         <div className={styles.tiles}>
                             {members.map((m, i) =>
                                 m.tier !== g.tier ? null : (

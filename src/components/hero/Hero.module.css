@@ -1,353 +1,140 @@
-/* Title screen. Desktop: the play area fills the viewport and the UI sits on the bottom edge.
-   Phone: the play area is a fixed-height box and the UI flows below it. */
+/* Title screen: OASIS itself. Flat black with the poster's print filter, the wordmark as a sheet
+   of halftone dots in the middle, and one band of copy and actions under it. Nothing overlaps
+   the logo. */
 
 .hero {
-  min-height: 100svh;
-}
-
-.stage {
   position: relative;
   min-height: 100svh;
   display: grid;
-  grid-template-rows: 1fr auto;
-  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.play {
-  position: absolute;
-  inset: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--nav-h) minmax(0, 1fr) auto;
+  background: var(--c-void);
   overflow: clip;
 }
 
-/* ── Giant words ── */
-.words {
-  position: absolute;
-  inset: 0 0 42svh;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.track {
-  display: flex;
-  gap: 6vw;
-  white-space: nowrap;
-  will-change: transform;
-}
-
-.word {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(4.5rem, 1rem + 15vw, 18rem);
-  line-height: 0.8;
-  letter-spacing: -0.05em;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(200, 161, 90, 0.5);
-  transition: color 0.45s var(--snap), -webkit-text-stroke-color 0.45s var(--snap);
-}
-
-.word[data-on] {
-  color: var(--ink);
-  -webkit-text-stroke-color: transparent;
-}
-
-/* ── Pad ── */
-.shadow {
-  position: absolute;
-  left: 50%;
-  top: 62%;
-  width: min(34vw, 520px);
-  aspect-ratio: 6 / 1;
-  translate: -50% 0;
-  z-index: 1;
-  background: radial-gradient(closest-side, rgba(28, 5, 7, 0.55), transparent);
-  animation: breathe 5.7s ease-in-out infinite;
-}
-
-.shadow[data-paused] {
-  animation-play-state: paused;
-}
-
-@keyframes breathe {
-  0%, 100% { scale: 1; opacity: 0.9; }
-  50% { scale: 0.86; opacity: 0.7; }
-}
-
-.fallback {
-  position: absolute;
-  left: 50%;
-  top: 44%;
-  width: min(44vw, 600px);
-  translate: -50% -50%;
-  rotate: -4deg;
-  z-index: 2;
-  filter: drop-shadow(0 24px 30px rgba(28, 5, 7, 0.35));
-  transition: opacity 0.6s var(--snap);
-}
-
-.canvas {
+/* The print filter: a faint halftone screen over the black (the global grain sits on top). */
+.hero::before {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.6s var(--snap);
+  pointer-events: none;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--c-cream) 3%, transparent) 1px, transparent 1.5px);
+  background-size: 7px 7px;
 }
 
-.canvas[data-ready] {
-  opacity: 1;
-}
-
-.canvas[data-ready] ~ .fallback,
-.play:has(.canvas[data-ready]) .fallback {
-  opacity: 0;
-}
-
-/* ── UI ── */
-.ui {
+/* ── The logo ── */
+.art {
   grid-row: 2;
   position: relative;
-  z-index: 4;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--gutter);
-  align-items: end;
-  pointer-events: none;
+  min-height: 0;
 }
 
-.ui > * {
-  pointer-events: auto;
+/* The printed fallback: the same wordmark through a halftone screen. It holds the frame until the
+   dots draw (and stays for reduced motion / no WebGL). Sized to match the dot canvas's fit. */
+.print {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  color: var(--c-cream);
+  -webkit-mask-image: radial-gradient(circle, #000 1.9px, transparent 2.3px);
+  mask-image: radial-gradient(circle, #000 1.9px, transparent 2.3px);
+  -webkit-mask-size: 6px 6px;
+  mask-size: 6px 6px;
+  transition: opacity 500ms var(--ease-out);
 }
 
-.intro {
-  grid-column: 1 / span 5;
-  display: grid;
-  gap: 0.9rem;
+.art[data-ready] .print {
+  opacity: 0;
 }
 
-.h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--t-m);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  max-width: 22ch;
-}
-
-.h1Name {
-  color: var(--gold);
-}
-
-.panel {
-  grid-column: 8 / span 5;
-  display: grid;
-  gap: 1rem;
-}
-
-.panelHead {
+/* ── Copy and actions, under the logo ── */
+.foot {
+  grid-row: 3;
+  position: relative;
+  z-index: 2;
+  width: min(var(--max), calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+  padding-block: 1rem clamp(1.5rem, 4vh, 2.75rem);
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid var(--line);
+  gap: 1.5rem 3rem;
+  border-top: 1px solid var(--c-rule);
 }
 
-.mode {
+.say {
   display: grid;
-  gap: 0.5rem;
-  animation: mode-in 0.5s var(--snap);
+  gap: 0.55rem;
+  padding-top: 0.75rem;
 }
 
-@keyframes mode-in {
-  from { opacity: 0; translate: 0 10px; }
-}
-
-.modeName {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-  color: var(--gold);
-}
-
-.modeLine {
-  color: var(--ink);
-  max-width: 44ch;
-}
-
-.items {
-  list-style: none;
-  padding: 0;
+.script {
   margin: 0;
+  font-size: clamp(1.7rem, 1.1rem + 1.4vw, 2.6rem);
+  color: var(--c-signal);
+  rotate: -3deg;
+  transform-origin: left center;
+}
+
+.line {
+  margin: 0;
+  max-width: 36ch;
+  font-size: var(--t-m);
+  line-height: 1.35;
+  color: var(--c-cream);
+}
+
+.ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.6rem;
 }
 
-.items li {
-  font-family: var(--font-mono);
-  font-size: var(--t-hud);
-  padding: 0.35rem 0.6rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--muted);
-}
-
-/* Controls echo the pad: a D-pad pair, four face buttons, and a pause. */
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 0.3rem;
-}
-
-.dpad,
-.faces {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.arrow,
-.face,
-.pause {
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  display: inline-grid;
-  place-items: center;
-  border-radius: var(--radius);
-  background: var(--ink);
-  color: var(--deep);
-  box-shadow: 0 3px 0 0 #c9b89d;
-  translate: 0 0;
-  transition: translate 0.26s var(--snap), box-shadow 0.26s var(--snap), background-color 0.2s;
-}
-
-.arrow svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.face {
-  border-radius: 50%;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.95rem;
-  background: var(--gold);
-  color: var(--void);
-  box-shadow: 0 3px 0 0 #8e6f35;
-}
-
-.face[aria-pressed="true"] {
-  background: var(--gold-hi);
-  box-shadow: 0 3px 0 0 #8e6f35, 0 0 0 3px var(--ground), 0 0 0 5px var(--gold-hi);
-}
-
-.arrow:focus-visible,
-.face:focus-visible,
-.pause:focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 6px;
-}
-
-.pause {
-  margin-left: auto;
-  padding: 0 0.9rem;
-  background: transparent;
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-  font-family: var(--font-mono);
-  font-size: var(--t-hud);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.arrow:hover,
-.face:hover {
-  translate: 0 -2px;
-}
-
-.arrow:active,
-.face:active,
-.pause:active {
-  translate: 0 3px;
-  box-shadow: 0 0 0 0 transparent;
-  transition-duration: 0.09s;
-  transition-timing-function: var(--press);
-}
-
-.pause:hover {
-  box-shadow: inset 0 0 0 1px var(--ink);
-}
-
-.hint {
-  color: var(--muted);
-}
-
-.hintTouch {
-  display: none;
-}
-
-@media (hover: none) {
-  .hintFine { display: none; }
-  .hintTouch { display: inline; }
-}
-
-/* ── Phone ── */
+/* ── Phone: logo on top, copy and actions stacked below ── */
 @media (max-width: 860px) {
-  .stage {
-    display: flex;
-    flex-direction: column;
-    padding-top: var(--nav-h);
+  /* Phone: the hero is as tall as its content (no dead black), About follows straight on. */
+  .hero {
+    min-height: auto;
+    grid-template-rows: var(--nav-h) 2.5rem auto auto;
   }
 
-  .play {
-    position: relative;
-    inset: auto;
-    height: 56svh;
-    min-height: 22rem;
+  .art {
+    grid-row: 3;
+    aspect-ratio: 806 / 380;
   }
 
-  .words {
-    inset: 0 0 auto;
-    height: 40%;
-    align-items: flex-end;
+  .foot {
+    grid-row: 4;
   }
 
-  .word {
-    font-size: clamp(3rem, 17vw, 6.5rem);
-  }
-
-  .fallback {
-    top: 66%;
-    width: min(86vw, 420px);
-  }
-
-  .shadow {
-    top: 74%;
-    width: 60vw;
-  }
-
-  .ui {
-    display: flex;
+  .foot {
     flex-direction: column;
     align-items: stretch;
-    gap: 2rem;
   }
 
-  .panel {
-    order: -1;
+  .ctas {
+    flex-direction: column;
   }
 
-  .pause {
-    margin-left: 0;
+  .ctas :global(.btn) {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .print {
+    inset: 4%;
+    width: 92%;
+    height: 92%;
+    -webkit-mask-size: 4px 4px;
+    mask-size: 4px 4px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .shadow { animation: none; }
+/* Native cursor is hidden only while the reticle is running (it sets data-cursor on the section). */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero[data-cursor],
+  .hero[data-cursor] * {
+    cursor: none;
+  }
 }

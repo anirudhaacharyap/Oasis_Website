@@ -1,46 +1,43 @@
 import { hasMockContent, isPlaceholderUrl, levels } from "@/lib/content";
 import { site } from "@/data/site";
-import ControllerSVG from "@/components/hero/ControllerSVG";
+import Logo from "@/components/brand/Logo";
+import SpawnSelect from "./SpawnSelect";
 import styles from "./Finale.module.css";
 
 export default function Finale() {
-    const joinReal = !isPlaceholderUrl(site.links.join);
-    const discordReal = !isPlaceholderUrl(site.links.discord);
+    const emailReal = !isPlaceholderUrl(site.links.email);
 
     return (
-        <section id="join" className={`level tone-gold ${styles.finale}`} aria-labelledby="join-title">
-            <ControllerSVG active="A" className={styles.pad} />
+        <section id="join" className={`level tone-red ${styles.finale}`} aria-labelledby="join-title">
             <div className={`wrap ${styles.inner}`}>
-                <p className={`hud ${styles.label}`}>Finale</p>
-                <h2 id="join-title" className={`display ${styles.poster}`} data-reveal>
-                    Press{" "}
-                    <span className={styles.disc} aria-hidden="true">
-                        <span>A</span>
-                    </span>
-                    <span className="sr-only">A</span> to join
-                </h2>
-                <p className={styles.invite} data-reveal>
-                    Bring your squad or come alone. Scrim on a Friday, jam on a weekend, and find the people you
-                    will be queuing with all semester.
-                </p>
-                <div className={styles.actions} data-reveal>
-                    {joinReal ? (
-                        <a className="btn btn--deep" href={site.links.join}>
-                            <span className="glyph" aria-hidden="true">
-                                <span>A</span>
-                            </span>
-                            Join OASIS
-                        </a>
-                    ) : (
-                        <p className={styles.soon}>Join form opens soon</p>
-                    )}
-                    {discordReal ? (
-                        <a className={styles.secondary} href={site.links.discord}>
-                            Discord
-                        </a>
-                    ) : (
-                        <p className={styles.soon}>Discord invite coming soon</p>
-                    )}
+                <div className={styles.main}>
+                    <h2 id="join-title" className={`display t-xl ${styles.title}`}>Pick your spawn point</h2>
+                    <SpawnSelect />
+                </div>
+
+                <div className={styles.lower}>
+                    <div className={styles.poster}>
+                        <p className={styles.enough}>Enough played, getting bro.</p>
+                        <p className={styles.time}>
+                            <span className={styles.timeLead}>It&rsquo;s time to</span>
+                            <span className={`script ${styles.play}`}>play.</span>
+                        </p>
+                    </div>
+
+                    <div className={styles.partner}>
+                        <h3 className={`display ${styles.partnerTitle}`}>Partner with OASIS</h3>
+                        <p className={styles.partnerText}>
+                            Sponsors and other colleges: run an event with us or back a tournament, and put your name
+                            in front of the whole campus.
+                        </p>
+                        {emailReal ? (
+                            <a className="snap-link" href={`mailto:${site.links.email}`}>
+                                {site.links.email}
+                            </a>
+                        ) : (
+                            <p className={styles.soon}>Partner contact coming soon</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </section>
@@ -53,32 +50,26 @@ export function SiteFooter() {
     const jump = levels.filter((level) => level.id !== "play");
 
     return (
-        <footer className={styles.footer}>
+        <footer className={`tone-ink ${styles.footer}`}>
             <div className={`wrap ${styles.footInner}`}>
-                <div className={styles.markBox}>
-                    <p className={`display ${styles.mark}`} aria-hidden="true">
-                        {site.name}
-                    </p>
-                </div>
+                <Logo className={styles.mark} decorative />
 
                 <div className={styles.cols}>
                     <div className={styles.col}>
                         <p className={styles.tag}>{site.tagline}</p>
                         <p>{site.college}</p>
                         <p>{site.city}</p>
-                        {emailReal ? (
+                        {emailReal && (
                             <p>
                                 <a className="snap-link" href={`mailto:${site.links.email}`}>
                                     {site.links.email}
                                 </a>
                             </p>
-                        ) : (
-                            <p className={styles.muted}>Email coming soon</p>
                         )}
                     </div>
 
-                    <nav className={styles.col} aria-label="Levels">
-                        <h2 className={`hud ${styles.colHead}`}>Levels</h2>
+                    <nav className={styles.col} aria-label="Sections">
+                        <p className="label">Sections</p>
                         <ul className={styles.list}>
                             {jump.map((level) => (
                                 <li key={level.id}>
@@ -91,7 +82,7 @@ export function SiteFooter() {
                     </nav>
 
                     <div className={styles.col}>
-                        <h2 className={`hud ${styles.colHead}`}>Socials</h2>
+                        <p className="label">Socials</p>
                         {socials.length > 0 ? (
                             <ul className={styles.list}>
                                 {socials.map((social) => (
@@ -112,7 +103,7 @@ export function SiteFooter() {
                     <p>
                         &copy; {new Date().getFullYear()} {site.name}, {site.college}
                     </p>
-                    {hasMockContent() && <p className="hud">Preview build: some content is placeholder</p>}
+                    {hasMockContent() && <p className="label">Preview build: some content is placeholder</p>}
                 </div>
             </div>
         </footer>

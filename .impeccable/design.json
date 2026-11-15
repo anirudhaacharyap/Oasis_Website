@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-15T00:00:00.000Z",
+  "title": "Design System: OASIS",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1e181e", "tonalRamp": ["#0b080b", "#140f14", "#1e181e", "#2a222a", "#4a424a", "#746b74", "#a39aa2", "#d4ccd2"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink 2", "canonical": "#2a222a", "tonalRamp": ["#0b080b", "#1e181e", "#2a222a", "#3a323a", "#554d55", "#7e757e", "#aaa1a9", "#d6ced4"] },
+      "ink-void": { "role": "neutral", "displayName": "Ink Void", "canonical": "#070607", "tonalRamp": ["#000000", "#070607", "#0b0a0b", "#140f14", "#2a232a", "#4d464d", "#7c747c", "#b0a8b0"] },
+      "brand-red": { "role": "primary", "displayName": "Brand Red", "canonical": "#ad0013", "tonalRamp": ["#2a0004", "#4d0008", "#7c000e", "#ad0013", "#c0101f", "#d8454d", "#ea8a8f", "#f6c9cb"] },
+      "red-deep": { "role": "secondary", "displayName": "Red Deep", "canonical": "#7c000e", "tonalRamp": ["#1f0003", "#3d0007", "#5c000b", "#7c000e", "#9a0012", "#b8333f", "#d4747c", "#ebb7bb"] },
+      "signal": { "role": "primary", "displayName": "Signal Red", "canonical": "#e5323a", "tonalRamp": ["#4a0508", "#7c0b10", "#b01820", "#e5323a", "#ea5a60", "#f08489", "#f6b0b3", "#fbdcdd"] },
+      "cream": { "role": "neutral", "displayName": "Cream", "canonical": "#f2eadb", "tonalRamp": ["#5c5648", "#8a8272", "#b5ac9a", "#d6ccb8", "#e3d6c3", "#f2eadb", "#f8f3e8", "#fcfaf4"] },
+      "cream-2": { "role": "neutral", "displayName": "Cream 2", "canonical": "#e3d6c3", "tonalRamp": ["#4f493d", "#7a7262", "#a39a87", "#c4b9a5", "#d3c6b2", "#e3d6c3", "#efe6d8", "#f8f3ea"] },
+      "gold": { "role": "tertiary", "displayName": "Earned Gold", "canonical": "#c9a35b", "tonalRamp": ["#3a2c10", "#5f4a1e", "#8a6d32", "#a98946", "#c9a35b", "#d9bb80", "#e8d3a6", "#f4e8cc"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Section titles, Archivo 900 at width 125, caps." },
+      "headline": { "displayName": "Headline", "purpose": "Sub-sections, Archivo 900 at width 125." },
+      "title": { "displayName": "Title", "purpose": "Project index names, Archivo 900 at width 112." },
+      "body": { "displayName": "Body", "purpose": "Reading copy, width 100, max 62ch." },
+      "lede": { "displayName": "Lede", "purpose": "Intro lines in cream 2." },
+      "label": { "displayName": "Label", "purpose": "Condensed caps (width 72) for dates, kinds, counts and the Sample data tag." },
+      "script": { "displayName": "Script", "purpose": "Mr Dafoe, one use: the hero 'Gaming & Game Dev' line in signal red." }
+    },
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "Surfaces are flat; no hard offset shadows." },
+      { "name": "contact-pad", "value": "radial-gradient(ellipse, rgba(0,0,0,0.35), rgba(0,0,0,0) 72%) + blur(6px)", "purpose": "Soft contact shadow under the 3D controller pad only." },
+      { "name": "nav-rule", "value": "0 1px 0 rgba(242,234,219,0.16)", "purpose": "1px rule under the solid nav." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.23, 1, 0.32, 1)", "purpose": "Default for every state change; the snap." },
+      { "name": "ease-in-out", "value": "cubic-bezier(0.77, 0, 0.175, 1)", "purpose": "On-screen moves." },
+      { "name": "press", "value": "140ms, scale 0.97", "purpose": "Press feedback on buttons, rows and links; hover lift is 2px over 200ms." },
+      { "name": "sheet", "value": "320ms cubic-bezier(0.32, 0.72, 0, 1)", "purpose": "Mobile nav sheet enter; exit 200ms." },
+      { "name": "lenis", "value": "lerp 0.09; anchor 1.2s expo-out", "purpose": "Smooth scroll; absent under reduced motion." },
+      { "name": "split-reveal", "value": "SplitText lines, 0.9s expo.out, stagger 0.08s", "purpose": "Heading reveals under ScrollTrigger." },
+      { "name": "dot-spring", "value": "K 0.055, damp 0.84/frame, cool 0.955/frame", "purpose": "Dot logo physics: slight overshoot, then settle." },
+      { "name": "dot-pointer", "value": "lerp 0.35, radius 62 + min(speed*5,120)px, heat min(1,speed*0.05), press burst 170px", "purpose": "Pointer scatter and heat on the dot logo." },
+      { "name": "cursor-reticle", "value": "28px ring, 4 ticks, max 360px; hero only, fine pointer, motion allowed", "purpose": "Thermal reticle cursor states: idle, open over logo, pulse on press." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "860px" },
+      { "name": "tablet", "value": "720px" },
+      { "name": "desktop", "value": "1024px" },
+      { "name": "grid", "value": "64rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Cream fill, ink text; lifts 2px on hover, scales 0.97 on press.",
+      "html": "<button class=\"ds-btn\">Join the club</button>",
+      "css": ".ds-btn { display:inline-flex; align-items:center; min-height:3rem; padding:0 1.35rem; background:#f2eadb; color:#1e181e; border:0; border-radius:0; font-weight:800; font-variation-settings:'wdth' 110; font-size:0.95rem; letter-spacing:0.02em; text-transform:uppercase; cursor:pointer; transition: translate 200ms cubic-bezier(0.23,1,0.32,1), scale 140ms cubic-bezier(0.23,1,0.32,1); } .ds-btn:hover { translate: 0 -2px; } .ds-btn:active { scale:0.97; translate:0 0; } .ds-btn:focus-visible { outline:2px solid #f2eadb; outline-offset:3px; }"
+    },
+    {
+      "name": "Red Button",
+      "kind": "button",
+      "refersTo": "button-red",
+      "description": "Brand red primary action (Pick your spawn point).",
+      "html": "<button class=\"ds-btn-red\">Pick your spawn point</button>",
+      "css": ".ds-btn-red { display:inline-flex; align-items:center; min-height:3rem; padding:0 1.35rem; background:#ad0013; color:#f2eadb; border:0; border-radius:0; font-weight:800; font-variation-settings:'wdth' 110; font-size:0.95rem; letter-spacing:0.02em; text-transform:uppercase; cursor:pointer; transition: translate 200ms cubic-bezier(0.23,1,0.32,1), scale 140ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-red:hover { translate:0 -2px; } .ds-btn-red:active { scale:0.97; translate:0 0; } .ds-btn-red:focus-visible { outline:2px solid #f2eadb; outline-offset:3px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Transparent with a 1.5px inset outline in the current colour.",
+      "html": "<button class=\"ds-btn-ghost\">Partner with us</button>",
+      "css": ".ds-btn-ghost { display:inline-flex; align-items:center; min-height:3rem; padding:0 1.35rem; background:transparent; color:#f2eadb; border:0; border-radius:0; box-shadow: inset 0 0 0 1.5px currentColor; font-weight:800; font-variation-settings:'wdth' 110; font-size:0.95rem; letter-spacing:0.02em; text-transform:uppercase; cursor:pointer; transition: translate 200ms cubic-bezier(0.23,1,0.32,1), scale 140ms cubic-bezier(0.23,1,0.32,1); } .ds-btn-ghost:hover { translate:0 -2px; } .ds-btn-ghost:active { scale:0.97; } .ds-btn-ghost:focus-visible { outline:2px solid #f2eadb; outline-offset:3px; }"
+    },
+    {
+      "name": "Label and Sample Tag",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Condensed caps label; also the required 'Sample data' tag for mock content.",
+      "html": "<span class=\"ds-label\">Sample data</span> <span class=\"ds-chip\">Unity</span>",
+      "css": ".ds-label { font-size:0.8rem; font-weight:700; font-variation-settings:'wdth' 72; letter-spacing:0.06em; text-transform:uppercase; font-variant-numeric:tabular-nums; color:#e3d6c3; } .ds-chip { display:inline-block; padding:0.35rem 0.65rem; background:#1e181e; color:#f2eadb; font-weight:700; border-radius:0; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "description": "Underline draws from the left in 250ms and retracts in 180ms.",
+      "html": "<a class=\"ds-link\" href=\"#about\">About</a>",
+      "css": ".ds-link { font-weight:500; font-size:0.95rem; color:#f2eadb; text-decoration:none; padding-bottom:0.12em; background: linear-gradient(currentColor,currentColor) left bottom / 0% 1.5px no-repeat; transition: background-size 180ms cubic-bezier(0.23,1,0.32,1); } .ds-link:hover, .ds-link:focus-visible { background-size:100% 1.5px; transition-duration:250ms; } .ds-link:focus-visible { outline:2px solid #f2eadb; outline-offset:3px; }"
+    },
+    {
+      "name": "Domain Spawn Row",
+      "kind": "custom",
+      "description": "A huge expanded-caps domain name on the red band; selection slides the name, draws an ink underline and reveals a chevron.",
+      "html": "<div style=\"background:#ad0013;padding:1rem\"><button class=\"ds-domain ds-on\"><svg class=\"ds-chev\" viewBox=\"0 0 6 10\" aria-hidden=\"true\"><path d=\"M1 1l4 4-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg><span class=\"ds-text\">Game Dev</span></button></div>",
+      "css": ".ds-domain { position:relative; display:block; width:100%; padding:0.35em 0; border:0; border-bottom:2px solid #1e181e; border-radius:0; background:none; text-align:left; font-family:inherit; font-weight:900; font-variation-settings:'wdth' 125; font-size:2.4rem; line-height:1; letter-spacing:-0.03em; text-transform:uppercase; color:#f2eadb; cursor:pointer; } .ds-text { position:relative; display:inline-block; translate:0 0; transition:translate 220ms cubic-bezier(0.23,1,0.32,1); } .ds-text::after { content:''; position:absolute; left:0; right:0; bottom:-0.1em; height:2px; background:#1e181e; scale:0 1; transform-origin:left center; transition:scale 240ms cubic-bezier(0.23,1,0.32,1); } .ds-chev { position:absolute; left:-0.15em; top:50%; width:0.4em; height:0.64em; margin-top:-0.32em; color:#f2eadb; opacity:0; translate:-0.5em 0; transition:translate 220ms cubic-bezier(0.23,1,0.32,1), opacity 200ms; } .ds-on .ds-text { translate:0.3em 0; } .ds-on .ds-text::after { scale:1 1; } .ds-on .ds-chev { opacity:1; translate:0 0; } .ds-domain:focus-visible { outline:3px solid #f2eadb; outline-offset:-3px; }"
+    },
+    {
+      "name": "Project Index Row",
+      "kind": "custom",
+      "description": "Cartridge row on the red band: name, meta, year, with an ink bar that fills under it on focus or expansion.",
+      "html": "<div style=\"background:#ad0013;padding:0 1rem\"><button class=\"ds-row\"><span class=\"ds-name\">Project Name</span><span class=\"ds-meta\">Unity / C#</span><span class=\"ds-year\">2025</span></button></div>",
+      "css": ".ds-row { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:'name year' 'meta meta'; align-items:center; column-gap:1rem; row-gap:0.3rem; width:100%; min-height:44px; padding:1.1rem 0; border:0; border-bottom:2px solid #1e181e; background:none; text-align:left; color:#f2eadb; cursor:pointer; } .ds-row::after { content:''; position:absolute; left:0; right:0; bottom:0; height:4px; background:#1e181e; transform-origin:left center; scale:0 1; transition:scale 300ms cubic-bezier(0.23,1,0.32,1); } .ds-row:hover::after, .ds-row:focus-visible::after { scale:1 1; } .ds-row:focus-visible { outline:2px solid #f2eadb; outline-offset:-3px; } .ds-name { grid-area:name; font-weight:900; font-variation-settings:'wdth' 112; font-size:1.8rem; line-height:1.02; letter-spacing:-0.03em; } .ds-meta { grid-area:meta; font-weight:700; font-size:0.8rem; font-variation-settings:'wdth' 72; letter-spacing:0.06em; text-transform:uppercase; } .ds-year { grid-area:year; font-weight:700; text-align:right; }"
+    },
+    {
+      "name": "Raised Card",
+      "kind": "card",
+      "refersTo": "card-ink",
+      "description": "Ink 2 square card on the ink band; border turns signal on hover.",
+      "html": "<div class=\"ds-card\"><span class=\"ds-tag\">2024</span><h3 class=\"ds-card-t\">Event Title</h3></div>",
+      "css": ".ds-card { display:grid; gap:0.75rem; padding:1.6rem; background:#2a222a; color:#f2eadb; border:1px solid rgba(242,234,219,0.16); border-radius:0; transition:border-color 0.2s cubic-bezier(0.23,1,0.32,1); } .ds-card:hover { border-color:#e5323a; } .ds-tag { justify-self:start; padding:0.2rem 0.6rem; background:#ad0013; color:#f2eadb; font-size:0.8rem; font-weight:700; font-variation-settings:'wdth' 72; text-transform:uppercase; letter-spacing:0.06em; } .ds-card-t { margin:0; font-weight:900; font-variation-settings:'wdth' 112; font-size:1.6rem; line-height:1.1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Press Start, Printed",
+    "overview": "OASIS is the club's own recruitment poster turned into a page, then made playable. The surface is warm black ink and a brand red band, split by thin rules, with cream type and a film of grain over everything. Halftone dots sit on the red fields and as a faint screen on the hero. The page is played, not browsed: the first screen is the wordmark itself, built from halftone dots that heat, scatter and settle under the hand.\n\nThe system is flat, square and printed. There are no soft cards, no rounded corners, no glow. Depth comes from alternating ink and red bands, 2px rules, and grain. Colour is rationed: cream carries text, signal red carries heat and large display type, gold appears only where something has been earned.",
+    "keyCharacteristics": [
+      "Ink and brand-red bands alternate below a flat near-black hero; cream type throughout.",
+      "Archivo on its width axis (expanded for display, condensed for labels) plus one retro script (Mr Dafoe), used once per surface.",
+      "Grain over the whole page (7% opacity), halftone on red and signal fields.",
+      "Square corners everywhere; round shapes are drawn only as true circles.",
+      "Motion verb is \"heat and settle\": springs for what the hand touches, strong ease-out for everything else.",
+      "Mock content is always tagged \"Sample data\"."
+    ],
+    "rules": [
+      { "name": "The Earned Gold Rule", "body": "Gold marks something achieved or kept: a milestone on the timeline, a framed member. It never decorates, never fills a button, never colours a heading.", "section": "colors" },
+      { "name": "The Heat Rule", "body": "Signal red means heat or attention (motion speed, hover, selection, the hero script). It is not a second brand fill; bands use Brand Red.", "section": "colors" },
+      { "name": "The Cream Text Rule", "body": "Text is cream or cream 2 on every field. No grey text, no opacity-faded copy on red; the contrast pairs above are the floor.", "section": "colors" },
+      { "name": "The Width Axis Rule", "body": "Hierarchy is made with Archivo's width, not new families: 125 expanded for titles, 72 condensed for labels, 100 for reading.", "section": "typography" },
+      { "name": "The One Script Rule", "body": "Mr Dafoe appears once, in the hero, in signal red. It is a signature, not a texture.", "section": "typography" },
+      { "name": "The Flat Print Rule", "body": "Surfaces never lift with shadow. Hover moves the element (2px up), never adds depth.", "section": "elevation" },
+      { "name": "The Grain Rule", "body": "One grain layer over the whole page, normal blend, never per component.", "section": "elevation" },
+      { "name": "The Hero-Only Cursor Rule", "body": "The custom cursor lives in the hero and nowhere else. Every other surface keeps the native cursor.", "section": "motion" },
+      { "name": "The Settle Rule", "body": "Anything that heats up must cool and return home. No effect is left running or stuck in a hot state.", "section": "motion" }
+    ],
+    "dos": [
+      "Do alternate ink (#1e181e) and brand red (#ad0013) bands with 2px rules and keep type cream.",
+      "Do keep every corner square (0px); draw circles only where the shape is a circle.",
+      "Do put hierarchy in Archivo's width axis (125 titles, 112 names, 100 body, 72 labels).",
+      "Do use cubic-bezier(0.23, 1, 0.32, 1) for state changes and 0.97 press scale at 140ms.",
+      "Do tag every mock-data surface with a \"Sample data\" label.",
+      "Do hide the nav wordmark while the hero logo is on screen.",
+      "Do give every motion a reduced-motion equivalent that shows the final state."
+    ],
+    "donts": [
+      "Don't use gold for decoration, buttons or headings; it marks earned moments.",
+      "Don't add offset shadows, glows or rounded corners.",
+      "Don't extend the custom cursor beyond the hero.",
+      "Don't put the hero logo and nav wordmark on screen together.",
+      "Don't put a gradient in the hero ground; it is flat near-black.",
+      "Don't use signal red for body text on ink; it clears contrast only at large size."
+    ]
+  }
+}

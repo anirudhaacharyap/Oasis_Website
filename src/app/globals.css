@@ -1,55 +1,110 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 /*
- * OASIS: press start.
- * Matte red field, bone type, gold used like foil stamping.
- * Motion verb: press and snap. See DESIGN.md.
- * Sections own their layout in CSS modules; this file holds tokens and shared primitives.
+ * OASIS: press start, printed.
+ * The club's own recruitment poster as a web page: warm ink fields and brand-red bands split by
+ * thin rules, cream type, halftone and grain on every field, gold only where something is earned.
+ * Motion verb: press (scale 0.97, 140 ms) then snap (strong ease-out). See the surface brief.
  */
 
 @theme inline {
-  --color-ground: #a3161d;
-  --color-deep: #6e0d12;
-  --color-void: #1c0507;
-  --color-ink: #f7ecda;
-  --color-muted: #f0d3c4;
-  --color-gold: #c8a15a;
-  --font-sans: var(--font-text), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-martian), ui-monospace, monospace;
+  /* Same palette as :root. Hex lives on --c-* only. */
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-red: var(--c-red);
+  --color-red-deep: var(--c-red-deep);
+  --color-signal: var(--c-signal);
+  --color-cream: var(--c-cream);
+  --color-cream-2: var(--c-cream-2);
+  --color-gold: var(--c-gold);
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-dafoe), cursive;
+
+  /* shadcn semantic tokens, mapped onto the OASIS palette (see :root). */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
 :root {
-  /* palette */
-  --ground: #a3161d;
-  --deep: #6e0d12;
-  --void: #1c0507;
-  --ink: #f7ecda;
-  --muted: #f0d3c4;
-  --gold: #c8a15a;
-  --gold-hi: #e2c07c;
-  --line: rgba(247, 236, 218, 0.2);
-  --line-strong: rgba(247, 236, 218, 0.42);
+  /* ── Palette (contrast: cream on red 6.2:1, cream on ink 15:1, signal on ink 4.1:1 large) ── */
+  --c-ink: #1e181e;
+  --c-ink-2: #2a222a;
+  --c-red: #ad0013;
+  --c-red-deep: #7c000e;
+  --c-signal: #e5323a;
+  --c-cream: #f2eadb;
+  --c-cream-2: #e3d6c3; /* secondary text: 12:1 on ink, 5:1 on red */
+  --c-gold: #c9a35b; /* earned moments only */
+  --c-void: #070607; /* hero ground. Grain and the faint halftone sit on top. */
+  --c-rule: color-mix(in srgb, var(--c-cream) 16%, transparent);
+  --c-rule-strong: color-mix(in srgb, var(--c-cream) 38%, transparent);
+  --c-rule-red: var(--c-red);
 
-  /* motion */
-  --snap: cubic-bezier(0.2, 0.9, 0.25, 1);
+
+  /* ── Motion (emil-design-eng) ── */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --snap: var(--ease-out);
   --press: cubic-bezier(0.4, 0, 0.6, 1);
+  --t-press: 140ms;
 
-  /* layout */
+  /* ── Layout ── */
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --max: 80rem;
   --nav-h: 4.5rem;
-  --radius: 6px;
-  --measure: 60ch;
+  --radius: 0px; /* square print corners everywhere (round shapes are drawn as circles) */
+  --measure: 62ch;
 
-  /* type scale */
+  /* ── Type scale (display max 6rem per the craft floor, mega reserved for the hero word) ── */
   --t-mega: clamp(3.5rem, 1rem + 13vw, 15rem);
-  --t-xl: clamp(2.4rem, 1.2rem + 4.4vw, 6rem);
+  --t-xl: clamp(2.4rem, 1.2rem + 4.2vw, 6rem);
   --t-l: clamp(1.6rem, 1.2rem + 1.6vw, 2.75rem);
-  --t-m: clamp(1.2rem, 1.05rem + 0.6vw, 1.6rem);
+  --t-m: clamp(1.15rem, 1.05rem + 0.5vw, 1.5rem);
   --t-body: 1.0625rem;
-  --t-s: 0.875rem;
-  --t-hud: 0.78rem;
+  --t-s: 0.9rem;
+  --t-label: 0.8rem;
+
+  /* Width axis of Archivo (62 to 125). */
+  --wdth-display: 125;
+  --wdth-label: 72;
+
+  /* Halftone and grain, reused by every field. */
+  --halftone: radial-gradient(circle, color-mix(in srgb, var(--c-ink) 22%, transparent) 0.9px, transparent 1.4px);
+  --halftone-light: radial-gradient(circle, color-mix(in srgb, var(--c-cream) 7%, transparent) 0.9px, transparent 1.4px);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* shadcn semantic values: one dark world, no light/dark switch. */
+  --background: var(--c-ink);
+  --foreground: var(--c-cream);
+  --popover: var(--c-ink-2);
+  --popover-foreground: var(--c-cream);
+  --primary: var(--c-red);
+  --primary-foreground: var(--c-cream);
+  --secondary: var(--c-ink-2);
+  --secondary-foreground: var(--c-cream);
+  --accent: var(--c-ink-2);
+  --accent-foreground: var(--c-cream);
+  --muted-foreground: var(--c-cream-2);
+  --border: var(--c-rule-strong);
+  --ring: var(--c-cream);
 
   color-scheme: dark;
 }
@@ -58,53 +113,60 @@
   html {
     overflow-x: clip;
     scroll-padding-top: var(--nav-h);
-    background: var(--ground);
-    color: var(--ink);
-    scrollbar-color: var(--gold) var(--deep);
+    background: var(--c-ink);
+    color: var(--c-cream);
+    scrollbar-color: var(--c-red) var(--c-ink);
   }
 
   body {
-    background: var(--ground);
-    color: var(--ink);
-    font-family: var(--font-sans);
+    background: var(--c-ink);
+    color: var(--c-cream);
+    font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
     font-size: var(--t-body);
-    line-height: 1.5;
+    line-height: 1.55;
+    font-variation-settings: "wdth" 100;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Matte finish: soft top light + fine film grain over every field. */
-  body::before,
+  /* Film grain over everything: the printed surface. Normal blend keeps scrolling cheap. */
   body::after {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 90;
-  }
-
-  body::before {
-    background: radial-gradient(120% 70% at 50% -10%, rgba(255, 220, 200, 0.07), transparent 60%);
-  }
-
-  body::after {
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    background-image: var(--grain);
   }
 
   ::selection {
-    background: var(--gold);
-    color: var(--void);
+    background: var(--c-signal);
+    color: var(--c-ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--ink);
+    outline: 2px solid var(--c-cream);
     outline-offset: 3px;
-    border-radius: 2px;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--c-ink);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--c-red);
   }
 
   a {
     color: inherit;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
   }
 
   button {
@@ -133,135 +195,191 @@
   }
 }
 
-/* ── Shared primitives ── */
 @layer components {
   .wrap {
     width: min(var(--max), calc(100% - 2 * var(--gutter)));
     margin-inline: auto;
   }
 
-  /* Display type */
+  /* ── Type voices ── */
   .display {
-    font-family: var(--font-display);
-    font-weight: 800;
-    line-height: 0.9;
-    letter-spacing: -0.045em;
+    font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 900;
+    font-variation-settings: "wdth" var(--wdth-display);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    word-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .t-mega { font-size: var(--t-mega); }
-  .t-xl { font-size: var(--t-xl); line-height: 0.95; letter-spacing: -0.04em; }
-  .t-l { font-size: var(--t-l); line-height: 1.05; letter-spacing: -0.03em; }
+  .t-xl { font-size: var(--t-xl); }
+  .t-l { font-size: var(--t-l); line-height: 1; letter-spacing: -0.025em; }
 
-  /* HUD labels carry real information: level, dates, engines, counts. */
-  .hud {
-    font-family: var(--font-mono);
-    font-size: var(--t-hud);
-    font-weight: 500;
-    letter-spacing: 0.04em;
+  /* Condensed caps for labels that carry real information (dates, kinds, engines, counts). */
+  .label {
+    font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--t-label);
+    font-weight: 700;
+    font-variation-settings: "wdth" var(--wdth-label);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
-    color: var(--muted);
+    color: var(--c-cream-2);
+  }
+
+
+  .script {
+    font-family: var(--font-dafoe), cursive;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1;
   }
 
   .lede {
     font-size: var(--t-m);
-    line-height: 1.4;
-    color: var(--muted);
+    line-height: 1.45;
+    color: var(--c-cream-2);
     max-width: var(--measure);
   }
 
-  /* Section scaffold. Each level paints its own field. */
+  /* ── Fields: grainy gradients, halftone on red ── */
   .level {
     position: relative;
     isolation: isolate;
   }
 
-  .tone-ground { background: var(--ground); }
-  .tone-deep { background: var(--deep); }
-  .tone-void { background: var(--void); }
-  .tone-gold { background: var(--gold); color: var(--deep); }
+  .tone-ink {
+    background: radial-gradient(120% 80% at 18% 0%, var(--c-ink-2) 0%, var(--c-ink) 48%, #140f14 100%);
+    color: var(--c-cream);
+  }
 
-  /* Buttons: press and snap. Dip on press, spring back on release. */
+  .tone-red {
+    background:
+      var(--halftone) 0 0 / 5px 5px,
+      radial-gradient(120% 90% at 78% 0%, #c0101f 0%, var(--c-red) 46%, var(--c-red-deep) 100%);
+    color: var(--c-cream);
+  }
+
+  .tone-signal {
+    background:
+      var(--halftone) 0 0 / 5px 5px,
+      var(--c-signal);
+    color: var(--c-ink);
+  }
+
+
+  /* Poster strip rule between bands. */
+  .rule-top {
+    border-top: 2px solid var(--c-red);
+  }
+
+  /* ── Buttons: step on hover, press on click (scale 0.97). No offset shadows. ── */
   .btn {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.7rem;
     min-height: 3rem;
-    padding: 0 1.4rem;
+    padding: 0 1.35rem;
     border-radius: var(--radius);
-    font-family: var(--font-display);
-    font-weight: 700;
+    font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    font-variation-settings: "wdth" 110;
     font-size: 0.95rem;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
+    word-spacing: 0.16em;
+    text-transform: uppercase;
     text-decoration: none;
-    background: var(--ink);
-    color: var(--deep);
-    box-shadow: 0 4px 0 0 var(--btn-edge, #c9b89d);
-    translate: 0 0;
-    transition: translate 0.26s var(--snap), box-shadow 0.26s var(--snap), background-color 0.2s;
+    background: var(--c-cream);
+    color: var(--c-ink);
+    transition:
+      translate 200ms var(--ease-out),
+      scale var(--t-press) var(--ease-out),
+      background-color 200ms ease;
   }
 
-  .btn:hover {
-    translate: 0 -2px;
-    box-shadow: 0 6px 0 0 var(--btn-edge, #c9b89d);
+  /* Press answers at once: a shorter transition than the hover lift. */
+  .btn:active {
+    transition-duration: 100ms, 100ms, 200ms;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover { translate: 0 -2px; }
   }
 
   .btn:active {
-    translate: 0 3px;
-    box-shadow: 0 1px 0 0 var(--btn-edge, #c9b89d);
-    transition-duration: 0.09s;
-    transition-timing-function: var(--press);
+    scale: 0.97;
+    translate: 0 0;
   }
 
-  .btn--gold {
-    background: var(--gold);
-    color: var(--void);
-    --btn-edge: #8e6f35;
+  .btn--red { background: var(--c-red); color: var(--c-cream); }
+  .btn--ink { background: var(--c-ink); color: var(--c-cream); }
+  .btn--signal { background: var(--c-signal); color: var(--c-ink); }
+
+  .btn--ghost {
+    background: transparent;
+    color: currentColor;
+    box-shadow: inset 0 0 0 1.5px currentColor;
   }
 
-  .btn--deep {
-    background: var(--deep);
-    color: var(--ink);
-    --btn-edge: #3d070a;
+
+  /* Arrow that travels on hover (external links). */
+  .btn .arrow {
+    transition: translate 200ms var(--ease-out);
   }
 
-  /* Face-button glyph inside a button label (A, B, X, Y). */
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover .arrow { translate: 3px -3px; }
+  }
+
   .glyph {
     display: inline-grid;
     place-items: center;
     width: 1.6em;
     height: 1.6em;
     border-radius: 50%;
-    font-family: var(--font-mono);
     font-size: 0.72em;
-    font-weight: 500;
+    font-weight: 800;
     background: currentColor;
   }
 
   .glyph > span {
-    color: var(--glyph-ink, var(--ink));
+    color: var(--glyph-ink, var(--c-cream));
   }
 
-  /* Primary text links: a gold bar snaps in from the left. */
+  /* Primary text links: an underline that draws from the left. */
   .snap-link {
     position: relative;
     text-decoration: none;
-    padding-bottom: 0.15em;
-    background: linear-gradient(var(--gold), var(--gold)) left bottom / 0% 2px no-repeat;
-    transition: background-size 0.4s var(--snap);
+    padding-bottom: 0.12em;
+    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1.5px no-repeat;
+    /* Retracts faster (180ms) than it draws (250ms). */
+    transition: background-size 180ms var(--ease-out);
   }
 
-  .snap-link:hover,
-  .snap-link:focus-visible {
-    background-size: 100% 2px;
+  .snap-link:focus-visible,
+  .snap-link[aria-current] {
+    background-size: 100% 1.5px;
+    transition-duration: 250ms;
   }
 
-  /* Inline links in body copy keep an underline at rest. */
+  @media (hover: hover) and (pointer: fine) {
+    .snap-link:hover {
+      background-size: 100% 1.5px;
+      transition-duration: 250ms;
+    }
+  }
+
   .prose a {
     text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
+  }
+
+  .nf-logo {
+    width: min(70vw, 22rem);
+    height: auto;
+    color: var(--c-cream);
   }
 
   .skip-link {
@@ -271,10 +389,9 @@
     z-index: 200;
     translate: 0 -200%;
     padding: 0.7rem 1rem;
-    background: var(--ink);
-    color: var(--deep);
-    border-radius: var(--radius);
-    font-weight: 600;
+    background: var(--c-cream);
+    color: var(--c-ink);
+    font-weight: 700;
   }
 
   .skip-link:focus-visible {
@@ -294,26 +411,16 @@
   }
 }
 
-/* Level tones: with motion on, <html> carries the scrubbed field colour (see Motion.tsx). */
-html.tone-live,
-html.tone-live body {
-  background: var(--page);
-}
-
-html.tone-live main > .level {
-  background: transparent;
-}
-
-/* Hero intro: the title screen's text and panel rise in once, after the pad. */
+/* Hero intro: the title screen's text and panel rise in once (translate only, so LCP paints at once). */
 @media (prefers-reduced-motion: no-preference) {
   [data-intro] {
-    animation: intro-rise 1s var(--snap) both;
-    animation-delay: calc(var(--i, 0) * 0.08s);
+    animation: intro-rise 900ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
   }
 }
 
 @keyframes intro-rise {
-  from { translate: 0 28px; }
+  from { translate: 0 24px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

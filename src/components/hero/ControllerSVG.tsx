@@ -30,31 +30,31 @@ export default function ControllerSVG({ active, className }: { active: FaceButto
         <svg viewBox="-10 -10 440 290" className={className} aria-hidden="true" focusable="false">
             <defs>
                 <linearGradient id="pad-body" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#A6202A" />
-                    <stop offset="1" stopColor="#6E0D12" />
+                    <stop offset="0" stopColor="#2E262C" />
+                    <stop offset="1" stopColor="#120D11" />
                 </linearGradient>
             </defs>
-            <rect x="72" y="0" width="96" height="30" rx="14" fill="#5A0A0F" transform="rotate(-5 120 15)" />
-            <rect x="252" y="0" width="96" height="30" rx="14" fill="#5A0A0F" transform="rotate(5 300 15)" />
-            <path d={BODY} fill="url(#pad-body)" stroke="#5A0A0F" strokeWidth="3" />
-            <circle cx={X(0)} cy={Y(0.06)} r="48" fill="none" stroke="#C8A15A" strokeWidth="2" />
+            <rect x="72" y="0" width="96" height="30" rx="14" fill="#0E0A0D" transform="rotate(-5 120 15)" />
+            <rect x="252" y="0" width="96" height="30" rx="14" fill="#0E0A0D" transform="rotate(5 300 15)" />
+            <path d={BODY} fill="url(#pad-body)" stroke="#AD0013" strokeWidth="2.5" />
+            <circle cx={X(0)} cy={Y(0.06)} r="48" fill="none" stroke="#AD0013" strokeWidth="2" />
             {/* D-pad */}
-            <rect x={dx - 48} y={dy - 16} width="96" height="32" rx="6" fill="#F1E4CF" />
-            <rect x={dx - 16} y={dy - 48} width="32" height="96" rx="6" fill="#F1E4CF" />
+            <rect x={dx - 48} y={dy - 16} width="96" height="32" rx="6" fill="#F2EADB" />
+            <rect x={dx - 16} y={dy - 48} width="32" height="96" rx="6" fill="#F2EADB" />
             {/* Face buttons */}
             {(Object.keys(LAYOUT.face) as FaceButton[]).map((k) => {
                 const [x, y] = LAYOUT.face[k];
                 return (
                     <g key={k}>
-                        <circle cx={X(x)} cy={Y(y)} r="20" fill={k === active ? "#F0CC85" : "#C8A15A"} />
+                        <circle cx={X(x)} cy={Y(y)} r="20" fill={k === active ? "#E5323A" : "#AD0013"} />
                         <text
                             x={X(x)}
                             y={Y(y) + 7}
                             textAnchor="middle"
                             fontSize="20"
                             fontWeight="800"
-                            fill="#4A070B"
-                            style={{ fontFamily: "var(--font-display)" }}
+                            fill={k === active ? "#1E181E" : "#F2EADB"}
+                            style={{ fontFamily: "var(--font-archivo)" }}
                         >
                             {k}
                         </text>
@@ -64,12 +64,12 @@ export default function ControllerSVG({ active, className }: { active: FaceButto
             {/* Sticks */}
             {LAYOUT.sticks.map(([x, y], i) => (
                 <g key={i}>
-                    <circle cx={X(x)} cy={Y(y)} r="38" fill="#2A0608" />
-                    <circle cx={X(x)} cy={Y(y)} r="28" fill="#F1E4CF" />
+                    <circle cx={X(x)} cy={Y(y)} r="38" fill="#0E0A0D" />
+                    <circle cx={X(x)} cy={Y(y)} r="28" fill="#F2EADB" />
                     <circle cx={X(x)} cy={Y(y)} r="18" fill="none" stroke="#D9C8AC" strokeWidth="4" />
                 </g>
             ))}
-            <polygon points={STAR} fill="#C8A15A" />
+            <polygon points={STAR} fill="#C9A35B" />
         </svg>
     );
 }

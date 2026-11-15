@@ -8,28 +8,40 @@
   align-items: center;
   gap: 2rem;
   translate: 0 0;
-  transition: translate 0.5s var(--snap);
+  transition: translate 0.5s var(--ease-out);
 }
 
 .bar[data-solid] {
-  background: color-mix(in srgb, var(--page, var(--ground)) 90%, transparent);
+  background: var(--c-ink);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 1px 0 var(--line);
+  box-shadow: 0 1px 0 var(--c-rule);
 }
 
 .bar[data-away] {
   translate: 0 -110%;
 }
 
+.bar:not([data-solid]) .word {
+  visibility: hidden;
+}
+
 .word {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.3rem;
-  letter-spacing: -0.03em;
-  color: var(--gold);
-  text-decoration: none;
   margin-right: auto;
+  display: inline-flex;
+  color: var(--c-cream);
+  transition: color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .word:hover {
+    color: var(--c-signal);
+  }
+}
+
+.mark {
+  width: 5.6rem;
+  height: auto;
 }
 
 .links {
@@ -40,12 +52,12 @@
 .link {
   font-weight: 500;
   font-size: 0.95rem;
-  color: var(--ink);
+  color: var(--c-cream);
 }
 
 .link[aria-current] {
   background-size: 100% 2px;
-  color: var(--ink);
+  color: var(--c-cream);
 }
 
 .join {
@@ -58,27 +70,63 @@
   display: none;
   min-height: 2.75rem;
   padding: 0 1rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--c-rule-strong);
   border-radius: var(--radius);
-  font-family: var(--font-mono);
-  font-size: var(--t-hud);
+  font-weight: 700;
+  font-variation-settings: "wdth" var(--wdth-label);
+  font-size: var(--t-label);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
-.panel {
-  position: fixed;
-  inset: 0;
+/* The Sheet popup. Unlayered, so it wins over the shadcn utility classes on sheet.tsx. */
+.sheet {
   z-index: 70;
-  background: var(--void);
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  border: 0;
+  box-shadow: none;
+  background: var(--c-ink);
+  color: var(--c-cream);
   padding: calc(var(--nav-h) + 1rem) var(--gutter) 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 0;
+  overflow-y: auto;
+  translate: 0 0;
+  opacity: 1;
+  transition:
+    translate 320ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 320ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.panel[hidden] {
-  display: none;
+.sheet[data-starting-style] {
+  translate: 2rem 0;
+  opacity: 0;
+}
+
+.sheet[data-ending-style] {
+  translate: 1rem 0;
+  opacity: 0;
+  transition-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet[data-starting-style],
+  .sheet[data-ending-style] {
+    translate: 0 0;
+    transition-duration: 120ms;
+  }
+}
+
+@media (min-width: 861px) {
+  .sheet {
+    display: none;
+  }
 }
 
 .panelLinks {
@@ -92,10 +140,12 @@
   justify-content: space-between;
   gap: 1rem;
   padding-block: 0.7rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--c-red);
+  color: var(--c-cream);
   text-decoration: none;
-  font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 900;
+  font-variation-settings: "wdth" var(--wdth-display);
+  text-transform: uppercase;
   font-size: clamp(2rem, 9vw, 3.2rem);
   letter-spacing: -0.04em;
   line-height: 1.05;
@@ -103,7 +153,7 @@
 
 .panelLink > :first-child {
   order: 2;
-  color: var(--gold);
+  color: var(--c-cream-2);
 }
 
 .panelClose {
@@ -120,14 +170,4 @@
     display: inline-flex;
     align-items: center;
   }
-}
-
-@media (min-width: 861px) {
-  .panel {
-    display: none !important;
-  }
-}
-
-:global(html.menu-open) {
-  overflow: hidden;
 }

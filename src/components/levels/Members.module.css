@@ -1,6 +1,6 @@
 .section {
     padding-block: clamp(6rem, 4rem + 8vw, 11rem);
-    color: var(--ink);
+    color: var(--c-cream);
 }
 
 .head {
@@ -10,7 +10,7 @@
     margin-bottom: clamp(3rem, 2rem + 4vw, 6rem);
 }
 
-.hint { color: var(--gold); }
+.hint { color: var(--c-cream-2); }
 .hintTouch { display: none; }
 @media (hover: none) {
     .hintFine { display: none; }
@@ -29,7 +29,7 @@
     aspect-ratio: 1;
     width: 100%;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: 0;
 }
 .monoPhoto { object-fit: cover; }
 .monoSvg {
@@ -50,21 +50,22 @@
 .panelMono { flex: 0 0 9rem; width: 9rem; }
 .panelText { min-width: 0; flex: 1; display: grid; gap: 0.5rem; align-content: start; }
 .handle {
-    font-size: clamp(1.7rem, 1.2rem + 2vw, 3rem);
+    font-size: clamp(1.9rem, 1.4rem + 1.4vw, 2.8rem);
     line-height: 1;
     letter-spacing: -0.03em;
-    color: var(--gold);
+    color: var(--c-signal);
     overflow-wrap: anywhere;
 }
-.name { font-size: 1.2rem; line-height: 1.2; color: var(--ink); }
-.stats { margin: 0.9rem 0 0; border-top: 1px solid var(--line); }
+.name { font-size: 1.4rem; line-height: 1.2; color: var(--c-cream); }
+.role { color: var(--c-cream-2); }
+.stats { margin: 0.9rem 0 0; border-top: 2px solid var(--c-red); }
 .stat {
     display: grid;
     gap: 0.25rem;
     padding-block: 0.75rem;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--c-rule);
 }
-.stat dd { margin: 0; color: var(--ink); line-height: 1.3; }
+.stat dd { margin: 0; color: var(--c-cream); line-height: 1.3; }
 .links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
 
 /* Roster: flat 3-column grid on phones, grouped 4-column rows on desktop */
@@ -83,6 +84,7 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+    color: var(--c-cream-2);
 }
 
 .tile {
@@ -95,27 +97,29 @@
     display: grid;
     gap: 0.55rem;
     justify-items: center;
-    color: var(--muted);
+    color: var(--c-cream-2);
     font: inherit;
     cursor: pointer;
     translate: 0 0;
-    transition: translate 0.26s var(--snap), color 0.2s;
+    transition: translate 0.2s var(--ease-out), scale var(--t-press) var(--ease-out), color 0.2s var(--ease-out);
 }
 .tileMono { position: relative; display: block; width: 100%; }
 .tileHandle {
-    font-family: var(--font-mono);
-    font-size: var(--t-hud);
+    font-size: var(--t-label);
+    font-weight: 700;
+    font-variation-settings: "wdth" var(--wdth-label);
+    text-transform: uppercase;
     letter-spacing: 0.02em;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.tile[aria-pressed="true"] { color: var(--gold); }
-.tile:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-@media (hover: hover) {
-    .tile:hover { translate: 0 -3px; color: var(--ink); }
+.tile[aria-pressed="true"] { color: var(--c-cream); }
+.tile:focus-visible { outline: 2px solid var(--c-cream); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+    .tile:hover { translate: 0 -3px; color: var(--c-cream); }
 }
-.tile:active { translate: 0 2px; transition-timing-function: var(--press); }
+.tile:active { scale: 0.97; }
 
 /* Gold cursor frame: four corner brackets */
 .frame {
@@ -123,7 +127,7 @@
     inset: -6px;
     pointer-events: none;
 }
-.frame i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--gold); }
+.frame i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--c-gold); }
 .frame i:nth-child(1) { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
 .frame i:nth-child(2) { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
 .frame i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
@@ -162,4 +166,19 @@
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 0.75rem;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tile { transition: color 0.2s var(--ease-out); }
+    .tile:hover, .tile:active { translate: 0 0; scale: 1; }
+}
+
+.sample {
+    display: inline-block;
+    margin-left: 0.75rem;
+    padding: 2px 6px;
+    border: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+    border-radius: 0;
+    color: inherit;
+    vertical-align: middle;
 }

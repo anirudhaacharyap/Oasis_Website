@@ -1,0 +1,167 @@
+.select {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 3rem);
+}
+
+.left {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-content: start;
+    min-width: 0;
+}
+
+.pad {
+    display: grid;
+    min-width: 0;
+}
+
+.domains {
+    border-top: 2px solid var(--c-ink);
+}
+
+.domain {
+    appearance: none;
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0.35em 0;
+    border: 0;
+    border-bottom: 2px solid var(--c-ink);
+    border-radius: 0;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    font-weight: 900;
+    font-variation-settings: "wdth" var(--wdth-display);
+    font-size: clamp(1.8rem, 4.5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: var(--c-cream);
+    overflow-wrap: anywhere;
+}
+
+.domain:focus-visible {
+    outline: 3px solid var(--c-cream);
+    outline-offset: -3px;
+}
+
+.text {
+    position: relative;
+    display: inline-block;
+    translate: 0 0;
+    transition: translate 220ms var(--ease-out);
+}
+
+/* The 2px ink underline draws left to right under the selected name. */
+.text::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.1em;
+    height: 2px;
+    background: var(--c-ink);
+    scale: 0 1;
+    transform-origin: left center;
+    transition: scale 240ms var(--ease-out);
+}
+
+.chevron {
+    position: absolute;
+    left: -0.15em;
+    top: 50%;
+    width: 0.4em;
+    height: 0.64em;
+    margin-top: -0.32em;
+    color: var(--c-cream);
+    opacity: 0;
+    translate: -0.5em 0;
+    transition:
+        translate 220ms var(--ease-out),
+        opacity 200ms var(--ease-out);
+    pointer-events: none;
+}
+
+.on .text {
+    translate: 0.3em 0;
+}
+
+.on .text::after {
+    scale: 1 1;
+}
+
+.on .chevron {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.cta {
+    min-height: 3.5rem;
+    font-size: 1.05rem;
+}
+
+.ctaBlock {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+}
+
+.hint {
+    margin: 0;
+    color: var(--c-cream);
+}
+
+.hintTouch {
+    display: none;
+}
+
+@media (hover: none) {
+    .hintFine {
+        display: none;
+    }
+
+    .hintTouch {
+        display: inline;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .domain:not(.on):hover .text {
+        translate: 0.2em 0;
+    }
+
+    /* The selected row still answers the hand: its chevron nudges forward. */
+    .domain.on:hover .chevron {
+        translate: 0.18em 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .text,
+    .text::after,
+    .chevron {
+        transition: none;
+    }
+}
+
+@media (min-width: 64rem) {
+    .select {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        column-gap: 1.5rem;
+        align-items: start;
+    }
+
+    .left {
+        grid-column: 1 / 8;
+    }
+
+    .pad {
+        grid-column: 8 / 13;
+        position: sticky;
+        top: calc(var(--nav-h) + 4rem);
+    }
+}

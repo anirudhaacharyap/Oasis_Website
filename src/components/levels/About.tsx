@@ -12,14 +12,14 @@ function Manifesto({ text }: { text: string }) {
         if (cut === -1) return <>{text}</>;
         return (
             <>
-                {text.slice(0, cut + 1)} <span className={styles.gold}>{text.slice(cut + 1).trim()}</span>
+                {text.slice(0, cut + 1)} <span className={styles.stamp}>{text.slice(cut + 1).trim()}</span>
             </>
         );
     }
     return (
         <>
             {text.slice(0, at)}
-            <span className={styles.gold}>{HIGHLIGHT}</span>
+            <span className={styles.stamp}>{HIGHLIGHT}</span>
             {text.slice(at + HIGHLIGHT.length)}
         </>
     );
@@ -27,39 +27,36 @@ function Manifesto({ text }: { text: string }) {
 
 export default function About() {
     return (
-        <section id="about" className={`level tone-ground ${styles.about}`} aria-labelledby="about-title">
+        <section id="about" className={`level tone-red ${styles.about}`} aria-labelledby="about-title">
             <div className="wrap">
-                <div className={styles.top}>
-                    <p className={`hud ${styles.label}`}>Level 1</p>
-                    <h2 id="about-title" className={styles.title}>
-                        Who we are
-                    </h2>
-                </div>
+                <h2 id="about-title" className={`display t-xl ${styles.title}`}>
+                    Who we are
+                </h2>
 
-                <p className={styles.manifesto} data-reveal>
+                <p className={styles.manifesto}>
                     <Manifesto text={site.manifesto} />
                 </p>
 
-                <dl className={styles.facts} data-reveal>
+                <dl className={styles.facts}>
                     {site.facts.map((fact) => (
                         <div key={fact.label} className={styles.fact}>
-                            <dt className="hud">{fact.label}</dt>
+                            <dt className="label">{fact.label}</dt>
                             <dd>{fact.value}</dd>
                         </div>
                     ))}
                 </dl>
 
-                <h3 className={`hud ${styles.index}`}>What we do</h3>
+                <h3 className={`display ${styles.index}`}>What we do</h3>
                 <ul className={styles.modes}>
                     {modes.map((mode) => (
-                        <li key={mode.id} className={styles.mode} data-reveal>
+                        <li key={mode.id} className={styles.mode}>
                             <span className={styles.disc} aria-hidden="true">
                                 {mode.button}
                             </span>
-                            <p className={styles.word}>{mode.word}</p>
+                            <p className={`display ${styles.word}`}>{mode.word}</p>
                             <div className={styles.text}>
                                 <p className={styles.line}>{mode.line}</p>
-                                <ul className={styles.items}>
+                                <ul className={`label ${styles.items}`}>
                                     {mode.items.map((item) => (
                                         <li key={item}>{item}</li>
                                     ))}

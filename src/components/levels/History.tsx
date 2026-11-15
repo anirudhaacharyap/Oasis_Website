@@ -11,19 +11,20 @@ export default function History() {
     const upcoming = upcomingEvents();
     const earliestYear = past.length ? yearOf(past[past.length - 1]) : null;
     const years = past.map(yearOf);
+    const sample = [...past, ...upcoming].some((e) => e.mock);
 
     return (
-        <section id="history" className={`level tone-deep ${styles.section}`} aria-labelledby="history-title">
+        <section id="history" className={`level tone-ink ${styles.section}`} aria-labelledby="history-title">
             <div className="wrap">
-                <header className={styles.head} data-reveal>
-                    <p className="hud">Level 2</p>
+                <header className={styles.head}>
                     <h2 id="history-title" className="display t-xl">
                         Save files
                     </h2>
                     <p className="lede">Every event the club has run, newest first.</p>
                     {past.length > 0 && earliestYear && (
-                        <p className={`hud ${styles.fact}`}>
+                        <p className={`label ${styles.fact}`}>
                             {past.length} {past.length === 1 ? "event" : "events"} since {earliestYear}
+                            {sample && <span className={`label ${styles.sample}`}>Sample data</span>}
                         </p>
                     )}
                 </header>
@@ -35,9 +36,9 @@ export default function History() {
                             {upcoming.map((event) => {
                                 const real = !isPlaceholderUrl(event.url);
                                 return (
-                                    <li key={event.slug} className={styles.card} data-reveal>
-                                        <span className={`hud ${styles.pill}`}>Upcoming</span>
-                                        <p className={`hud ${styles.cardDate}`}>
+                                    <li key={event.slug} className={styles.card}>
+                                        <span className={`label ${styles.pill}`}>Upcoming</span>
+                                        <p className={`label ${styles.cardDate}`}>
                                             <time dateTime={event.date}>{formatEventDate(event.date, event.endDate)}</time>
                                         </p>
                                         <h4 className={`display ${styles.cardTitle}`}>
@@ -49,7 +50,7 @@ export default function History() {
                                                 event.title
                                             )}
                                         </h4>
-                                        <p className={`hud ${styles.cardMeta}`}>
+                                        <p className={`label ${styles.cardMeta}`}>
                                             {event.kind} / {event.venue}
                                         </p>
                                         <p className={styles.summary}>{event.summary}</p>
@@ -70,7 +71,7 @@ export default function History() {
                                             {years[0]}
                                         </span>
                                     </div>
-                                    <p className={`hud ${styles.slot}`}>
+                                    <p className={`label ${styles.slot}`}>
                                         Slot <span data-slot>1</span> of {past.length}
                                     </p>
                                 </div>
@@ -95,10 +96,10 @@ export default function History() {
                                     {past.map((event, index) => {
                                         const real = !isPlaceholderUrl(event.url);
                                         return (
-                                            <li key={event.slug} className={styles.item} data-reveal data-item data-index={index}>
+                                            <li key={event.slug} className={styles.item} data-item data-index={index}>
                                                 <span className={styles.dot} aria-hidden="true" />
-                                                <p className={`hud ${styles.itemYear}`}>{yearOf(event)}</p>
-                                                <p className={`hud ${styles.itemMeta}`}>
+                                                <p className={`label ${styles.itemYear}`}>{yearOf(event)}</p>
+                                                <p className={`label ${styles.itemMeta}`}>
                                                     <time dateTime={event.date}>{formatEventDate(event.date, event.endDate)}</time>
                                                     <span className={styles.kind}>{event.kind}</span>
                                                 </p>
@@ -113,7 +114,7 @@ export default function History() {
                                                 </h3>
                                                 <p className={styles.venue}>{event.venue}</p>
                                                 <p className={styles.summary}>{event.summary}</p>
-                                                {event.outcome && <p className={styles.outcome}>{event.outcome}</p>}
+                                                {event.outcome && <p className={`label ${styles.outcome}`}>{event.outcome}</p>}
                                             </li>
                                         );
                                     })}

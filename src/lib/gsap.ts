@@ -2,12 +2,13 @@
 
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
 
 // Register plugins once. useGSAP scopes every animation to its component and
 // reverts only that component's tweens/triggers on unmount.
 if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger, useGSAP);
+    gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 }
 
 /** Media queries shared by every animated section. */
@@ -16,4 +17,4 @@ export const MQ = {
     desktopMotion: "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
 };
 
-export { gsap, ScrollTrigger, useGSAP };
+export { gsap, ScrollTrigger, SplitText, useGSAP };

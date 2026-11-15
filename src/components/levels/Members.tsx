@@ -2,18 +2,20 @@ import { members } from "@/data/members";
 import PlayerSelect from "./PlayerSelect";
 import styles from "./Members.module.css";
 
-/** Level 4: character select. */
+/** Character select. */
 export default function Members() {
     return (
-        <section id="members" className={`level tone-void ${styles.section}`} aria-labelledby="members-title">
+        <section id="members" className={`level tone-ink ${styles.section}`} aria-labelledby="members-title">
             <div className="wrap">
-                <header className={styles.head} data-reveal>
-                    <p className="hud">Level 4</p>
-                    <h2 id="members-title" className="display t-xl" style={{ color: "var(--ink)" }}>
+                <header className={styles.head}>
+                    <h2 id="members-title" className="display t-xl" style={{ color: "var(--c-cream)" }}>
                         Player select
                     </h2>
-                    <p className="lede">The people who run the room.</p>
-                    <p className={`hud ${styles.hint}`}>
+                    <p className="lede">
+                        The people who run the room.
+                        {members.some((m) => m.mock) && <span className={`label ${styles.sample}`}>Sample data</span>}
+                    </p>
+                    <p className={`label ${styles.hint}`}>
                         <span className={styles.hintFine}>Arrow keys or click to pick a player</span>
                         <span className={styles.hintTouch}>Tap a player</span>
                     </p>

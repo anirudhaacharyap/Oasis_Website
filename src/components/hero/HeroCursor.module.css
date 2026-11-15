@@ -1,0 +1,51 @@
+/* Thermal reticle: a fixed, click-through layer that only exists inside the hero. */
+.layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.stretch {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+.svg {
+  position: absolute;
+  left: -200px;
+  top: -200px;
+  width: 400px;
+  height: 400px;
+  max-width: none; /* the global svg reset (max-width: 100%) would collapse it in the 0-wide layer */
+  overflow: visible;
+}
+
+.ring {
+  fill: none;
+  stroke: var(--c-cream);
+  stroke-width: 1.5;
+}
+
+.tick {
+  stroke: var(--c-cream);
+  stroke-width: 1.5;
+  stroke-linecap: butt;
+}
+
+.dot {
+  fill: var(--c-cream);
+}
+
+.pulse {
+  fill: none;
+  stroke: var(--c-cream);
+  stroke-width: 1.5;
+}
