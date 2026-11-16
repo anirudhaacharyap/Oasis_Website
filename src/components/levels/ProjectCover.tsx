@@ -4,7 +4,7 @@ import Image from "next/image";
 import type { Project } from "@/data/types";
 
 /** Print palette: ink, cream and red, foreground always the contrasting ink of the three. */
-const INK = "#1E181E";
+const INK = "#0C0B0C";
 const CREAM = "#F2EADB";
 const CREAM_2 = "#E3D6C3";
 const RED = "#AD0013";

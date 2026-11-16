@@ -32,6 +32,7 @@ export default function SpawnPad({ selected, name, onInput, pulse = null }: Spaw
     const box = useRef<HTMLDivElement>(null);
     const [mount, setMount] = useState(false);
     const [ready, setReady] = useState(false);
+    const [isStatic, setIsStatic] = useState(false);
     const [prev, setPrev] = useState(selected);
     const [nudge, setNudge] = useState({ dir: 0, id: 0 });
 
@@ -42,6 +43,7 @@ export default function SpawnPad({ selected, name, onInput, pulse = null }: Spaw
     }
 
     useEffect(() => {
+        // three.js only loads once Join is near the viewport; the static drawing holds until then.
         const el = document.getElementById("join") ?? box.current;
         if (!el) return;
         const io = new IntersectionObserver(
@@ -50,6 +52,7 @@ export default function SpawnPad({ selected, name, onInput, pulse = null }: Spaw
                 io.disconnect();
                 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
                 if (!reduced && webglAvailable()) setMount(true);
+                else setIsStatic(true);
             },
             { rootMargin: "100% 0px" }
         );
@@ -63,7 +66,11 @@ export default function SpawnPad({ selected, name, onInput, pulse = null }: Spaw
             <p className={styles.name}>
                 {name}
             </p>
-            <div ref={box} className={styles.padBox} aria-hidden="true">
+            <div ref={box} className={styles.padBox} data-static={isStatic ? "" : undefined} data-pad-box="" aria-hidden="true">
+                {/* The flat drawing is only the fallback (reduced motion, no WebGL, no JS). */}
+                <noscript>
+                    <style>{"[data-pad-box] svg{opacity:1!important}"}</style>
+                </noscript>
                 <ControllerSVG active="A" className={styles.svg} />
                 {mount && (
                     <div className={`${styles.stage} ${ready ? styles.ready : ""}`}>

@@ -96,7 +96,8 @@
 /* Footer */
 .footer {
     border-top: 2px solid var(--c-red);
-    padding-block: clamp(3rem, 6vw, 5rem) 2rem;
+    /* Bottom room so the floating HUD dock never covers the last line. */
+    padding-block: clamp(3rem, 6vw, 5rem) 6.5rem;
     color: var(--c-cream);
 }
 

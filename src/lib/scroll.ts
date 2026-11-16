@@ -1,7 +1,7 @@
 import type Lenis from "lenis";
 
-/** Height of the fixed nav (4.5rem), so anchored levels land just below it. */
-export const NAV_OFFSET = -72;
+/** The HUD dock floats at the bottom, so levels land flush at the top. */
+export const NAV_OFFSET = 0;
 
 /** The page's Lenis instance, set by SmoothScroll (absent under reduced motion). */
 let lenis: Lenis | null = null;

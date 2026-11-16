@@ -19,7 +19,7 @@ export default function SmoothScroll() {
             syncTouch: false,
             wheelMultiplier: 1,
             autoRaf: false,
-            anchors: { offset: -72 },
+            anchors: { offset: 0 },
         });
 
         lenis.on("scroll", ScrollTrigger.update);

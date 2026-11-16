@@ -179,6 +179,8 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
         try {
             renderer = new Renderer({ dpr, alpha: true, premultipliedAlpha: false, antialias: false });
         } catch {
+            readyRef.current?.();
+            readyRef.current = undefined;
             return; // No WebGL: the static print stays.
         }
         const gl = renderer.gl;
@@ -221,7 +223,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             const fresh = sampleLogo(w, h, cell, pad);
             if (first && !reduced()) {
                 scatterForIntro(fresh, w);
-                introStart = t;
+                introStart = -2; // set on the first tick, so the assembly uses the ticker's clock
             }
             first = false;
             dots = fresh;
@@ -302,6 +304,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
 
         const tick = (time: number, deltaTime: number) => {
             t = time;
+            if (introStart === -2) introStart = t;
             if (!visible || document.hidden || !dots || !mesh || !geometry) return;
             const f = Math.min(deltaTime / 16.667, 3);
             const d = dots;

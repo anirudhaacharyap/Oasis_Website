@@ -53,7 +53,7 @@ export default function ControllerSVG({ active, className }: { active: FaceButto
                             textAnchor="middle"
                             fontSize="20"
                             fontWeight="800"
-                            fill={k === active ? "#1E181E" : "#F2EADB"}
+                            fill={k === active ? "#0C0B0C" : "#F2EADB"}
                             style={{ fontFamily: "var(--font-archivo)" }}
                         >
                             {k}

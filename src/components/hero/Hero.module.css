@@ -44,8 +44,13 @@
   transition: opacity 500ms var(--ease-out);
 }
 
-.art[data-ready] .print {
-  opacity: 0;
+/* With motion, the print never shows: the dots assemble into the empty frame instead
+   (so a refresh has nothing to swap). It returns only as the fallback. */
+@media (prefers-reduced-motion: no-preference) {
+  .art:not([data-static]) .print {
+    opacity: 0;
+    transition: none;
+  }
 }
 
 /* ── Copy and actions, under the logo ── */

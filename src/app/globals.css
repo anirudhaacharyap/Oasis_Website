@@ -45,8 +45,8 @@
 
 :root {
   /* ── Palette (contrast: cream on red 6.2:1, cream on ink 15:1, signal on ink 4.1:1 large) ── */
-  --c-ink: #1e181e;
-  --c-ink-2: #2a222a;
+  --c-ink: #0c0b0c; /* premium black: neutral, a hair warm, same as the hero */
+  --c-ink-2: #161517; /* raised layer: cards, panels, tiles */
   --c-red: #ad0013;
   --c-red-deep: #7c000e;
   --c-signal: #e5323a;
@@ -112,7 +112,9 @@
 @layer base {
   html {
     overflow-x: clip;
-    scroll-padding-top: var(--nav-h);
+    scroll-padding-top: 0;
+    /* Room for the floating HUD dock at the end of the page and under focus targets. */
+    scroll-padding-bottom: 5.5rem;
     background: var(--c-ink);
     color: var(--c-cream);
     scrollbar-color: var(--c-red) var(--c-ink);
@@ -250,16 +252,43 @@
     isolation: isolate;
   }
 
+  /* Flat black with the hero's faint halftone screen. */
   .tone-ink {
-    background: radial-gradient(120% 80% at 18% 0%, var(--c-ink-2) 0%, var(--c-ink) 48%, #140f14 100%);
+    background:
+      radial-gradient(circle, rgba(242, 234, 219, 0.03) 1px, transparent 1.5px) 0 0 / 7px 7px,
+      var(--c-ink);
     color: var(--c-cream);
   }
 
+  /* Flat brand red with the poster's ink dots. */
   .tone-red {
     background:
       var(--halftone) 0 0 / 5px 5px,
-      radial-gradient(120% 90% at 78% 0%, #c0101f 0%, var(--c-red) 46%, var(--c-red-deep) 100%);
+      var(--c-red);
     color: var(--c-cream);
+  }
+
+  /* Red meets black like a print run: the colour above breaks into a band of halftone dots
+     that thin out into the next field. The dots are a pattern masked to fade, not a colour gradient. */
+  .tone-ink:not(#play)::before,
+  .tone-red::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: clamp(3.5rem, 7vw, 6rem);
+    z-index: -1;
+    pointer-events: none;
+    background-size: 7px 7px;
+    -webkit-mask-image: linear-gradient(#000, transparent);
+    mask-image: linear-gradient(#000, transparent);
+  }
+
+  .tone-ink:not(#play)::before {
+    background-image: radial-gradient(circle, var(--c-red) 1.7px, transparent 2.2px);
+  }
+
+  .tone-red::before {
+    background-image: radial-gradient(circle, var(--c-ink) 1.7px, transparent 2.2px);
   }
 
   .tone-signal {

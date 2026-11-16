@@ -32,10 +32,13 @@ const subscribe = (cb: () => void) => {
 const getLive = () => (cached ??= canRunDots());
 
 export default function HeroArt() {
-    const live = useSyncExternalStore(subscribe, getLive, () => false);
+    const live = useSyncExternalStore(subscribe, getLive, () => true);
     const [ready, setReady] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
-    const onReady = useCallback(() => setReady(true), []);
+    const onReady = useCallback(() => {
+        setReady(true);
+    }, []);
+
 
     // Any press inside the hero is a heat burst (the reticle answers with a pulse ring).
     useEffect(() => {
@@ -50,7 +53,18 @@ export default function HeroArt() {
     }, []);
 
     return (
-        <div ref={ref} className={styles.art} data-ready={ready ? "" : undefined} aria-hidden="true">
+        <div
+            ref={ref}
+            className={styles.art}
+            data-ready={ready ? "" : undefined}
+            data-static={live ? undefined : ""}
+            data-hero-art=""
+            aria-hidden="true"
+        >
+            {/* The flat print shows only when the dots can't run (no WebGL, reduced motion, no JS). */}
+            <noscript>
+                <style>{"[data-hero-art] svg{opacity:1!important}"}</style>
+            </noscript>
             <Logo decorative className={styles.print} />
             {live && <DotLogo onReady={onReady} />}
         </div>

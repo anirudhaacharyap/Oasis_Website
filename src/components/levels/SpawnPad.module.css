@@ -77,13 +77,21 @@
     opacity: 1;
 }
 
-/* Once the 3D pad is drawing, the static drawing steps out (no double pad). */
-.svg {
-    transition: opacity 300ms var(--ease-out);
-}
+/* With motion, the flat drawing never shows (nothing to swap): the 3D pad rises in once.
+   It is the fallback only for reduced motion, no WebGL, or no JS. */
+@media (prefers-reduced-motion: no-preference) {
+    .padBox:not([data-static]) .svg {
+        opacity: 0;
+    }
 
-.padBox:has(.ready) .svg {
-    opacity: 0;
+    .stage {
+        translate: 0 18px;
+        transition: opacity 500ms var(--ease-out), translate 700ms var(--ease-out);
+    }
+
+    .stage.ready {
+        translate: 0 0;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
