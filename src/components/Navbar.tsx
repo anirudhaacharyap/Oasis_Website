@@ -208,13 +208,19 @@ export default function Navbar() {
     return (
         <Sheet open={open} onOpenChange={setOpen} onOpenChangeComplete={onOpenChangeComplete}>
             <header className={styles.dock} data-shown={shown || open ? "" : undefined}>
-                {/* Desktop: the map of the run. */}
+                {/* Over the title screen only the bare star shows, with one soft chevron under it saying "scroll". */}
+                <span className={styles.peek} aria-hidden="true">
+                    <svg viewBox="0 0 16 10">
+                        <path d="M2 2l6 6 6-6" />
+                    </svg>
+                </span>
+                {/* Desktop: the map of the run. While peeking, the star starts the run. */}
                 <nav id="level-map" aria-label="Levels" className={styles.map}>
                     <a
-                        href="#play"
+                        href={shown ? "#play" : `#${levels[1].id}`}
                         className={styles.star}
-                        onClick={go("play")}
-                        aria-label="Title screen, back to the top"
+                        onClick={go(shown ? "play" : levels[1].id)}
+                        aria-label={shown ? "Title screen, back to the top" : `Start: scroll to ${levels[1].label}`}
                         aria-current={current === "play" ? "location" : undefined}
                     >
                         <svg viewBox="0 0 16 16" aria-hidden="true">

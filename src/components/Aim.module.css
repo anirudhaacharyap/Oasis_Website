@@ -24,12 +24,14 @@
 .frame i:nth-child(3) { border-bottom-width: 2px; border-left-width: 2px; }
 .frame i:nth-child(4) { border-bottom-width: 2px; border-right-width: 2px; }
 
-/* The readout: a small print plate in the top-left corner, inside the band the nav left free. */
+/* The readout: a small print plate in the top-left band the nav left free, just right of the logo. */
 .hud {
   position: fixed;
-  top: 1rem;
-  /* On the content edge, same as .wrap. */
-  left: calc((100% - min(var(--max), 100% - 2 * var(--gutter))) / 2);
+  top: var(--top-y);
+  left: calc(var(--edge) + var(--mark-w) + 0.5rem);
+  height: var(--top-h);
+  box-sizing: border-box;
+  align-content: center;
   z-index: 55;
   pointer-events: none;
   display: grid;
@@ -66,6 +68,11 @@
 .mode[data-on] {
   color: var(--c-signal);
   opacity: 1;
+}
+.mode[data-win] {
+  padding: 0 0.3em;
+  background: var(--c-signal);
+  color: var(--c-ink);
 }
 
 .sep {

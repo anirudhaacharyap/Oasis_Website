@@ -8,6 +8,7 @@ import KonamiCode from "@/components/KonamiCode";
 import Motion from "@/components/Motion";
 import Reel from "@/components/Reel";
 import Aim from "@/components/Aim";
+import TopMark from "@/components/TopMark";
 import { site } from "@/data/site";
 import { siteUrl } from "@/lib/site-url";
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <a href="#main" className="skip-link">
                     Skip to content
                 </a>
+                <TopMark />
                 <Navbar />
                 {children}
                 <script

@@ -102,7 +102,7 @@ components:
 
 **Creative North Star: "Press Start, Printed"**
 
-OASIS is the club's own recruitment poster turned into a page, then made playable. The surface is warm black ink and a brand red band, split by thin rules, with cream type and a film of grain over everything. Halftone dots sit on the red fields and as a faint screen on the hero. The page is played, not browsed: the first screen is the wordmark itself, built from halftone dots that heat, scatter and settle under the hand.
+OASIS is the club's own recruitment poster turned into a page, then made playable. The surface is warm black ink and a brand red band, split by thin rules, with cream type and a film of grain over everything. Halftone dots sit on the red fields and as a faint screen on the hero. The page is played, not browsed: the first screen is a row of five retro 3D arcade machines whose CRTs spell OASIS; hit one and it changes channel. The logo itself lives in the top-left plate and closes the page in the footer.
 
 The system is flat, square and printed. There are no soft cards, no rounded corners, no glow. Depth comes from alternating ink and red bands, 2px rules, and grain. Colour is rationed: cream carries text, signal red carries heat and large display type, gold appears only where something has been earned.
 
@@ -171,7 +171,7 @@ A warm ink and brand-red poster palette, cream type, one gold reserved for earne
 
 A single column page of full-bleed bands inside an 80rem container (`min(80rem, 100% - 2 * gutter)`), gutter `clamp(1.25rem, 4vw, 2.5rem)`. Sections breathe on `clamp(5rem, 10vw, 8rem)` of vertical padding; headers separate from content with a 2px rule. The fixed nav is 4.5rem tall and sets `scroll-padding-top`.
 
-The hero is a three-row grid: nav, logo stage, a foot band with a hairline top rule. The wordmark is centred and huge (about 78vw), copy sits left of the foot and actions right; nothing overlaps the logo. Below 860px the hero is as tall as its content, the logo sits on top and actions stack full width. The spawn selector is a 12-column grid at 64rem: list in columns 1 to 7, the controller pad sticky in 8 to 12; below that it stacks. Project rows go from thumbnail rows (touch, narrow) to a 12-column index with a cursor-following cover preview at 1024px with fine pointer and motion allowed.
+The hero is a three-row grid: the top band (logo plate and readout), the arcade stage, a foot band with a hairline top rule. The arcade row is centred at a whole-number pixel scale, copy sits left of the foot and actions right; nothing overlaps the row. Below 860px the hero is as tall as its content, the logo sits on top and actions stack full width. The spawn selector is a 12-column grid at 64rem: list in columns 1 to 7, the controller pad sticky in 8 to 12; below that it stacks. Project rows go from thumbnail rows (touch, narrow) to a 12-column index with a cursor-following cover preview at 1024px with fine pointer and motion allowed.
 
 ## Elevation & Depth
 
@@ -211,10 +211,8 @@ Cartridge rows on the red band, separated by 2px ink rules. Each row: name (wdth
 ### Player Select (Members)
 Ink band; members framed with 14px gold corner brackets (earned) and a "Sample data" label while members are mock.
 
-### Hero Dot Logo and Cursor
-The wordmark is a sheet of halftone dots drawn in WebGL with a halftone-masked SVG print as fallback (also used for reduced motion and no WebGL). Dots are springs: stiffness 0.055, 0.84 velocity kept per 60fps frame (slight overshoot), cooling 0.955 per frame. The pointer is lerped (0.35 per frame); scatter radius is `62 + min(speed*5, 120)` px; heat is `min(1, speed*0.05)` and runs cream, red, signal. A press bursts heat outward in a 170px radius. A heat wave rides the star's arc about every 6s; the intro is the dots assembling in about 1.1s; scrolling away drifts them apart and cools them. On touch, a slow virtual pointer wanders the logo when idle.
-
-The hero no longer has its own cursor: the sitewide crosshair and lock frame (see Aim, below) cover it.
+### Hero Arcade
+Five pixel-art arcade machines; see "The OASIS Arcade" below. The footer keeps the halftone dot wordmark (the bookend), which still heats and scatters under the pointer.
 
 ## Motion
 
@@ -222,10 +220,10 @@ Grammar: **heat and settle.** Springs for anything the hand touches; `cubic-bezi
 
 Headings reveal with GSAP SplitText by line (masked lines, 0.9s `expo.out`, 0.08s stagger) under ScrollTrigger. The hero copy and panel rise once on load (`intro-rise`, 900ms, 24px translate only, 70ms stagger, so LCP paints at once).
 
-**Reduced motion:** all CSS animation and transition durations collapse to 0.001ms; Lenis is not created; SplitText is not applied; the hero cursor is not created; the dot logo falls back to the static halftone print; the project index uses thumbnail rows without the cursor preview; the nav sheet shortens to 120ms with no travel; spawn selector transitions are removed.
+**Reduced motion:** all CSS animation and transition durations collapse to 0.001ms; Lenis is not created; SplitText is not applied; the arcade is the flat 2D machines, lit and still (channel changes swap with no roll, no idle flicker, no parallax, no hitmarker); the footer dot logo falls back to the static halftone print; the project index uses thumbnail rows without the cursor preview; the nav sheet shortens to 120ms with no travel; spawn selector transitions are removed.
 
 ### Named Rules
-**The Hero-Only Cursor Rule.** The custom cursor lives in the hero and nowhere else. Every other surface keeps the native cursor.
+**The Native Crosshair Rule.** The cursor is a native crosshair image on fine pointers everywhere (see Aim). Nothing follows the pointer with lag.
 
 **The Settle Rule.** Anything that heats up must cool and return home. No effect is left running or stuck in a hot state.
 
@@ -237,14 +235,11 @@ Headings reveal with GSAP SplitText by line (masked lines, 0.9s `expo.out`, 0.08
 - **Do** put hierarchy in Archivo's width axis (125 titles, 112 names, 100 body, 72 labels).
 - **Do** use `cubic-bezier(0.23, 1, 0.32, 1)` for state changes and 0.97 press scale at 140ms.
 - **Do** tag every mock-data surface with a "Sample data" label.
-- **Do** hide the nav wordmark while the hero logo is on screen.
 - **Do** give every motion a reduced-motion equivalent that shows the final state.
 
 ### Don't:
 - **Don't** use gold for decoration, buttons or headings; it marks earned moments.
 - **Don't** add offset shadows, glows or rounded corners.
-- **Don't** extend the custom cursor beyond the hero.
-- **Don't** put the hero logo and nav wordmark on screen together.
 - **Don't** put a gradient in the hero ground; it is flat near-black.
 - **Don't** use signal red for body text on ink; it clears contrast only at large size.
 
@@ -274,10 +269,9 @@ Sample tags, the tilted script line, no loader, no per-project pages, and the do
 
 ## The print run (cinematic pass 2)
 
-The title break heats the wordmark to brand red and lets the dots fall like wet ink, fading out by
-the end of the break. The footer's wordmark is the last frame of the page and runs the same sheet in
-reverse: the red ink rises and cools into the cream word as you reach the end (`FooterMark.tsx`,
-`reel.footBreak`).
+The title break now powers the arcade down (see The OASIS Arcade); the dot wordmark no longer
+appears in the hero. The footer's wordmark is the last frame of the page: red ink rises and cools
+into the cream word as you reach the end (`FooterMark.tsx`, `reel.footBreak`).
 
 Tried and removed at the owner's call: a live halftone wipe between sections and committed section
 snapping. Forced scrolling felt like a fight, especially scrolling back up. Scrolling stays free, on
@@ -287,7 +281,37 @@ Lenis with lerp 0.07.
 
 Built for fine pointers; phones get their own pass later and see none of this.
 
-- **Crosshair:** the cursor everywhere is a native SVG cursor (`public/cursor/crosshair.svg`), so it never lags the hand. Over a lock target it swaps to `crosshair-lock.svg`: the arms tighten and the pip turns signal red. The old hero-only thermal reticle is retired; the dot logo still scatters under the pointer on its own.
+- **Crosshair:** the cursor everywhere is a native SVG cursor (`public/cursor/crosshair.svg`), so it never lags the hand. Over a lock target it swaps to `crosshair-lock.svg`: the arms tighten and the pip turns signal red. The old hero-only thermal reticle is retired.
 - **Lock frame** (`src/components/Aim.tsx`): one set of four cream corner brackets that catches a target. Priority is hover, then keyboard focus-visible, then the scroll auto-lock (the `[data-lock-auto]` target nearest 55% of the screen height). The auto-lock only highlights; it never moves focus or activates anything. A new catch starts 18px wide and snaps to 6px (`back.out`); moving between targets flies the frame in 320ms `power3.out`; a click clamps the brackets in and lets go. Reduced motion: no fly, no snap.
 - **Targets:** `data-lock="Name"` marks a target (the name shows in the readout); `data-lock-auto` adds it to scroll selection; `data-lock-own` means it draws its own brackets (player tiles), so the shared frame steps aside. Auto targets: the two hero CTAs (Pick your spawn point wins the tie), the selected Join domain, Apply for <domain>, and the partner email once it is real. Hover only: the Join domain rows, event links, project links.
 - **Readout:** top left, on the content edge, a small ink plate: `X 0742  Y 0388` in page coordinates (Y keeps counting as you scroll), then `LOCK › TARGET` in signal red, or `SCAN › NO TARGET`. Written on the GSAP ticker, text only when it changes.
+
+## The OASIS Arcade (hero)
+
+Five retro arcade machines whose CRTs spell OASIS. The machines are 3D; the retro lives in the
+picture, which is 26 x 20 pixels shown through a CRT shader.
+
+- **Machines** (`src/components/arcade/cabinet.ts`): built from code. An extruded upright side profile (base, control deck, raked CRT, marquee hood) with red T-molding tubes on every edge, pixel side art, plain lit stripes on the marquee (cream, signal, cream), a CRT behind dark glass with red light spilling onto the bezel, joystick and buttons, a coin door with lit slots and a kick plate. Lambert materials with a light 4x4 Bayer dither on a 2px grid, so the shading has a retro grain. Static parts are merged per material: about ten draw calls a machine.
+- **Row** (`ArcadeScene.tsx`): five machines in a straight row, each turned to face the camera so every letter reads the same; the row only leans 1.7 degrees toward the pointer. The camera fits the row to the stage from just above the screens. Rendered sharp (antialiased, pixel ratio up to 1.5).
+- **CRT picture** (`tube.ts`, shared with the 2D fallback): the machine's letter (custom 10 x 13 pixel glyph, cream with a red drop), a channel change (roll, static, pop), the jackpot, and the power band. **CRT shader**: curved glass, scanlines between pixel rows, an RGB slot mask, phosphor bloom from neighbouring pixels, a slow brightness roll, vignette, red phosphor floor and a glare; the aimed machine glows hotter.
+- **Hit = change channel:** the machines are real `<button>`s laid over the projected 3D boxes (Aim lock targets `Machine O`...; the middle one is the scroll auto-target). A hit shows the hitmarker, knocks the machine back on an elastic spring and changes channel to a random game symbol (star, heart, controller, cartridge, coin, bolt); 3s untouched it changes back to its letter. The HUD counts `HITS`.
+- **Jackpot:** all five on the same symbol at once (honest random). Tubes flash, pixel coins rain, the symbol blinks in a strobing red border, marquees strobe, the HUD shows `JACKPOT`, a live region announces it; after 2.8s the machines return to OASIS left to right. The Konami code rigs one.
+- **Boot:** three.js loads after first paint behind a blinking INSERT COIN; every shader compiles (`compileAsync`) before the first frame. Then the marquees stutter on left to right and each CRT opens from a dot to a line to the letter.
+- **Exit:** the hero pin (`reel.heroBreak`) powers the row down: tubes collapse to a line then a dot left to right, marquees die right to left, the camera eases back.
+- **Performance:** one clock (GSAP ticker drives `advance()`); paused offscreen and in hidden tabs; half-rate rendering while nothing moves; a tube re-uploads its 26 x 20 picture only when it changes; no allocation in the frame loop. If the page's frame interval averages over 24ms the resolution steps to 75%, then 60%, and the canvas scales up as hard pixels. Measured on a laptop RTX 3050: 60fps idle, clicking and scrolling at full resolution, and still 60fps with the CPU throttled 4x (the main thread is about 95% idle). On a machine with no GPU at all (software rendering) it steps down and runs about 24fps.
+- **Fallback** (`Arcade2D.tsx`): phones (until their own pass), reduced motion and no WebGL get the same five machines as whole-pixel SVG art with the same tubes and game.
+- **Logo:** the wordmark left the hero. It sits small in the top-left plate (`TopMark`, a link back to the title screen) beside the Aim readout, and closes the page as the footer bookend.
+
+## Dock peek and the hero lock (PC)
+
+- **Peek:** over the title screen the dock shows only the bare star glyph, centred at the bottom, in 70% cream with no tile, border or track, and one soft chevron under it stepping down (1.6s loop). It is the quietest thing on the screen on purpose. Clicking the star there starts the run (scrolls to About). Once you scroll past 55% of the hero, the star slides left and the whole bar unrolls out of it: `translate` to the dock's place and a `clip-path` opening from the star's width, 620ms `--ease-out`; rolling back up is 380ms. Keyboard focus opens the bar at once (`:has(:focus-visible)`), a mouse click does not. Phones keep the plain behaviour until their own pass.
+- **Hero lock follows the crosshair:** with the crosshair on no machine, the arcade's scroll lock goes to the machine horizontally nearest the pointer (`holdNearest` in `game.ts`), so aiming past the far right holds the right machine instead of snapping to the middle one; leaving the hero keeps the last. Aim rechecks auto-targets every 100ms.
+
+## Boot loader (PC)
+
+The arcade's 3D has to load, so the title screen boots like a CRT (`src/components/arcade/BootLoader.tsx`, mounted in `page.tsx` outside the pinned hero).
+
+- **Look:** full-screen ink with scanlines, a vignette and a faint flicker. A giant counter (Archivo 900, wdth 125, tabular) with a constant signal-red split; every 0.26 to 0.9s a glitch tears a random horizontal slice sideways for 60 to 130ms. A 24-block pixel progress bar (the next block glows red). Corner readouts in the HUD's voice: `OASIS // BOOT`, the club line, a blinking `INSERT COIN`, and the stage.
+- **Honest progress** (`loading.ts`): page 15, fonts 20, 3D code arrived and mounted 30, every shader compiled and the first frame drawn 35. The stage line names the real step (Loading type, Loading cabinets, Warming the tubes, Ready). The counter never runs ahead of real progress, takes at least 1.2s so it reads, and leaves at 6s whatever happens (the arcade then shows INSERT COIN until it lands). A CSS failsafe hides it at 9s; no-JS never sees it.
+- **Exit (about 0.75s):** a hard tear, then the tube switches off: it flares cream while squeezing to a bright line (`scaleY`, 300ms `power3.in`), the line shrinks to a dot (`scaleX`, 200ms), and the arcade behind it powers on (marquees stutter on, CRTs open) as the hero copy rises. The arcade boot and the copy's rise both wait for the loader.
+- **Where:** PC-sized screens with motion allowed only. Phones (2D arcade, nothing heavy to load), reduced motion, and reloads that land below the hero skip it. Scrolling is locked while it runs. Measured cold load on the laptop GPU: 100 at about 1.9s, gone by about 2.7s.

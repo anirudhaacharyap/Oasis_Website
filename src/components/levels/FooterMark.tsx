@@ -19,7 +19,7 @@ export default function FooterMark() {
             <Logo className={styles.mark} decorative />
             {live && (
                 <div className={styles.markDots}>
-                    <DotLogo mode="bookend" />
+                    <DotLogo />
                 </div>
             )}
         </div>

@@ -1,0 +1,86 @@
+/* The 3D arcade stage: the scene, its DOM hit targets, the boot line and the hitmarker. */
+
+.art {
+  position: absolute;
+  inset: 0;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 240ms linear;
+}
+.art[data-ready] .scene {
+  opacity: 1;
+}
+/* On a slow PC the scene renders below screen resolution; it scales up as hard pixels, not blur. */
+.scene[data-lowres] canvas {
+  image-rendering: pixelated;
+}
+
+/* Loading: a blinking INSERT COIN where the row will stand, gone the moment the row draws. */
+.coin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  margin: 0;
+  font-size: var(--t-label);
+  font-weight: 700;
+  font-variation-settings: "wdth" 75;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--c-cream);
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+.art[data-ready] .coin {
+  display: none;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* Hit targets: invisible buttons laid over each machine, moved by the scene's projection. */
+.hits {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  pointer-events: auto;
+  background: none;
+  border: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.hit:focus-visible {
+  outline: 2px solid var(--c-cream);
+  outline-offset: 6px;
+}
+
+.fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.hitmark {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--c-cream);
+  stroke-width: 2.5;
+  stroke-linecap: square;
+  filter: drop-shadow(0 0 1px var(--c-ink));
+}

@@ -1,0 +1,189 @@
+/* The boot loader: a full-screen CRT counting the arcade in. Hidden on phones and under reduced
+   motion (it never shows there), removed from view when done, and never stuck: a CSS failsafe
+   hides it if the script never runs to the end. */
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  place-items: center;
+  background: var(--c-ink);
+  color: var(--c-cream);
+  transform-origin: 50% 50%;
+  --g-top: 40%;
+  --g-bot: 40%;
+  --g-x: 0px;
+  --g-x2: 0px;
+}
+
+@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+  .loader {
+    display: grid;
+    animation: failsafe 0s linear 9s forwards;
+  }
+}
+.loader[data-done] {
+  display: none;
+}
+@keyframes failsafe {
+  to {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* The tube: scanlines and a faint flicker over everything on the loader. */
+.loader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgb(0 0 0 / 0.55) 100%),
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.28) 2px 4px);
+  animation: flicker 3.2s steps(1) infinite;
+}
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  41% {
+    opacity: 0.86;
+  }
+  42% {
+    opacity: 1;
+  }
+  77% {
+    opacity: 0.92;
+  }
+  78% {
+    opacity: 1;
+  }
+}
+
+/* The counter: three stacked copies. The base is cream; the red copy sits a hair to the left
+   (a constant colour split); the tear copy only shows inside the glitch slice, knocked sideways. */
+.center {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1rem, 3vh, 2rem);
+}
+
+.digits {
+  display: grid;
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 900;
+  font-variation-settings: "wdth" 125;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(7rem, 4rem + 13vw, 17rem);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+}
+.digits > span {
+  grid-area: 1 / 1;
+}
+.base {
+  position: relative;
+  z-index: 2;
+}
+.red {
+  z-index: 1;
+  color: var(--c-signal);
+  translate: -0.035em 0;
+}
+.tear {
+  z-index: 3;
+  color: var(--c-cream);
+  opacity: 0;
+  clip-path: inset(var(--g-top) 0 var(--g-bot) 0);
+  translate: var(--g-x) 0;
+}
+.loader[data-glitch] .tear {
+  opacity: 1;
+}
+.loader[data-glitch] .red {
+  translate: calc(-0.035em + var(--g-x2)) 0;
+  clip-path: inset(calc(var(--g-top) - 6%) 0 calc(var(--g-bot) - 6%) 0);
+}
+.loader[data-glitch] .base {
+  clip-path: polygon(0 0, 100% 0, 100% var(--g-top), 0 var(--g-top), 0 calc(100% - var(--g-bot)), 100% calc(100% - var(--g-bot)), 100% 100%, 0 100%);
+}
+
+/* The pixel progress bar: 24 hard blocks. */
+.bar {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 4px;
+  width: clamp(16rem, 34vw, 30rem);
+}
+.bar i {
+  height: 10px;
+  background: var(--c-rule);
+}
+.bar i[data-on] {
+  background: var(--c-cream);
+}
+.bar i[data-on]:last-of-type,
+.bar i[data-on] + i:not([data-on]) {
+  /* the block about to light glows red */
+  background: var(--c-signal);
+}
+
+/* Corner readouts, in the HUD's voice. */
+.corner {
+  position: absolute;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variation-settings: "wdth" 75;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-cream-2);
+}
+.tl {
+  top: var(--top-y);
+  left: var(--edge);
+}
+.tr {
+  top: var(--top-y);
+  right: var(--edge);
+}
+.bl {
+  bottom: 1.5rem;
+  left: var(--edge);
+  color: var(--c-cream);
+}
+.bl::before {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.6em;
+  background: var(--c-signal);
+  animation: blink 0.8s steps(2, jump-none) infinite;
+}
+.br {
+  bottom: 1.5rem;
+  right: var(--edge);
+  animation: blink 1s steps(2, jump-none) infinite;
+}
+.dim {
+  color: var(--c-signal);
+}
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Switching off: the tube flares cream as it squeezes to a line. */
+.flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: var(--c-cream);
+  opacity: 0;
+  pointer-events: none;
+}

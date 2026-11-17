@@ -2,6 +2,7 @@
 
 import { useRef, useSyncExternalStore } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { arcade, onArcade } from "@/components/arcade/game";
 import styles from "./Aim.module.css";
 
 /**
@@ -16,7 +17,8 @@ import styles from "./Aim.module.css";
  *
  * A target marked [data-lock-own] draws its own brackets (the player tiles), so the shared frame
  * steps aside and only the readout names it. The top-left readout prints the crosshair's page
- * coordinates and the current lock. Fine pointers only; phones get their own pass later.
+ * coordinates, the arcade's hit count and the current lock, and flashes the arcade's jackpot.
+ * Fine pointers only; phones get their own pass later.
  */
 const FINE = "(hover: hover) and (pointer: fine)";
 
@@ -81,6 +83,11 @@ function AimLayer() {
         let sinceScan = 1e9;
         let shownPos = "";
         let shownLock = "";
+        // An arcade win takes over the lock line for a moment.
+        let win: { mode: string; text: string; until: number } | null = null;
+        const offArcade = onArcade((e) => {
+            if (e.type === "jackpot") win = { mode: "Jackpot", text: e.label.replace(/^Jackpot, /, ""), until: performance.now() + 3200 };
+        });
 
         const visible = (el: HTMLElement) => {
             const r = el.getBoundingClientRect();
@@ -171,7 +178,7 @@ function AimLayer() {
         const tick = (_t: number, dt: number) => {
             const sy = window.scrollY;
             sinceScan += dt;
-            if (sy !== lastScroll || sinceScan > 250) {
+            if (sy !== lastScroll || sinceScan > 100) {
                 if (sy !== lastScroll) probe();
                 lastScroll = sy;
                 sinceScan = 0;
@@ -199,17 +206,21 @@ function AimLayer() {
             draw();
 
             // The readout: page coordinates, so Y keeps counting as you scroll under a still hand.
-            const posText = px < 0 ? `X 0000  Y ${pad4(sy)}` : `X ${pad4(px)}  Y ${pad4(py + sy)}`;
+            const xy = px < 0 ? `X 0000  Y ${pad4(sy)}` : `X ${pad4(px)}  Y ${pad4(py + sy)}`;
+            const posText = `${xy}   HITS ${String(arcade.hits).padStart(3, "0")}`;
             if (posText !== shownPos) {
                 pos.textContent = posText;
                 shownPos = posText;
             }
+            if (win && performance.now() > win.until) win = null;
             const name = nameOf(current);
-            if (name !== shownLock) {
-                lockEl.textContent = name || "No target";
-                modeEl.textContent = name ? "Lock" : "Scan";
-                modeEl.toggleAttribute("data-on", !!name);
-                shownLock = name;
+            const key = win ? `win:${win.mode}:${win.text}` : name;
+            if (key !== shownLock) {
+                lockEl.textContent = win ? win.text : name || "No target";
+                modeEl.textContent = win ? win.mode : name ? "Lock" : "Scan";
+                modeEl.toggleAttribute("data-on", !!name || !!win);
+                modeEl.toggleAttribute("data-win", !!win);
+                shownLock = key;
             }
         };
 
@@ -227,6 +238,7 @@ function AimLayer() {
             document.documentElement.removeEventListener("pointerleave", onLeave);
             document.removeEventListener("focusin", onFocusIn);
             document.removeEventListener("focusout", onFocusOut);
+            offArcade();
             gsap.killTweensOf([fly, snap, vis]);
         };
     }, []);

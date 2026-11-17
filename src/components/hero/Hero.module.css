@@ -1,6 +1,5 @@
-/* Title screen: OASIS itself. Flat black with the poster's print filter, the wordmark as a sheet
-   of halftone dots in the middle, and one band of copy and actions under it. Nothing overlaps
-   the logo. */
+/* Title screen: the OASIS arcade. Flat black with the poster's print filter, five cabinets in the
+   middle band, and one band of copy and actions under them. Nothing overlaps the row. */
 
 .hero {
   position: relative;
@@ -22,7 +21,7 @@
   background-size: 7px 7px;
 }
 
-/* ── The logo ── */
+/* ── The arcade row ── */
 .word {
   grid-row: 2;
   min-height: 0;
@@ -30,36 +29,7 @@
   position: relative;
 }
 
-.art {
-  position: absolute;
-  inset: 0;
-}
-
-/* The printed fallback: the same wordmark through a halftone screen. It holds the frame until the
-   dots draw (and stays for reduced motion / no WebGL). Sized to match the dot canvas's fit. */
-.print {
-  position: absolute;
-  inset: 6%;
-  width: 88%;
-  height: 88%;
-  color: var(--c-cream);
-  -webkit-mask-image: radial-gradient(circle, #000 1.9px, transparent 2.3px);
-  mask-image: radial-gradient(circle, #000 1.9px, transparent 2.3px);
-  -webkit-mask-size: 6px 6px;
-  mask-size: 6px 6px;
-  transition: opacity 500ms var(--ease-out);
-}
-
-/* With motion, the print never shows: the dots assemble into the empty frame instead
-   (so a refresh has nothing to swap). It returns only as the fallback. */
-@media (prefers-reduced-motion: no-preference) {
-  .art:not([data-static]) .print {
-    opacity: 0;
-    transition: none;
-  }
-}
-
-/* ── Copy and actions, under the logo ── */
+/* ── Copy and actions, under the row ── */
 .foot {
   grid-row: 3;
   position: relative;
@@ -133,11 +103,4 @@
     width: 100%;
   }
 
-  .print {
-    inset: 4%;
-    width: 92%;
-    height: 92%;
-    -webkit-mask-size: 4px 4px;
-    mask-size: 4px 4px;
-  }
 }

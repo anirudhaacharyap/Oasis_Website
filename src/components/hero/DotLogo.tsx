@@ -1,16 +1,15 @@
 "use client";
 
 /**
- * The OASIS wordmark printed as a sheet of halftone ink dots.
+ * The OASIS wordmark printed as a sheet of halftone ink dots: the footer's last frame.
  *
  * Dots are sampled from the club's logo path. Each one sits on a spring at its home position.
  * The pointer pushes dots away and heats them (cream -> signal red -> brand red, faster pointer =
  * more heat); they cool and settle home with a slight overshoot. The star glints, and a heat
- * wave rides the arc every few seconds. On load the dots assemble.
+ * wave rides the arc every few seconds.
  *
- * The print run: scrolling away heats the word to brand red and lets it fall like wet ink into the
- * red field below. The footer runs the same sheet in reverse (mode "bookend"): the red ink rises and
- * cools back into the cream word as you reach the end of the page.
+ * The bookend: the word starts as fallen red ink and rises, cooling back into the cream word, as
+ * you reach the end of the page (driven by reel.footBreak).
  *
  * OGL (one tiny WebGL context), CPU springs in typed arrays, one clock: GSAP's ticker.
  */
@@ -20,7 +19,6 @@ import { Geometry, Mesh, Program, Renderer } from "ogl";
 import { gsap } from "@/lib/gsap";
 import { reel } from "@/lib/reel";
 import { LOGO_PATH } from "@/components/brand/logo-path";
-import { heroState, onPress } from "./hero-store";
 
 const VB_W = 806;
 const VB_H = 323;
@@ -68,7 +66,6 @@ interface Dots {
     vy: Float32Array;
     heat: Float32Array;
     radius: Float32Array;
-    delay: Float32Array;
     fall: Float32Array; // how far each dot drops when the word breaks (0.5 to 1.5)
     pos: Float32Array; // interleaved x,y for the GPU
     star: Uint32Array;
@@ -144,7 +141,6 @@ function sampleLogo(w: number, h: number, cell: number, pad: number): Dots {
         vy: new Float32Array(n),
         heat: new Float32Array(n),
         radius: Float32Array.from(rad),
-        delay: new Float32Array(n),
         fall: Float32Array.from({ length: n }, () => 0.5 + Math.random()),
         pos: new Float32Array(n * 2),
         star: Uint32Array.from(star),
@@ -156,25 +152,11 @@ function sampleLogo(w: number, h: number, cell: number, pad: number): Dots {
     return dots;
 }
 
-/** Scatter dots around their homes and stagger their release left to right (the intro). */
-function scatterForIntro(d: Dots, w: number) {
-    for (let i = 0; i < d.n; i++) {
-        const a = Math.random() * Math.PI * 2;
-        const r = 180 + Math.random() * 420;
-        d.x[i] = d.hx[i] + Math.cos(a) * r;
-        d.y[i] = d.hy[i] + Math.sin(a) * r;
-        d.heat[i] = 0.9;
-        d.delay[i] = (d.hx[i] / w) * 0.5 + Math.random() * 0.18;
-    }
-}
-
 type Props = {
     onReady?: () => void;
-    /** "hero" owns the intro, the reticle and presses; "bookend" is the footer's quiet copy. */
-    mode?: "hero" | "bookend";
 };
 
-export default function DotLogo({ onReady, mode = "hero" }: Props) {
+export default function DotLogo({ onReady }: Props) {
     const wrapRef = useRef<HTMLDivElement>(null);
     const readyRef = useRef(onReady);
 
@@ -185,7 +167,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
     useEffect(() => {
         const wrap = wrapRef.current;
         if (!wrap) return;
-        const hero = mode === "hero";
         const touch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
         const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
@@ -223,8 +204,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
         let w = 1;
         let h = 1;
         let t = 0;
-        let introStart = -1;
-        let first = true;
 
         const build = () => {
             const r = wrap.getBoundingClientRect();
@@ -232,16 +211,9 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             h = Math.max(1, r.height);
             renderer.setSize(w, h);
             program.uniforms.uRes.value = [w, h];
-            const pad = hero ? Math.min(w, h) * 0.06 : 0;
-            const logoW = Math.min(w - pad * 2, ((h - pad * 2) * VB_W) / VB_H);
+            const logoW = Math.min(w, (h * VB_W) / VB_H);
             const cell = Math.min(6.5, Math.max(3.6, logoW / 210));
-            const fresh = sampleLogo(w, h, cell, pad);
-            if (first && hero && !reduced()) {
-                scatterForIntro(fresh, w);
-                introStart = -2; // set on the first tick, so the assembly uses the ticker's clock
-            }
-            first = false;
-            dots = fresh;
+            dots = sampleLogo(w, h, cell, 0);
             geometry?.remove();
             for (let i = 0; i < dots.n; i++) {
                 dots.pos[i * 2] = dots.x[i];
@@ -254,7 +226,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             });
             mesh = new Mesh(gl, { mode: gl.POINTS, geometry, program });
         };
-        const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
         // Pointer: lerped target in canvas space; speed drives the push and the heat.
         const ptr = { tx: -9999, ty: -9999, x: -9999, y: -9999, px: -9999, py: -9999, active: false, last: 0 };
@@ -275,28 +246,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
         window.addEventListener("pointermove", onMove, { passive: true });
         document.documentElement.addEventListener("pointerleave", onLeave);
 
-        // Presses (from anywhere in the hero) burst heat outward from the press point.
-        const offPress = onPress((clientX, clientY) => {
-            if (!dots || !hero) return;
-            const r = wrap.getBoundingClientRect();
-            const bx = clientX - r.left;
-            const by = clientY - r.top;
-            const R = 170;
-            for (let i = 0; i < dots.n; i++) {
-                const dx = dots.x[i] - bx;
-                const dy = dots.y[i] - by;
-                const d = Math.hypot(dx, dy);
-                if (d > R) continue;
-                const fall = 1 - d / R;
-                const k = (fall * 7) / (d + 1);
-                dots.vx[i] += dx * k;
-                dots.vy[i] += dy * k;
-                dots.heat[i] = Math.min(1.2, dots.heat[i] + fall * 0.8);
-            }
-        });
-
-        // The title break is driven by Reel (one scroll position), not a second trigger.
-
         let visible = true;
         let lastExit = -1;
         let calmFrames = 0; // frames since anything last moved
@@ -308,7 +257,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
 
         const tick = (time: number, deltaTime: number) => {
             t = time;
-            if (introStart === -2) introStart = t;
             if (!visible || document.hidden || !dots || !mesh || !geometry) return;
             const f = Math.min(deltaTime / 16.667, 3);
             const d = dots;
@@ -330,15 +278,7 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             const R = 62 + Math.min(speed * 5, 120);
             const R2 = R * R;
 
-            const L = d.logo;
-            if (hero) {
-                heroState.overLogo = ptr.active && ptr.x > L.x - 20 && ptr.x < L.x + L.w + 20 && ptr.y > L.y - 20 && ptr.y < L.y + L.h + 20;
-                heroState.radius = R;
-                heroState.heat = Math.min(1, speed * 0.05);
-            }
-
-            const introT = introStart >= 0 ? t - introStart : 99;
-            const exit = hero ? reel.heroBreak : reel.footBreak;
+            const exit = reel.footBreak;
             // Broken, the word is wet red ink: a little spread, mostly falling, each dot at its own rate.
             const spread = exit * 0.12;
             const drop = exit * h * 0.42;
@@ -348,17 +288,16 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             const push = 1.5 + speed * 0.2;
             const warm = 0.03 + speed * 0.012;
 
-            // Calm: no pointer, intro done, scroll still, and the sheet already settled. Then only
+            // Calm: no pointer, scroll still, and the sheet already settled. Then only
             // the star and arc (the idle life) change, and positions are not re-uploaded.
             const scrolling = Math.abs(exit - lastExit) > 0.0005;
             lastExit = exit;
-            const busy = ptr.active || introT < 2.2 || scrolling;
+            const busy = ptr.active || scrolling;
             calmFrames = busy ? 0 : calmFrames + 1;
             const calm = calmFrames > 90; // ~1.5s for springs and heat to settle first
 
             if (!calm) for (let i = 0; i < d.n; i++) {
-                if (introT < d.delay[i]) continue; // still waiting to fly in
-                // Home, pushed outward from the centre as the hero scrolls away.
+                // Home, pushed outward from the centre while the word is still broken.
                 const tx = d.hx[i] + (d.hx[i] - d.cx) * spread;
                 const ty = d.hy[i] + (d.hy[i] - d.cy) * spread + drop * d.fall[i];
 
@@ -385,7 +324,7 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             }
 
             // Idle life: the star glints; a heat wave rides the arc every 6 seconds.
-            if (introT > 1.4 && exit < 0.3) {
+            if (exit < 0.3) {
                 const glint = 0.012 * (0.5 + 0.5 * Math.sin(t * 2.4));
                 for (let j = 0; j < d.star.length; j++) {
                     const i = d.star[j];
@@ -439,7 +378,6 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             gsap.ticker.remove(tick);
             ro.disconnect();
             io.disconnect();
-            offPress();
             window.clearTimeout(rt);
             window.removeEventListener("pointermove", onMove);
             document.documentElement.removeEventListener("pointerleave", onLeave);
@@ -448,7 +386,7 @@ export default function DotLogo({ onReady, mode = "hero" }: Props) {
             renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
             canvas.remove();
         };
-    }, [mode]);
+    }, []);
 
     return <div ref={wrapRef} style={{ position: "absolute", inset: 0 }} />;
 }

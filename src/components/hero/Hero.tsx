@@ -1,20 +1,20 @@
 import { site } from "@/data/site";
-import HeroArt from "./HeroArt";
+import Arcade from "@/components/arcade/Arcade";
 import styles from "./Hero.module.css";
 
 /**
- * Title screen: OASIS itself. The wordmark is a sheet of halftone ink dots that warms and
- * scatters under your hand, then settles home. Text lives only in the band under the logo.
+ * Title screen: the OASIS arcade. Five machines spell the name on their CRTs; hit one and it
+ * changes channel. Text lives only in the band under the row.
  */
 export default function Hero() {
     return (
         <section id="play" className={`level ${styles.hero}`} aria-labelledby="hero-title">
-            <h1 id="hero-title" className={styles.word}>
-                <span className="sr-only">
-                    {site.name}, {site.college}&rsquo;s esports and game dev club
-                </span>
-                <HeroArt />
+            <h1 id="hero-title" className="sr-only">
+                {site.name}, {site.college}&rsquo;s esports and game dev club
             </h1>
+            <div className={styles.word}>
+                <Arcade />
+            </div>
 
             <div className={styles.foot}>
                 <div className={styles.say} data-intro style={{ ["--i" as string]: 3 }}>
