@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
 import KonamiCode from "@/components/KonamiCode";
 import Motion from "@/components/Motion";
+import Reel from "@/components/Reel";
 import { site } from "@/data/site";
 import { siteUrl } from "@/lib/site-url";
 
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 />
                 <SmoothScroll />
                 <Motion />
+                <Reel />
                 <KonamiCode />
             </body>
         </html>

@@ -422,10 +422,14 @@ export default function ControllerScene(props: ControllerSceneProps) {
         // While the page scrolls, give the frames to the scroll: phones pause the pad,
         // desktops render it at half rate. It resumes 160 ms after scrolling stops.
         let lastScroll = 0;
-        const onScroll = () => (lastScroll = performance.now());
-        window.addEventListener("scroll", onScroll, { passive: true });
+        let lastY = window.scrollY;
         let frame = 0;
         const tick = (time: number) => {
+            const y = window.scrollY;
+            if (y !== lastY) {
+                lastY = y;
+                lastScroll = performance.now();
+            }
             if (!visible || document.hidden) return;
             const scrolling = performance.now() - lastScroll < 160;
             if (scrolling) return; // give every scroll frame to the page; the pad resumes 160 ms after
@@ -437,7 +441,6 @@ export default function ControllerScene(props: ControllerSceneProps) {
         gsap.ticker.add(tick);
         return () => {
             gsap.ticker.remove(tick);
-            window.removeEventListener("scroll", onScroll);
             io.disconnect();
             document.body.style.cursor = "";
         };

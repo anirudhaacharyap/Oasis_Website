@@ -14,7 +14,8 @@ export default function SmoothScroll() {
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         const lenis = new Lenis({
-            lerp: 0.09,
+            // A touch heavier than before: each wheel step glides a little longer.
+            lerp: 0.07,
             smoothWheel: true,
             syncTouch: false,
             wheelMultiplier: 1,

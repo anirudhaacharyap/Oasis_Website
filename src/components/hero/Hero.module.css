@@ -23,10 +23,16 @@
 }
 
 /* ── The logo ── */
-.art {
+.word {
   grid-row: 2;
-  position: relative;
   min-height: 0;
+  margin: 0;
+  position: relative;
+}
+
+.art {
+  position: absolute;
+  inset: 0;
 }
 
 /* The printed fallback: the same wordmark through a halftone screen. It holds the frame until the
@@ -104,7 +110,7 @@
     grid-template-rows: var(--nav-h) 2.5rem auto auto;
   }
 
-  .art {
+  .word {
     grid-row: 3;
     aspect-ratio: 806 / 380;
   }
@@ -138,8 +144,8 @@
 
 /* Native cursor is hidden only while the reticle is running (it sets data-cursor on the section). */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .hero[data-cursor],
-  .hero[data-cursor] * {
+  .hero[data-cursor] .art,
+  .hero[data-cursor] .art * {
     cursor: none;
   }
 }

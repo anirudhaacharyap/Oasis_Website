@@ -10,11 +10,12 @@ import styles from "./Hero.module.css";
 export default function Hero() {
     return (
         <section id="play" className={`level ${styles.hero}`} aria-labelledby="hero-title">
-            <h1 id="hero-title" className="sr-only">
-                {site.name}, {site.college}&rsquo;s esports and game dev club
+            <h1 id="hero-title" className={styles.word}>
+                <span className="sr-only">
+                    {site.name}, {site.college}&rsquo;s esports and game dev club
+                </span>
+                <HeroArt />
             </h1>
-
-            <HeroArt />
             <HeroCursor />
 
             <div className={styles.foot}>

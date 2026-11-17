@@ -1,6 +1,5 @@
-/* The HUD dock: a bottom-floating map of the run. Solid ink so it reads on red and on black,
-   square print corners, one red journey line. Motion: rise in from below (ease-out), exits
-   faster than entries, hover only on fine pointers, transform and opacity only. */
+/* The HUD dock: a bottom-floating map of the run. Solid ink so it reads on red and on black.
+   It stays down over the title screen and rises once you scroll. Exit is faster than the rise. */
 
 .dock {
   position: fixed;
@@ -11,23 +10,34 @@
   translate: -50% calc(100% + 2rem);
   opacity: 0;
   pointer-events: none;
-  background: var(--c-ink);
   color: var(--c-cream);
-  box-shadow:
-    inset 0 0 0 1px var(--c-rule-strong),
-    0 18px 40px -12px rgba(0, 0, 0, 0.6);
   transition:
-    translate 260ms cubic-bezier(0.4, 0, 1, 1),
-    opacity 200ms ease;
+    translate 260ms var(--ease-out),
+    opacity 200ms var(--ease-out);
 }
 
-.dock[data-shown] {
+/* Keyboard users tabbing in over the title screen get the dock too, so focus is never invisible. */
+.dock[data-shown],
+.dock:focus-within {
   translate: -50% 0;
   opacity: 1;
   pointer-events: auto;
   transition:
     translate 560ms var(--ease-out),
-    opacity 300ms ease;
+    opacity 300ms var(--ease-out);
+}
+
+/* Keyboard focus is answered at once: never make a keyboard user wait for a rise. */
+.dock:focus-within:not([data-shown]) {
+  transition: none;
+}
+
+.map,
+.phone {
+  background: var(--c-ink);
+  box-shadow:
+    inset 0 0 0 1px var(--c-rule-strong),
+    0 18px 40px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* ── Desktop map ── */
@@ -60,12 +70,15 @@
 }
 
 .levels {
+  position: relative;
   display: grid;
   min-width: 0;
 }
 
 .level {
   position: relative;
+  z-index: 1;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -121,24 +134,60 @@
   transition: translate 240ms var(--ease-out);
 }
 
-/* The level you are in: full cream, a cream marker before the name. */
+/* The level you are in: full cream type, signal-red level number. */
 .level[aria-current] {
   color: var(--c-cream);
 }
 
-.level[aria-current] .hud {
+.level[aria-current] > .hud {
   color: var(--c-signal);
   opacity: 1;
 }
 
-.level[aria-current]::before {
-  content: "";
+/* Its slot fills with cream as you read through it (JS sets scaleX 0..1 on the one clock).
+   It stops 2px short of the foot so the red journey line stays visible under it. */
+.wash {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
+  z-index: -1;
+  inset: 0 0 2px;
   background: var(--c-cream);
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+/* The same label set in ink and clipped to the fill's edge (JS sets clip-path), so letters
+   turn ink exactly as the cream passes under them. Inherits the slot's padding and gap. */
+.ink {
+  position: absolute;
+  inset: 0 0 2px;
+  display: flex;
+  align-items: center;
+  gap: inherit;
+  padding: inherit;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+}
+
+.ink .hud,
+.ink .name {
+  color: var(--c-ink);
+  opacity: 1;
+}
+
+/* Only the level you are in shows its fill; a level you leave lets it go quickly. */
+.wash,
+.ink {
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.level[aria-current] .wash,
+.level[aria-current] .ink,
+.where[data-filling] .wash,
+.where[data-filling] .ink {
+  opacity: 1;
+  transition: none;
 }
 
 /* Hover preview: a cream line draws across this level's stretch of the journey. */
@@ -218,6 +267,8 @@
 }
 
 .where {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -226,11 +277,11 @@
   padding: 0 1rem;
 }
 
-.where .name {
+.where > .name {
   color: var(--c-cream);
 }
 
-.where .hud {
+.where > .hud {
   color: var(--c-signal);
   opacity: 1;
 }
@@ -267,7 +318,7 @@
 @media (prefers-reduced-motion: reduce) {
   .dock,
   .dock[data-shown] {
-    transition: opacity 120ms ease;
+    transition: opacity 120ms var(--ease-out);
     translate: -50% 0;
   }
 }

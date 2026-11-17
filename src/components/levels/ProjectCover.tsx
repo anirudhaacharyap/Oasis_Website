@@ -31,28 +31,35 @@ function hash(text: string) {
     return h >>> 0;
 }
 
-function rng(seed: number) {
-    let a = seed;
-    return () => {
+/**
+ * The nth float in [0, 1) for a seed. Indexed, not a leftover generator, so a second
+ * render (and the server) always read the same number. A shared generator was advancing
+ * once more in the browser than on the server, and the cartridge dots did not match.
+ */
+function take(seed: number, index: number) {
+    let a = seed >>> 0;
+    let value = 0;
+    for (let i = 0; i <= index; i++) {
         a = (a + 0x6d2b79f5) | 0;
         let t = Math.imul(a ^ (a >>> 15), 1 | a);
         t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+        value = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    return value;
 }
 
 const n1 = (v: number) => Number(v.toFixed(1));
 
-function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: string; rand: () => number }) {
+function Pattern({ kind, fg, seed }: { kind: Project["cover"]["pattern"]; fg: string; seed: number }) {
     switch (kind) {
         case "stripes": {
-            const step = 46 + rand() * 18;
-            const tilt = rand() < 0.5 ? -28 : 28;
+            const step = 46 + take(seed, 0) * 18;
+            const tilt = take(seed, 1) < 0.5 ? -28 : 28;
             const count = Math.ceil(700 / step);
             return (
                 <g transform={`rotate(${tilt} 200 218)`} fill={fg}>
                     {Array.from({ length: count }, (_, i) => (
-                        <rect key={i} x={n1(-120 + i * step)} y={-120} width={n1(step * (0.32 + rand() * 0.28))} height={700} />
+                        <rect key={i} x={n1(-120 + i * step)} y={-120} width={n1(step * (0.32 + take(seed, 2 + i) * 0.28))} height={700} />
                     ))}
                 </g>
             );
@@ -63,7 +70,7 @@ function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: st
             const cw = AW / cols;
             const ch = AH / rows;
             const filled = new Set<number>();
-            while (filled.size < 9) filled.add(Math.floor(rand() * cols * rows));
+            for (let k = 0; filled.size < 9 && k < 64; k++) filled.add(Math.floor(take(seed, k) * cols * rows));
             return (
                 <g stroke={fg} strokeWidth={3}>
                     {Array.from({ length: cols * rows }, (_, i) => {
@@ -84,9 +91,9 @@ function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: st
             );
         }
         case "rings": {
-            const cx = 200 + (rand() - 0.5) * 90;
-            const cy = 218 + (rand() - 0.5) * 70;
-            const step = 22 + rand() * 6;
+            const cx = 200 + (take(seed, 0) - 0.5) * 90;
+            const cy = 218 + (take(seed, 1) - 0.5) * 70;
+            const step = 22 + take(seed, 2) * 6;
             return (
                 <g fill="none" stroke={fg}>
                     {Array.from({ length: 11 }, (_, i) => (
@@ -99,14 +106,14 @@ function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: st
             const n = 6;
             const gap = 6;
             const b = (AW - gap * (n - 1)) / n;
-            const flip = rand() < 0.5;
+            const flip = take(seed, 0) < 0.5;
             const blocks: ReactNode[] = [];
             for (let row = 0; row < n; row++) {
                 for (let j = 0; j <= row; j++) {
                     const col = flip ? n - 1 - j : j;
                     const x = AX + col * (b + gap);
                     const y = AY + AH - (row + 1) * b - row * gap;
-                    const hollow = rand() < 0.22;
+                    const hollow = take(seed, 1 + (row * (row + 1)) / 2 + j) < 0.22;
                     const inset = hollow ? 2 : 0;
                     blocks.push(
                         <rect
@@ -127,7 +134,7 @@ function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: st
         case "dots": {
             const cols = 10;
             const rows = 10;
-            const angle = rand() * Math.PI * 2;
+            const angle = take(seed, 0) * Math.PI * 2;
             const dx = Math.cos(angle);
             const dy = Math.sin(angle);
             const sx = AW / cols;
@@ -145,8 +152,8 @@ function Pattern({ kind, fg, rand }: { kind: Project["cover"]["pattern"]; fg: st
             );
         }
         case "wave": {
-            const phase = rand() * Math.PI * 2;
-            const freq = 1.6 + rand() * 1.4;
+            const phase = take(seed, 0) * Math.PI * 2;
+            const freq = 1.6 + take(seed, 1) * 1.4;
             return (
                 <g fill="none" stroke={fg} strokeWidth={7} strokeLinecap="round">
                     {Array.from({ length: 10 }, (_, i) => {
@@ -186,6 +193,7 @@ export default function ProjectCover({
     }
 
     const { bg, fg } = TONES[project.cover.tone];
+    const seed = hash(project.slug);
     const size = Math.max(15, Math.min(26, 304 / (project.title.length * 0.82)));
 
     return (
@@ -214,10 +222,10 @@ export default function ProjectCover({
             <rect x={14} y={34} width={372} height={460} fill="none" stroke={fg} strokeOpacity={0.35} strokeWidth={2} />
             <g clipPath={`url(#${uid})`}>
                 <g mask={`url(#${uid}m)`}>
-                    <Pattern kind={project.cover.pattern} fg={fg} rand={rng(hash(project.slug))} />
+                    <Pattern kind={project.cover.pattern} fg={fg} seed={seed} />
                 </g>
                 <g mask={`url(#${uid}s)`}>
-                    <Pattern kind={project.cover.pattern} fg={fg} rand={rng(hash(project.slug))} />
+                    <Pattern kind={project.cover.pattern} fg={fg} seed={seed} />
                 </g>
             </g>
             <rect x={AX} y={408} width={AW} height={68} fill={INK} stroke={CREAM} strokeOpacity={0.45} strokeWidth={1.5} />

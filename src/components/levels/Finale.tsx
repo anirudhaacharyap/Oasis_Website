@@ -1,7 +1,7 @@
 import { hasMockContent, isPlaceholderUrl, levels } from "@/lib/content";
 import { site } from "@/data/site";
-import Logo from "@/components/brand/Logo";
 import SpawnSelect from "./SpawnSelect";
+import FooterMark from "./FooterMark";
 import styles from "./Finale.module.css";
 
 export default function Finale() {
@@ -52,8 +52,6 @@ export function SiteFooter() {
     return (
         <footer className={`tone-ink ${styles.footer}`}>
             <div className={`wrap ${styles.footInner}`}>
-                <Logo className={styles.mark} decorative />
-
                 <div className={styles.cols}>
                     <div className={styles.col}>
                         <p className={styles.tag}>{site.tagline}</p>
@@ -98,6 +96,9 @@ export function SiteFooter() {
                         )}
                     </div>
                 </div>
+
+                {/* The last frame of the page: the wordmark the title broke apart, printed whole again. */}
+                <FooterMark />
 
                 <div className={styles.bottom}>
                     <p>

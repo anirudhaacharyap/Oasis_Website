@@ -6,14 +6,19 @@
  * Dots are sampled from the club's logo path. Each one sits on a spring at its home position.
  * The pointer pushes dots away and heats them (cream -> signal red -> brand red, faster pointer =
  * more heat); they cool and settle home with a slight overshoot. The star glints, and a heat
- * wave rides the arc every few seconds. On load the dots assemble; scrolling away drifts them apart.
+ * wave rides the arc every few seconds. On load the dots assemble.
+ *
+ * The print run: scrolling away heats the word to brand red and lets it fall like wet ink into the
+ * red field below. The footer runs the same sheet in reverse (mode "bookend"): the red ink rises and
+ * cools back into the cream word as you reach the end of the page.
  *
  * OGL (one tiny WebGL context), CPU springs in typed arrays, one clock: GSAP's ticker.
  */
 
 import { useEffect, useRef } from "react";
 import { Geometry, Mesh, Program, Renderer } from "ogl";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
+import { reel } from "@/lib/reel";
 import { LOGO_PATH } from "@/components/brand/logo-path";
 import { heroState, onPress } from "./hero-store";
 
@@ -64,6 +69,7 @@ interface Dots {
     heat: Float32Array;
     radius: Float32Array;
     delay: Float32Array;
+    fall: Float32Array; // how far each dot drops when the word breaks (0.5 to 1.5)
     pos: Float32Array; // interleaved x,y for the GPU
     star: Uint32Array;
     arc: Uint32Array; // arc dots ordered left to right
@@ -139,6 +145,7 @@ function sampleLogo(w: number, h: number, cell: number, pad: number): Dots {
         heat: new Float32Array(n),
         radius: Float32Array.from(rad),
         delay: new Float32Array(n),
+        fall: Float32Array.from({ length: n }, () => 0.5 + Math.random()),
         pos: new Float32Array(n * 2),
         star: Uint32Array.from(star),
         arc: Uint32Array.from(arc),
@@ -161,7 +168,13 @@ function scatterForIntro(d: Dots, w: number) {
     }
 }
 
-export default function DotLogo({ onReady }: { onReady?: () => void }) {
+type Props = {
+    onReady?: () => void;
+    /** "hero" owns the intro, the reticle and presses; "bookend" is the footer's quiet copy. */
+    mode?: "hero" | "bookend";
+};
+
+export default function DotLogo({ onReady, mode = "hero" }: Props) {
     const wrapRef = useRef<HTMLDivElement>(null);
     const readyRef = useRef(onReady);
 
@@ -172,6 +185,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
     useEffect(() => {
         const wrap = wrapRef.current;
         if (!wrap) return;
+        const hero = mode === "hero";
         const touch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
         const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
@@ -190,6 +204,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
         canvas.style.inset = "0";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
+        canvas.style.pointerEvents = "none";
         canvas.setAttribute("aria-hidden", "true");
         wrap.appendChild(canvas);
 
@@ -217,11 +232,11 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             h = Math.max(1, r.height);
             renderer.setSize(w, h);
             program.uniforms.uRes.value = [w, h];
-            const pad = Math.min(w, h) * 0.06;
+            const pad = hero ? Math.min(w, h) * 0.06 : 0;
             const logoW = Math.min(w - pad * 2, ((h - pad * 2) * VB_W) / VB_H);
             const cell = Math.min(6.5, Math.max(3.6, logoW / 210));
             const fresh = sampleLogo(w, h, cell, pad);
-            if (first && !reduced()) {
+            if (first && hero && !reduced()) {
                 scatterForIntro(fresh, w);
                 introStart = -2; // set on the first tick, so the assembly uses the ticker's clock
             }
@@ -262,7 +277,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
 
         // Presses (from anywhere in the hero) burst heat outward from the press point.
         const offPress = onPress((clientX, clientY) => {
-            if (!dots) return;
+            if (!dots || !hero) return;
             const r = wrap.getBoundingClientRect();
             const bx = clientX - r.left;
             const by = clientY - r.top;
@@ -280,18 +295,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             }
         });
 
-        // Scroll exit: the dots drift apart and cool as the hero leaves.
-        let exit = 0;
-        const section = wrap.closest("section");
-        const st = section
-            ? ScrollTrigger.create({
-                  trigger: section,
-                  start: "top top",
-                  end: "bottom top",
-                  scrub: true,
-                  onUpdate: (self) => (exit = self.progress),
-              })
-            : null;
+        // The title break is driven by Reel (one scroll position), not a second trigger.
 
         let visible = true;
         let lastExit = -1;
@@ -327,14 +331,20 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             const R2 = R * R;
 
             const L = d.logo;
-            heroState.overLogo = ptr.active && ptr.x > L.x - 20 && ptr.x < L.x + L.w + 20 && ptr.y > L.y - 20 && ptr.y < L.y + L.h + 20;
-            heroState.radius = R;
-            heroState.heat = Math.min(1, speed * 0.05);
+            if (hero) {
+                heroState.overLogo = ptr.active && ptr.x > L.x - 20 && ptr.x < L.x + L.w + 20 && ptr.y > L.y - 20 && ptr.y < L.y + L.h + 20;
+                heroState.radius = R;
+                heroState.heat = Math.min(1, speed * 0.05);
+            }
 
             const introT = introStart >= 0 ? t - introStart : 99;
-            const spread = exit * 0.38;
+            const exit = hero ? reel.heroBreak : reel.footBreak;
+            // Broken, the word is wet red ink: a little spread, mostly falling, each dot at its own rate.
+            const spread = exit * 0.12;
+            const drop = exit * h * 0.42;
+            const floor = exit * 1.05; // heat the break holds the dots at (1 and above reads brand red)
             const damp = Math.pow(DAMP, f);
-            const cool = Math.pow(0.955 - exit * 0.05, f);
+            const cool = Math.pow(0.955, f);
             const push = 1.5 + speed * 0.2;
             const warm = 0.03 + speed * 0.012;
 
@@ -350,7 +360,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
                 if (introT < d.delay[i]) continue; // still waiting to fly in
                 // Home, pushed outward from the centre as the hero scrolls away.
                 const tx = d.hx[i] + (d.hx[i] - d.cx) * spread;
-                const ty = d.hy[i] + (d.hy[i] - d.cy) * spread + exit * 60;
+                const ty = d.hy[i] + (d.hy[i] - d.cy) * spread + drop * d.fall[i];
 
                 if (ptr.active) {
                     const dx = d.x[i] - ptr.x;
@@ -369,7 +379,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
                 d.vy[i] = (d.vy[i] + (ty - d.y[i]) * K * f) * damp;
                 d.x[i] += d.vx[i] * f;
                 d.y[i] += d.vy[i] * f;
-                d.heat[i] *= cool;
+                d.heat[i] = Math.max(d.heat[i] * cool, floor);
                 d.pos[i * 2] = d.x[i];
                 d.pos[i * 2 + 1] = d.y[i];
             }
@@ -397,13 +407,16 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
 
             if (calm) {
                 // Only the glint and arc dots cool here; everything else is already at rest.
-                for (let j = 0; j < d.star.length; j++) d.heat[d.star[j]] *= cool;
-                for (let j = 0; j < d.arc.length; j++) d.heat[d.arc[j]] *= cool;
+                for (let j = 0; j < d.star.length; j++) d.heat[d.star[j]] = Math.max(d.heat[d.star[j]] * cool, floor);
+                for (let j = 0; j < d.arc.length; j++) d.heat[d.arc[j]] = Math.max(d.heat[d.arc[j]] * cool, floor);
             } else {
                 geometry.attributes.position.needsUpdate = true;
             }
             geometry.attributes.heat.needsUpdate = true;
-            program.uniforms.uAlpha.value = 1 - exit * 0.85;
+            // The ink holds its colour while it falls, then is gone by the end of the break (no smear
+            // left hanging over the next section).
+            const late = Math.min(1, Math.max(0, (exit - 0.6) / 0.4));
+            program.uniforms.uAlpha.value = 1 - late * late * (3 - 2 * late);
             renderer.render({ scene: mesh });
 
             if (readyRef.current) {
@@ -426,7 +439,6 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             gsap.ticker.remove(tick);
             ro.disconnect();
             io.disconnect();
-            st?.kill();
             offPress();
             window.clearTimeout(rt);
             window.removeEventListener("pointermove", onMove);
@@ -436,7 +448,7 @@ export default function DotLogo({ onReady }: { onReady?: () => void }) {
             renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
             canvas.remove();
         };
-    }, []);
+    }, [mode]);
 
     return <div ref={wrapRef} style={{ position: "absolute", inset: 0 }} />;
 }

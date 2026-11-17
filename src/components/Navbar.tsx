@@ -9,17 +9,29 @@ import styles from "./Navbar.module.css";
 
 /**
  * The HUD: a bottom dock that is also the map of the run.
- * Each level's slot is as wide as that level is long, so the dock reads as the page itself.
- * One red line fills from the hero to the footer (the whole journey, never stopping early),
- * ticks mark each checkpoint and turn red once passed, and a cream marker sits on the
- * level you are in. It stays down over the title screen and rises once you start playing.
- * Phones get the star, the current level and a Menu sheet, over the same journey line.
+ * It stays down over the title screen and rises once you scroll. Each level's slot
+ * is as wide as that level is long. The red line along the foot is the whole page.
+ * The slot of the level you are in fills with cream as you read through that level,
+ * and its label turns ink exactly where the fill has reached.
  */
 
 type Segment = { id: string; start: number; end: number };
+type Bound = { id: string; top: number; bottom: number };
+type Wash = { wash: HTMLSpanElement | null; ink: HTMLSpanElement | null };
 
 /** Layout numbers measured on resize only, so the per-frame tick never forces a layout. */
-const metrics = { max: 1, heroH: 800 };
+const metrics = { max: 1, heroH: 800, bounds: [] as Bound[] };
+
+/** How far the reading line (the middle of the screen) is through a level: 0 not reached, 1 read. */
+const progressOf = (b: Bound, mid: number) =>
+    Math.min(1, Math.max(0, (mid - b.top) / Math.max(1, b.bottom - b.top)));
+
+const paint = (w: Wash | undefined, v: number) => {
+    if (w?.wash) w.wash.style.transform = `scaleX(${v})`;
+    if (w?.ink) w.ink.style.clipPath = `inset(0 ${((1 - v) * 100).toFixed(3)}% 0 0)`;
+};
+
+const EPS = 0.0005;
 
 const STAR = "M8 0.8 9.9 5.9 15.3 6.1 11 9.4 12.5 14.6 8 11.6 3.5 14.6 5 9.4 0.7 6.1 6.1 5.9Z";
 
@@ -31,6 +43,8 @@ export default function Navbar() {
     const pending = useRef<string | null>(null);
     const fillRef = useRef<HTMLSpanElement>(null);
     const phoneFillRef = useRef<HTMLSpanElement>(null);
+    const washRefs = useRef(new Map<string, Wash>());
+    const phoneWashRef = useRef<Wash>({ wash: null, ink: null });
 
     // Measure every level once laid out (and whenever the page reflows): its share of the run.
     useEffect(() => {
@@ -38,15 +52,21 @@ export default function Navbar() {
             const max = document.documentElement.scrollHeight - window.innerHeight;
             metrics.max = Math.max(1, max);
             metrics.heroH = document.getElementById("play")?.offsetHeight ?? window.innerHeight;
-            if (max <= 0) return;
-            const next = levels
+            const bounds = levels
                 .map((level) => {
                     const el = document.getElementById(level.id);
                     if (!el) return null;
                     const top = el.getBoundingClientRect().top + window.scrollY;
-                    return { id: level.id as string, start: Math.min(1, Math.max(0, top / max)), end: 0 };
+                    return { id: level.id as string, top, bottom: top + el.offsetHeight };
                 })
-                .filter((s): s is Segment => s !== null);
+                .filter((b): b is Bound => b !== null);
+            metrics.bounds = bounds;
+            if (max <= 0) return;
+            const next = bounds.map((b) => ({
+                id: b.id,
+                start: Math.min(1, Math.max(0, b.top / max)),
+                end: 0,
+            }));
             next.forEach((s, i) => (s.end = i < next.length - 1 ? next[i + 1].start : 1));
             setSegments(next);
         };
@@ -62,7 +82,7 @@ export default function Navbar() {
         };
     }, []);
 
-    // The journey line, on the one clock (GSAP), eased toward the true scroll position.
+    // One tick on the one clock (GSAP): the journey line, the level you are in, and its fill.
     useEffect(() => {
         const fills = [fillRef.current, phoneFillRef.current].filter(Boolean) as HTMLElement[];
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -73,36 +93,64 @@ export default function Navbar() {
                   }
                 : gsap.quickTo(el, "scaleX", { duration: 0.45, ease: "power3.out" })
         );
-        // Only scrollY is read per frame (cheap); everything else comes from the resize measure.
+        // The fills ease toward the reading line, settling in about a quarter second.
+        const drawn = new Map<string, number>();
+        const target = new Map<string, number>();
+        let phoneDrawn = -1;
+        let phoneTarget = 0;
+        let here = "";
         let lastY = -1;
+        let lastH = -1;
         const tick = () => {
             const y = window.scrollY;
-            if (y === lastY) return;
-            lastY = y;
-            const p = Math.min(1, Math.max(0, y / metrics.max));
-            setters.forEach((set) => set(p));
-            // Over the title screen the dock stays down; it rises once you are on your way.
-            const next = y > metrics.heroH * 0.55;
-            setShown((s) => (s === next ? s : next));
-            // At the very end the footer owns the screen: the run is at its finale.
-            if (p > 0.985) setCurrent((c) => (c === "join" ? c : "join"));
+            const h = window.innerHeight;
+            if (y !== lastY || h !== lastH) {
+                lastY = y;
+                lastH = h;
+                const p = Math.min(1, Math.max(0, y / metrics.max));
+                setters.forEach((set) => set(p));
+                // Over the title screen the dock stays down; it rises once you are on your way.
+                const next = y > metrics.heroH * 0.55;
+                setShown((s) => (s === next ? s : next));
+                // The level you are in is the one under the middle of the screen. At the very end
+                // the footer owns the screen: the run is at its finale.
+                const mid = y + h * 0.5;
+                let id = "play";
+                for (const b of metrics.bounds) {
+                    if (b.top <= mid) id = b.id;
+                    target.set(b.id, progressOf(b, mid));
+                }
+                if (p > 0.985) id = "join";
+                const b = metrics.bounds.find((x) => x.id === id);
+                phoneTarget = b && id !== "play" && id !== "join" ? progressOf(b, mid) : 0;
+                if (id !== here) {
+                    // A new level starts its own fill where it stands, never from the last one's.
+                    phoneDrawn = phoneTarget;
+                    paint(phoneWashRef.current, phoneDrawn);
+                    here = id;
+                    setCurrent((c) => (c === id ? c : id));
+                }
+            }
+            const k = reduce ? 1 : 1 - Math.pow(0.8, gsap.ticker.deltaRatio(60));
+            washRefs.current.forEach((w, key) => {
+                const t = target.get(key) ?? 0;
+                const v = drawn.get(key);
+                if (v !== undefined && Math.abs(t - v) < EPS) return;
+                const nv = v === undefined || Math.abs(t - v) < EPS * 4 ? t : v + (t - v) * k;
+                drawn.set(key, nv);
+                paint(w, nv);
+            });
+            if (Math.abs(phoneTarget - phoneDrawn) >= EPS) {
+                phoneDrawn =
+                    Math.abs(phoneTarget - phoneDrawn) < EPS * 4
+                        ? phoneTarget
+                        : phoneDrawn + (phoneTarget - phoneDrawn) * k;
+                paint(phoneWashRef.current, phoneDrawn);
+            }
         };
         tick();
         gsap.ticker.add(tick);
         return () => gsap.ticker.remove(tick);
-    }, []);
-
-    // Which level owns the middle of the screen.
-    useEffect(() => {
-        const io = new IntersectionObserver(
-            (entries) => entries.forEach((e) => e.isIntersecting && setCurrent(e.target.id)),
-            { rootMargin: "-45% 0px -50% 0px" }
-        );
-        levels.forEach((level) => {
-            const el = document.getElementById(level.id);
-            if (el) io.observe(el);
-        });
-        return () => io.disconnect();
     }, []);
 
     // Growing past the phone layout while the sheet is open would strand its scroll lock.
@@ -134,6 +182,13 @@ export default function Navbar() {
         scrollToLevel(id);
     };
 
+    const washRef = (id: string, part: keyof Wash) => (node: HTMLSpanElement | null) => {
+        const w = washRefs.current.get(id) ?? { wash: null, ink: null };
+        w[part] = node;
+        if (w.wash || w.ink) washRefs.current.set(id, w);
+        else washRefs.current.delete(id);
+    };
+
     const currentIndex = Math.max(0, levels.findIndex((l) => l.id === current));
     const currentLevel = levels[currentIndex];
     const middle = levels.filter((l) => l.id !== "play" && l.id !== "join");
@@ -148,12 +203,13 @@ export default function Navbar() {
     // otherwise leave part of the bar empty).
     const columns = shares.map((v) => `minmax(10rem, ${((v / total) * 10).toFixed(3)}fr)`).join(" ");
     const hudOf = (i: number) => (i === 0 ? "Title" : i === levels.length - 1 ? "Finale" : `L${i}`);
+    const filling = current !== "play" && current !== "join";
 
     return (
         <Sheet open={open} onOpenChange={setOpen} onOpenChangeComplete={onOpenChangeComplete}>
             <header className={styles.dock} data-shown={shown || open ? "" : undefined}>
                 {/* Desktop: the map of the run. */}
-                <nav aria-label="Levels" className={styles.map}>
+                <nav id="level-map" aria-label="Levels" className={styles.map}>
                     <a
                         href="#play"
                         className={styles.star}
@@ -177,11 +233,17 @@ export default function Navbar() {
                                     aria-current={current === level.id ? "location" : undefined}
                                     data-passed={i <= currentIndex ? "" : undefined}
                                 >
+                                    <span ref={washRef(level.id, "wash")} className={styles.wash} aria-hidden="true" />
                                     <span className={styles.tick} aria-hidden="true" />
                                     <span className={styles.hud} aria-hidden="true">
                                         {hudOf(i)}
                                     </span>
                                     <span className={styles.name}>{level.label}</span>
+                                    {/* The same label in ink, clipped to the fill, so the type turns exactly at its edge. */}
+                                    <span ref={washRef(level.id, "ink")} className={styles.ink} aria-hidden="true">
+                                        <span className={styles.hud}>{hudOf(i)}</span>
+                                        <span className={styles.name}>{level.label}</span>
+                                    </span>
                                     <span className={styles.preview} aria-hidden="true" />
                                 </a>
                             );
@@ -204,16 +266,33 @@ export default function Navbar() {
                     </span>
                 </nav>
 
-                {/* Phone: star, where you are, menu, same journey line. */}
+                {/* Phone: star, where you are (filling the same way), menu, same journey line. */}
                 <div className={styles.phone}>
                     <a href="#play" className={styles.star} onClick={go("play")} aria-label="Title screen, back to the top">
                         <svg viewBox="0 0 16 16" aria-hidden="true">
                             <path d={STAR} />
                         </svg>
                     </a>
-                    <p className={styles.where}>
+                    <p className={styles.where} data-filling={filling ? "" : undefined}>
+                        <span
+                            ref={(node) => {
+                                phoneWashRef.current.wash = node;
+                            }}
+                            className={styles.wash}
+                            aria-hidden="true"
+                        />
                         <span className={styles.hud}>{hudOf(currentIndex)}</span>
                         <span className={styles.name}>{currentLevel.label}</span>
+                        <span
+                            ref={(node) => {
+                                phoneWashRef.current.ink = node;
+                            }}
+                            className={styles.ink}
+                            aria-hidden="true"
+                        >
+                            <span className={styles.hud}>{hudOf(currentIndex)}</span>
+                            <span className={styles.name}>{currentLevel.label}</span>
+                        </span>
                     </p>
                     <SheetTrigger className={styles.menuBtn}>Menu</SheetTrigger>
                     <span className={styles.track} aria-hidden="true">

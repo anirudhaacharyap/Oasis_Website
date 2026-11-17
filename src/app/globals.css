@@ -250,6 +250,14 @@
   .level {
     position: relative;
     isolation: isolate;
+    scroll-margin-bottom: 5.5rem;
+  }
+
+  /* Poster frames. History and the cartridges stay long, because they are lists you read. */
+  #about,
+  #members,
+  #join {
+    min-height: 100svh;
   }
 
   /* Flat black with the hero's faint halftone screen. */

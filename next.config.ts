@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   // Stay inside this repo. A package-lock.json in a parent folder would otherwise
   // be treated as the workspace root.
   turbopack: {

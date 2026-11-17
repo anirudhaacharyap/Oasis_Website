@@ -251,3 +251,35 @@ Headings reveal with GSAP SplitText by line (masked lines, 0.9s `expo.out`, 0.08
 ## QA State (at documentation)
 
 0 console errors; 0 serious axe violations; 60 fps on desktop and 59 fps on a throttled phone; LCP 1.6 s; CLS 0; JS 283 KB gzipped; finish review verdict "ship".
+
+
+## Scroll cut (cinematic pass)
+
+### Idea
+
+The page is one poster you scroll through. One scroll position drives the title. The word holds, then breaks apart, and the next frame is already the club's red. After that the page is normal scroll: events, cartridges, the roster, and the controller as the last shot.
+
+### What changed
+
+- The title pins for a short beat on a large screen (about 60% of the viewport) while the dots spread and cool. The wheel is never locked past that beat. A phone does not pin. The same break plays as the title leaves.
+- The dot wordmark reads that one value (`heroBreak`). It no longer keeps its own scroll trigger.
+- The heading is the wordmark on screen. The dots and the printed mark sit inside the `h1`. The name for screen readers stays a hidden span.
+- The reticle hides the cursor only over the word, not over the line or the buttons.
+- The cream block in the dock scales from its left edge instead of changing width.
+- The cartridge preview and the controller watch scroll on the GSAP ticker, with the dock and the smooth scroll.
+- About, the roster, and the spawn frame are at least one screen. History and the cartridges stay long, because they are lists.
+
+### Left as they were
+
+Sample tags, the tilted script line, no loader, no per-project pages, and the dock staying down until you leave the title.
+
+## The print run (cinematic pass 2)
+
+The title break heats the wordmark to brand red and lets the dots fall like wet ink, fading out by
+the end of the break. The footer's wordmark is the last frame of the page and runs the same sheet in
+reverse: the red ink rises and cools into the cream word as you reach the end (`FooterMark.tsx`,
+`reel.footBreak`).
+
+Tried and removed at the owner's call: a live halftone wipe between sections and committed section
+snapping. Forced scrolling felt like a fight, especially scrolling back up. Scrolling stays free, on
+Lenis with lerp 0.07.

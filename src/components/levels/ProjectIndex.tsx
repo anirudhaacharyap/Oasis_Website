@@ -105,13 +105,20 @@ export default function ProjectIndex({ projects }: { projects: Project[] }) {
                 ol.addEventListener("pointerleave", hide);
                 ol.addEventListener("focusin", onFocusIn);
                 ol.addEventListener("focusout", onFocusOut);
-                window.addEventListener("scroll", onScroll, { passive: true });
+                let lastY = window.scrollY;
+                const onTick = () => {
+                    const y = window.scrollY;
+                    if (y === lastY) return;
+                    lastY = y;
+                    onScroll();
+                };
+                gsap.ticker.add(onTick);
                 return () => {
                     ol.removeEventListener("pointermove", onMove);
                     ol.removeEventListener("pointerleave", hide);
                     ol.removeEventListener("focusin", onFocusIn);
                     ol.removeEventListener("focusout", onFocusOut);
-                    window.removeEventListener("scroll", onScroll);
+                    gsap.ticker.remove(onTick);
                     settle.kill();
                     gsap.set(box, { clearProps: "all" });
                 };
