@@ -1,0 +1,79 @@
+/* Aim: the shared lock frame and the top-left readout. Both float over the page under the dock. */
+
+.frame {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Four corner brackets, each moved on its own transform (composite only). */
+.frame i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--c-cream);
+  filter: drop-shadow(0 0 1px color-mix(in srgb, var(--c-ink) 70%, transparent));
+  will-change: transform;
+}
+.frame i:nth-child(1) { border-top-width: 2px; border-left-width: 2px; }
+.frame i:nth-child(2) { border-top-width: 2px; border-right-width: 2px; }
+.frame i:nth-child(3) { border-bottom-width: 2px; border-left-width: 2px; }
+.frame i:nth-child(4) { border-bottom-width: 2px; border-right-width: 2px; }
+
+/* The readout: a small print plate in the top-left corner, inside the band the nav left free. */
+.hud {
+  position: fixed;
+  top: 1rem;
+  /* On the content edge, same as .wrap. */
+  left: calc((100% - min(var(--max), 100% - 2 * var(--gutter))) / 2);
+  z-index: 55;
+  pointer-events: none;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.55rem 0.75rem 0.5rem;
+  background: color-mix(in srgb, var(--c-ink) 82%, transparent);
+  border: 1px solid var(--c-rule);
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-variation-settings: "wdth" 75;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--c-cream);
+  white-space: nowrap;
+}
+
+.pos {
+  white-space: pre;
+}
+
+.line {
+  display: flex;
+  gap: 0.4rem;
+  color: var(--c-cream-2);
+}
+
+.mode {
+  color: var(--c-cream-2);
+  opacity: 0.7;
+}
+.mode[data-on] {
+  color: var(--c-signal);
+  opacity: 1;
+}
+
+.sep {
+  opacity: 0.5;
+}
+
+.target {
+  max-width: 34ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

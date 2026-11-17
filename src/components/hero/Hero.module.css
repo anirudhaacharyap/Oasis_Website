@@ -141,11 +141,3 @@
     mask-size: 4px 4px;
   }
 }
-
-/* Native cursor is hidden only while the reticle is running (it sets data-cursor on the section). */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .hero[data-cursor] .art,
-  .hero[data-cursor] .art * {
-    cursor: none;
-  }
-}

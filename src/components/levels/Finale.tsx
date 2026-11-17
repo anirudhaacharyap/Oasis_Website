@@ -31,7 +31,7 @@ export default function Finale() {
                             in front of the whole campus.
                         </p>
                         {emailReal ? (
-                            <a className="snap-link" href={`mailto:${site.links.email}`}>
+                            <a className="snap-link" data-lock="Partner contact" data-lock-auto href={`mailto:${site.links.email}`}>
                                 {site.links.email}
                             </a>
                         ) : (

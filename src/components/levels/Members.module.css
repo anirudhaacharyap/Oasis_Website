@@ -121,13 +121,13 @@
 }
 .tile:active { scale: 0.97; }
 
-/* Gold cursor frame: four corner brackets */
+/* The player cursor: the same four brackets as the page lock frame (Aim), drawn on the tile */
 .frame {
     position: absolute;
     inset: -6px;
     pointer-events: none;
 }
-.frame i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--c-gold); }
+.frame i { position: absolute; width: 14px; height: 14px; border: 0 solid var(--c-cream); }
 .frame i:nth-child(1) { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
 .frame i:nth-child(2) { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
 .frame i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }

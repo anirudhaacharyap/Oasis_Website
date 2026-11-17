@@ -173,7 +173,7 @@ export default function ProjectIndex({ projects }: { projects: Project[] }) {
                                                 ))}
                                             </ul>
                                             {real ? (
-                                                <a className={`snap-link ${s.link}`} href={p.url} target="_blank" rel="noopener noreferrer">
+                                                <a className={`snap-link ${s.link}`} data-lock={`View ${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
                                                     View project
                                                 </a>
                                             ) : (

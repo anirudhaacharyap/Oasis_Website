@@ -129,7 +129,7 @@ A warm ink and brand-red poster palette, cream type, one gold reserved for earne
 - **Ink** (`#1e181e`): the page ground, History and Members bands, the nav bar once solid, chips and the underline on red bands. Cream on ink is 15:1.
 - **Ink 2** (`#2a222a`): raised surfaces on ink (history cards, popovers) and the top highlight of the ink band gradient.
 - **Ink Void** (`#070607`): the hero ground only. With grain and the faint halftone on top it nets about `#0B0A0B`. Flat, no gradient.
-- **Cream** (`#f2eadb`): all primary text, the default button fill, the focus ring and the cursor reticle.
+- **Cream** (`#f2eadb`): all primary text, the default button fill, the focus ring, the crosshair and the lock frame.
 - **Cream 2** (`#e3d6c3`): secondary text and labels (12:1 on ink, 5:1 on red).
 - **Rules**: cream at 16% for hairlines, 38% for strong borders; brand red as a solid 2px band divider.
 
@@ -184,7 +184,7 @@ Flat and printed. Depth is tonal and graphic: ink versus red bands, 2px rules, h
 
 ## Shapes
 
-Square print corners everywhere (`--radius: 0px`, applied to buttons, chips, cards, focus outlines). The single exception is shapes that are circles by nature (the `glyph` badge at 50%, reticle ring). Rules are 1px hairlines or solid 2px bands. Fields are rectangles; the poster feel comes from the straight edge.
+Square print corners everywhere (`--radius: 0px`, applied to buttons, chips, cards, focus outlines). The single exception is shapes that are circles by nature (the `glyph` badge at 50%). Rules are 1px hairlines or solid 2px bands. Fields are rectangles; the poster feel comes from the straight edge.
 
 ## Components
 
@@ -214,7 +214,7 @@ Ink band; members framed with 14px gold corner brackets (earned) and a "Sample d
 ### Hero Dot Logo and Cursor
 The wordmark is a sheet of halftone dots drawn in WebGL with a halftone-masked SVG print as fallback (also used for reduced motion and no WebGL). Dots are springs: stiffness 0.055, 0.84 velocity kept per 60fps frame (slight overshoot), cooling 0.955 per frame. The pointer is lerped (0.35 per frame); scatter radius is `62 + min(speed*5, 120)` px; heat is `min(1, speed*0.05)` and runs cream, red, signal. A press bursts heat outward in a 170px radius. A heat wave rides the star's arc about every 6s; the intro is the dots assembling in about 1.1s; scrolling away drifts them apart and cools them. On touch, a slow virtual pointer wanders the logo when idle.
 
-The reticle cursor is a 28px ring with four ticks (3px gap, 5px long) that opens up to a maximum 360px diameter and matches the scatter radius over the logo, with a pulse ring on press. It exists only inside the hero, only on `(hover: hover) and (pointer: fine)` with motion allowed, and the native cursor is hidden only while it runs.
+The hero no longer has its own cursor: the sitewide crosshair and lock frame (see Aim, below) cover it.
 
 ## Motion
 
@@ -264,7 +264,6 @@ The page is one poster you scroll through. One scroll position drives the title.
 - The title pins for a short beat on a large screen (about 60% of the viewport) while the dots spread and cool. The wheel is never locked past that beat. A phone does not pin. The same break plays as the title leaves.
 - The dot wordmark reads that one value (`heroBreak`). It no longer keeps its own scroll trigger.
 - The heading is the wordmark on screen. The dots and the printed mark sit inside the `h1`. The name for screen readers stays a hidden span.
-- The reticle hides the cursor only over the word, not over the line or the buttons.
 - The cream block in the dock scales from its left edge instead of changing width.
 - The cartridge preview and the controller watch scroll on the GSAP ticker, with the dock and the smooth scroll.
 - About, the roster, and the spawn frame are at least one screen. History and the cartridges stay long, because they are lists.
@@ -283,3 +282,12 @@ reverse: the red ink rises and cools into the cream word as you reach the end (`
 Tried and removed at the owner's call: a live halftone wipe between sections and committed section
 snapping. Forced scrolling felt like a fight, especially scrolling back up. Scrolling stays free, on
 Lenis with lerp 0.07.
+
+## Aim: crosshair, lock frame, readout (PC)
+
+Built for fine pointers; phones get their own pass later and see none of this.
+
+- **Crosshair:** the cursor everywhere is a native SVG cursor (`public/cursor/crosshair.svg`), so it never lags the hand. Over a lock target it swaps to `crosshair-lock.svg`: the arms tighten and the pip turns signal red. The old hero-only thermal reticle is retired; the dot logo still scatters under the pointer on its own.
+- **Lock frame** (`src/components/Aim.tsx`): one set of four cream corner brackets that catches a target. Priority is hover, then keyboard focus-visible, then the scroll auto-lock (the `[data-lock-auto]` target nearest 55% of the screen height). The auto-lock only highlights; it never moves focus or activates anything. A new catch starts 18px wide and snaps to 6px (`back.out`); moving between targets flies the frame in 320ms `power3.out`; a click clamps the brackets in and lets go. Reduced motion: no fly, no snap.
+- **Targets:** `data-lock="Name"` marks a target (the name shows in the readout); `data-lock-auto` adds it to scroll selection; `data-lock-own` means it draws its own brackets (player tiles), so the shared frame steps aside. Auto targets: the two hero CTAs (Pick your spawn point wins the tie), the selected Join domain, Apply for <domain>, and the partner email once it is real. Hover only: the Join domain rows, event links, project links.
+- **Readout:** top left, on the content edge, a small ink plate: `X 0742  Y 0388` in page coordinates (Y keeps counting as you scroll), then `LOCK › TARGET` in signal red, or `SCAN › NO TARGET`. Written on the GSAP ticker, text only when it changes.

@@ -178,6 +178,8 @@ export default function PlayerSelect({ members }: { members: Member[] }) {
                                         key={m.handle}
                                         type="button"
                                         data-tile
+                                        data-lock={`@${m.handle}`}
+                                        data-lock-own
                                         className={styles.tile}
                                         aria-pressed={locked === i}
                                         aria-label={`${m.name}, ${m.role}`}

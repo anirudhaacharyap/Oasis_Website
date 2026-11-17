@@ -101,6 +101,8 @@ export default function SpawnSelect() {
                                 }}
                                 type="button"
                                 className={`${styles.domain} ${on ? styles.on : ""}`}
+                                data-lock={domain}
+                                data-lock-auto={on ? "" : undefined}
                                 aria-pressed={on}
                                 tabIndex={on ? 0 : -1}
                                 onClick={() => setSelected(i)}
@@ -115,7 +117,11 @@ export default function SpawnSelect() {
                 </div>
 
                 <div className={styles.ctaBlock}>
-                    <a className={`btn btn--ink ${styles.cta}`} href={site.links.join} target="_blank" rel="noopener noreferrer">
+                    <a
+                        className={`btn btn--ink ${styles.cta}`}
+                        data-lock={`Apply for ${domains[selected]}`}
+                        data-lock-auto
+                        href={site.links.join} target="_blank" rel="noopener noreferrer">
                         Apply for {domains[selected]}
                         <svg className="arrow" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
                             <path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" strokeWidth="1.8" />

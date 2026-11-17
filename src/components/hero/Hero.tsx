@@ -1,6 +1,5 @@
 import { site } from "@/data/site";
 import HeroArt from "./HeroArt";
-import HeroCursor from "./HeroCursor";
 import styles from "./Hero.module.css";
 
 /**
@@ -16,7 +15,6 @@ export default function Hero() {
                 </span>
                 <HeroArt />
             </h1>
-            <HeroCursor />
 
             <div className={styles.foot}>
                 <div className={styles.say} data-intro style={{ ["--i" as string]: 3 }}>
@@ -28,14 +26,14 @@ export default function Hero() {
                     </p>
                 </div>
                 <div className={styles.ctas} data-intro style={{ ["--i" as string]: 4 }}>
-                    <a className="btn btn--red" data-magnetic href={site.links.join} target="_blank" rel="noopener noreferrer">
+                    <a className="btn btn--red" data-lock="Pick your spawn point" data-lock-auto href={site.links.join} target="_blank" rel="noopener noreferrer">
                         Pick your spawn point
                         <svg className="arrow" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
                             <path d="M4 10 10 4M5 4h5v5" fill="none" stroke="currentColor" strokeWidth="1.8" />
                         </svg>
                         <span className="sr-only">(opens the recruitment site)</span>
                     </a>
-                    <a className="btn btn--ghost" data-magnetic href="#join">
+                    <a className="btn btn--ghost" data-lock="Partner with us" data-lock-auto href="#join">
                         Partner with us
                     </a>
                 </div>

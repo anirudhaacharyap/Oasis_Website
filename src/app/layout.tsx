@@ -7,6 +7,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import KonamiCode from "@/components/KonamiCode";
 import Motion from "@/components/Motion";
 import Reel from "@/components/Reel";
+import Aim from "@/components/Aim";
 import { site } from "@/data/site";
 import { siteUrl } from "@/lib/site-url";
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <SmoothScroll />
                 <Motion />
                 <Reel />
+                <Aim />
                 <KonamiCode />
             </body>
         </html>

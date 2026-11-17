@@ -43,7 +43,7 @@ export default function History() {
                                         </p>
                                         <h4 className={`display ${styles.cardTitle}`}>
                                             {real ? (
-                                                <a href={event.url} className={styles.cardLink}>
+                                                <a href={event.url} className={styles.cardLink} data-lock={event.title}>
                                                     {event.title}
                                                 </a>
                                             ) : (
@@ -105,7 +105,7 @@ export default function History() {
                                                 </p>
                                                 <h3 className={`display ${styles.itemTitle}`}>
                                                     {real ? (
-                                                        <a href={event.url} className="snap-link">
+                                                        <a href={event.url} className="snap-link" data-lock={event.title}>
                                                             {event.title}
                                                         </a>
                                                     ) : (

@@ -470,3 +470,16 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* The crosshair is the cursor on a PC: a native cursor image, so it never lags the hand. It
+   tightens with a red pip over anything the lock frame can catch. Touch screens keep theirs. */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  html * {
+    cursor: url("/cursor/crosshair.svg") 16 16, crosshair !important;
+  }
+  html [data-lock]:hover,
+  html [data-lock]:hover * {
+    cursor: url("/cursor/crosshair-lock.svg") 16 16, crosshair !important;
+  }
+}
